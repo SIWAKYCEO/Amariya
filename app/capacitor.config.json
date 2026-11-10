@@ -1,0 +1,8 @@
+{
+  "appId": "ma.amariya.app",
+  "appName": "Amariya",
+  "webDir": "dist",
+  "backgroundColor": "#0F2A24",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never" }
+}
