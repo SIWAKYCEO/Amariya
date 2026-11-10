@@ -36,7 +36,7 @@ jobs:
         working-directory: app
         run: |
           npm ci
-          npx vite build --base=/amariya/
+          npx vite build --base=/Amariya/
 
       - name: SPA fallback for /i/<token> links
         run: cp app/dist/index.html app/dist/404.html
