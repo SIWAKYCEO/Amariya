@@ -2,9 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// base './' keeps every path relative, so the same build runs on the web and inside Capacitor (Play Store / App Store)
+// base '/' works on the web (also on /i/<token> links) and inside Capacitor, which serves the app from the root
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [
     react(),
     VitePWA({
