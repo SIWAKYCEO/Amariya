@@ -106,6 +106,7 @@ form.addEventListener('submit',async function(e){
     var key='am_wl_'+d;
     var already=false;try{already=localStorage.getItem(key)==='1'}catch(_){}
     if(!already){
+      try{fetch('https://tonxmajfvgflvlkkutou.supabase.co/rest/v1/rpc/amariya_join',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',apikey:'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC',Authorization:'Bearer sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'},body:JSON.stringify({p_name:business,p_city:city,p_phone:'212'+d,p_source:new URLSearchParams(location.search).get('src')||'bio',p_ua:navigator.userAgent})}).catch(function(){})}catch(_){}
       var r=await fetch('https://formsubmit.co/ajax/amariyamaroc@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Amariya · تسجيل جديد: '+business+' ('+city+')',_template:'table',_captcha:'false','الاسم':business,'المدينة':city,'واتساب':'+212'+d,'رابط واتساب':'https://wa.me/212'+d})});
       var j=await r.json();
       if(!(j&&(j.success===true||j.success==='true'))){throw new Error('server')}
