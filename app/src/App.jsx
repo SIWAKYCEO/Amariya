@@ -12,7 +12,7 @@ const Money = lazy(() => import('./screens/Money'))
 const Settings = lazy(() => import('./screens/Settings'))
 const Calendar = lazy(() => import('./screens/Calendar'))
 import { PHOTOS } from './lib/util'
-import { InstallButton, InstallNudge } from './install'
+import { InstallButton } from './install'
 
 const TABS = ['weddings', 'staff', 'clients', 'money']
 
@@ -93,7 +93,7 @@ export default function App() {
     <div className="app">
       <Suspense fallback={<div className="skel" />}>
       {route.v === 'calendar' && <Calendar back={back} go={go} day={route.day} />}
-      {route.v === 'weddings' && <><Weddings go={go} /><InstallNudge /></>}
+      {route.v === 'weddings' && <Weddings go={go} />}
       {route.v === 'staff' && <Staff go={go} />}
       {route.v === 'clients' && <Clients go={go} />}
       {route.v === 'money' && <Money go={go} />}

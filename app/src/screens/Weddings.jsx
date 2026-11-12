@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
-import { Count, DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
+import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
+import { InstallNudge } from '../install'
 
 const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا' }
 
@@ -110,6 +111,7 @@ export default function Weddings({ go }) {
       </section>
 
       <div className="content">
+        <InstallNudge />
         {todays.length > 0 && <><h4 className="sec">اليوم</h4>{todays.map((w) => <TodayCard key={w.id} w={w} s={s} go={go} />)}</>}
         {!todays.length && (week[0] || later[0]) && <><h4 className="sec">العرس الجاي</h4><TodayCard w={week[0] || later[0]} s={s} go={go} next /></>}
         {(todays.length ? week : week.slice(1)).length > 0 && <><h4 className="sec">هاد السيمانة</h4><div className="list">{(todays.length ? week : week.slice(1)).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
