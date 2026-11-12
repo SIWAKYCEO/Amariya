@@ -33,9 +33,11 @@ export const Star = ({ size = 14, color = 'var(--brass)', style }) => (
     <path d="M0 -10 L2.93 -7.07 L7.07 -7.07 L7.07 -2.93 L10 0 L7.07 2.93 L7.07 7.07 L2.93 7.07 L0 10 L-2.93 7.07 L-7.07 7.07 L-7.07 2.93 L-10 0 L-7.07 -2.93 L-7.07 -7.07 L-2.93 -7.07 Z" fill={color} />
   </svg>
 )
-export const Logo = ({ size = 22, color = 'var(--ivory)' }) => (
-  <span className="logo" style={{ fontSize: size, color }} aria-label="amariya">amariya<Star size={size * 0.42} style={{ marginBottom: size * 0.5, marginInlineStart: 1 }} /></span>
-)
+// official wordmark (public/logo.svg) tinted with any color through a CSS mask
+export const Logo = ({ size = 22, color = 'var(--ivory)' }) => {
+  const h = size * 0.95, url = `url(${import.meta.env.BASE_URL}logo.svg)`
+  return <span className="logo-mark" role="img" aria-label="amariya" style={{ display: 'inline-block', height: h, width: h * 3.295, background: color, WebkitMask: `${url} center / contain no-repeat`, mask: `${url} center / contain no-repeat` }} />
+}
 
 // amounts in RTL text: keep digits + DH left-to-right
 export const DH = ({ v, unit = true }) => <span className="num" dir="ltr">{money(v)}{unit && <small> DH</small>}</span>
