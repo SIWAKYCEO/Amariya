@@ -10,6 +10,7 @@ import Clients from './screens/Clients'
 import Money from './screens/Money'
 import Settings from './screens/Settings'
 import { PHOTOS } from './lib/util'
+import { InstallButton, InstallNudge } from './install'
 
 const TABS = ['weddings', 'staff', 'clients', 'money']
 
@@ -70,6 +71,7 @@ export default function App() {
               <h1>العراسات ديالك<br />كاملين فبلاصة وحدة</h1>
               {err ? <p className="err">{err}</p> : <p>هاد التطبيق كيتفتح بالرابط اللي صيفطنا ليك فالواتساب.</p>}
               <a className="btn brass" href="?demo=1">شوف كيفاش خدام</a>
+              <InstallButton className="btn glassbtn" />
             </>
           ) : <Spin />}
         </div>
@@ -81,7 +83,7 @@ export default function App() {
   const w = route.id && s.weddings.find((x) => x.id === route.id)
   return (
     <div className="app">
-      {route.v === 'weddings' && <Weddings go={go} />}
+      {route.v === 'weddings' && <><Weddings go={go} /><InstallNudge /></>}
       {route.v === 'staff' && <Staff go={go} />}
       {route.v === 'clients' && <Clients go={go} />}
       {route.v === 'money' && <Money go={go} />}

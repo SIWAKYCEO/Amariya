@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { InstallButton } from '../install'
 import { add, isDemo, logout, remove, saveTraiteur, update, useStore } from '../lib/data'
 import { normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, Sheet, TopBar, fail, toast } from '../ui'
@@ -40,7 +41,8 @@ export default function Settings({ back }) {
 
         <div className="card">
           <h3>دير التطبيق فالتيليفون</h3>
-          <p className="muted">فالأيفون: كليكي على «Partager» ومن بعد «Sur l'écran d'accueil». فالأندرويد: القائمة ⋮ ومن بعد «Installer l'application».</p>
+          <p className="muted">تفتح بكليكة وحدة من الشاشة ديال التيليفون، بلا ما تقلب على الرابط.</p>
+          <InstallButton />
         </div>
 
         <button className="btn ghost wide danger" onClick={logout}>{isDemo ? 'خرج من التجربة' : 'خرج من الحساب'}</button>

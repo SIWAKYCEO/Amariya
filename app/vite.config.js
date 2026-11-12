@@ -9,16 +9,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      includeAssets: ['icon.svg', 'favicon-64.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'maskable-512.png'],
       manifest: {
         name: 'Amariya · عمّارية',
         short_name: 'Amariya',
         description: 'العراسات، الخدامة، الكليان والفلوس ديال التريتور ديالك',
         lang: 'ar', dir: 'rtl', start_url: './', scope: './', display: 'standalone',
         background_color: '#0F2A24', theme_color: '#0F2A24',
+        id: '/', orientation: 'portrait', categories: ['business', 'productivity'],
         icons: [
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' },
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
