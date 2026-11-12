@@ -390,3 +390,6 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .welcome .bgphoto { filter: blur(2px) saturate(.95) brightness(.62); inset: -8px }
 .dbox.t b { font-size: 16px }
 .privacy{font-size:12px;line-height:1.7;color:var(--mute,#7a7a72);margin:6px 4px 14px;text-align:center}
+.rc-prev { margin: 4px 0 16px; border-radius: 18px; overflow: hidden; background: var(--green); max-height: 58vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(15,42,36,.18) }
+.rc-prev img { display: block; width: 100%; height: auto }
+.rc-skel { aspect-ratio: 1080/1500; width: 100% }

@@ -3,6 +3,7 @@ import { add, extrasSum, paidOf, problemsOf, readinessOf, remove, shoppingOf, te
 import { ROLES, ROLES_PL, dayKey, dayLabel, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
 import { Count, DH, Field, Ic, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
+import { receiptImage } from '../lib/receipt'
 
 function devisText(w, traiteur) {
   const lines = [
@@ -31,6 +32,7 @@ export default function WeddingFile({ w, back, go }) {
   const s = useStore()
   const [sheet, setSheet] = useState(null)
   const [amount, setAmount] = useState('')
+  const [rc, setRc] = useState(null)
   const total = totalOf(w), paid = paidOf(w, s.payments), rest = Math.max(0, total - paid)
   const pays = s.payments.filter((p) => p.wedding_id === w.id).sort((a, b) => a.paid_on.localeCompare(b.paid_on))
   const team = teamOf(w, s)
@@ -38,6 +40,25 @@ export default function WeddingFile({ w, back, go }) {
   const pkg = s.packages.find((p) => p.id === w.package_id)
   const ready = readinessOf(w, s)
   const shop = shoppingOf(w, s)
+
+  async function openReceipt(p, soFar) {
+    const text = receiptText(w, p, soFar, total, s.traiteur)
+    setRc({ loading: true, text })
+    try {
+      const blob = await receiptImage({ w, p, pays, total, traiteur: s.traiteur })
+      const file = new File([blob], `wasl-${String(w.family).replace(/\s+/g, '-')}.png`, { type: 'image/png' })
+      setRc({ url: URL.createObjectURL(blob), file, text })
+    } catch { setRc(null); shareText(text, w.phone ? waLink(w.phone, text) : null) }
+  }
+  async function sendReceipt() {
+    if (rc?.file && navigator.canShare?.({ files: [rc.file] })) {
+      try { await navigator.share({ files: [rc.file] }); return } catch (e) { if (e?.name === 'AbortError') return }
+    }
+    const a = document.createElement('a'); a.href = rc.url; a.download = rc.file.name; a.click()
+    toast('تسجّلات الصورة · صيفطها فالواتساب')
+    if (w.phone) setTimeout(() => openExternal(waLink(w.phone, rc.text)), 600)
+  }
+  const closeRc = () => { if (rc?.url) URL.revokeObjectURL(rc.url); setRc(null) }
   const byRole = Object.keys(ROLES).map((r) => [r, team.rows.filter((a) => a.person.role === r)]).filter(([, l]) => l.length)
 
   async function addPay() {
@@ -103,7 +124,7 @@ export default function WeddingFile({ w, back, go }) {
           <div className="bar"><i style={{ width: Math.min(100, (paid / (total || 1)) * 100) + '%' }} /></div>
           {pays.length > 0 && <ul className="pays">{pays.map((p, i) => {
             const soFar = pays.slice(0, i + 1).reduce((a, x) => a + +x.amount, 0)
-            return <li key={p.id}><span>{p.kind === 'arboun' ? 'العربون' : 'خلاص'} · {dayLabel(p.paid_on, false)}</span><span className="pr-r"><DH v={p.amount} /><button className="rcpt" onClick={() => shareText(receiptText(w, p, soFar, total, s.traiteur), w.phone ? waLink(w.phone, receiptText(w, p, soFar, total, s.traiteur)) : null)} aria-label="صيفط الوصل">{Ic.receipt(15)}</button></span></li>
+            return <li key={p.id}><span>{p.kind === 'arboun' ? 'العربون' : 'خلاص'} · {dayLabel(p.paid_on, false)}</span><span className="pr-r"><DH v={p.amount} /><button className="rcpt" onClick={() => openReceipt(p, soFar)} aria-label="صيفط الوصل">{Ic.receipt(15)}</button></span></li>
           })}</ul>}
           <div className="btnrow">
             <button className="btn green" onClick={() => setSheet('pay')}>{Ic.plus(18)} {paid ? 'زيد خلاص' : 'سجّل العربون'}</button>
@@ -156,6 +177,14 @@ export default function WeddingFile({ w, back, go }) {
           </div>}
         </div>
       </div>
+
+      {rc && (
+        <Sheet title="الوصل" onClose={closeRc}>
+          <div className="rc-prev">{rc.url ? <img src={rc.url} alt="الوصل" /> : <div className="skel rc-skel" />}</div>
+          <button className="btn green wide" disabled={!rc.url} onClick={sendReceipt}>{Ic.wa(18)} صيفط الوصل{w.phone ? ' للعائلة' : ''}</button>
+          <button className="linkbtn" onClick={() => shareText(rc.text, w.phone ? waLink(w.phone, rc.text) : null)}>صيفطو كتابة بلا صورة</button>
+        </Sheet>
+      )}
 
       {sheet === 'pay' && (
         <Sheet title={paid ? 'زيد خلاص' : 'سجّل العربون'} onClose={() => setSheet(null)}>
