@@ -26,6 +26,7 @@ export default function Calendar({ back, go, day }) {
     <div className="screen">
       <TopBar title="الكالوندري" back={back} />
       <div className="content">
+        <div className="cal-l">
         <div className="month">
           <button className="round sm" onClick={() => shift(-1)} aria-label="الشهر اللي فات">{Ic.back(18)}</button>
           <b>{MONTHS[ym[1]]} <span dir="ltr">{ym[0]}</span></b>
@@ -47,6 +48,8 @@ export default function Calendar({ back, go, day }) {
           })}
         </div>
         <div className="legend"><span><i className="lg busy" /> محجوز</span><span><i className="lg free" /> خاوي</span></div>
+        </div>
+        <div className="cal-r">
 
         <h4 className="sec dark">{dayLabel(sel)}</h4>
         {list.length === 0 ? (
@@ -67,6 +70,7 @@ export default function Calendar({ back, go, day }) {
             {sel >= today && <button className="btn ghost wide" onClick={() => go('new', { prefill: { day: sel } })}>{Ic.plus(16)} عرس آخر هاد النهار</button>}
           </div>
         )}
+        </div>
       </div>
     </div>
   )

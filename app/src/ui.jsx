@@ -208,6 +208,17 @@ export function Numpad({ value, onChange }) {
     if (k === 'del') onChange(String(value).slice(0, -1))
     else { const n = (String(value) + k).replace(/^0+/, ''); if (n.length <= 7) onChange(n) }
   }
+  // PC only: type the amount with the keyboard (digits, Backspace)
+  const latest = useRef(press); latest.current = press
+  useEffect(() => {
+    if (!matchMedia('(min-width: 1024px)').matches) return
+    const k = (e) => {
+      if (/INPUT|TEXTAREA/.test(document.activeElement?.tagName) || e.ctrlKey || e.metaKey) return
+      if (/^[0-9]$/.test(e.key)) { e.preventDefault(); latest.current(e.key) }
+      else if (e.key === 'Backspace') { e.preventDefault(); latest.current('del') }
+    }
+    addEventListener('keydown', k); return () => removeEventListener('keydown', k)
+  }, [])
   return (
     <div className="numpad">
       {['1', '2', '3', '4', '5', '6', '7', '8', '9', '000', '0', 'del'].map((k) => (

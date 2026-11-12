@@ -4,6 +4,7 @@ import { isDemo, load, redeem, useStore } from './lib/data'
 import { setScreen, startPresence } from './lib/presence'
 import { Dock, Ic, Logo, Spin, Toaster } from './ui'
 import Weddings from './screens/Weddings'
+import { Dashboard, Side, useDesk } from './screens/Desk'
 // home loads first; every other screen is fetched the first time it is opened
 const WeddingFile = lazy(() => import('./screens/WeddingFile'))
 const NewWedding = lazy(() => import('./screens/NewWedding'))
@@ -34,6 +35,7 @@ export default function App() {
   const [err, setErr] = useState('')
   const [route, setRoute] = useState({ v: 'weddings' })
   const s = useStore()
+  const desk = useDesk()
 
   useEffect(() => {
     (async () => {
@@ -92,19 +94,30 @@ export default function App() {
 
   const tab = TABS.includes(route.v) ? route.v : null
   const w = route.id && s.weddings.find((x) => x.id === route.id)
-  return (
-    <div className="app">
+  const screens = (
       <Suspense fallback={<div className="skel" />}>
       {route.v === 'calendar' && <Calendar back={back} go={go} day={route.day} />}
-      {route.v === 'weddings' && <Weddings go={go} />}
+      {route.v === 'weddings' && (desk ? <Dashboard go={go} /> : <Weddings go={go} />)}
       {route.v === 'staff' && <Staff go={go} />}
       {route.v === 'clients' && <Clients go={go} />}
       {route.v === 'money' && <Money go={go} />}
       {route.v === 'settings' && <Settings back={back} />}
       {route.v === 'new' && <NewWedding back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
       {route.v === 'edit' && w && <NewWedding key={w.id} edit={w} back={back} done={back} />}
-      {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : <Weddings go={go} />)}
+      {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : desk ? <Dashboard go={go} /> : <Weddings go={go} />)}
       </Suspense>
+  )
+  // PC: fixed side menu + wide main area; the phone layout below is unchanged
+  if (desk) return (
+    <div className="app desk">
+      <Side v={route.v} go={go} />
+      <main className="dmain">{screens}</main>
+      <Toaster />
+    </div>
+  )
+  return (
+    <div className="app">
+      {screens}
       {tab && <Dock tab={tab} go={go} />}
       <Toaster />
     </div>
