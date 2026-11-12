@@ -19,7 +19,7 @@ export default function Settings({ back }) {
       <Band photo={PHOTOS.food} pos="center 75%" title="الإعدادات" back={back}>
         <div className="prof">
           <span className="lgx">{first}</span>
-          <span style={{ flex: 1, minWidth: 0 }}><b>{t.name || 'التريتور ديالك'}</b><small>{[t.city, t.phone && prettyPhone(t.phone)].filter(Boolean).join(' · ') || 'زيد المدينة والتيليفون'}</small></span>
+          <span style={{ flex: 1, minWidth: 0 }}><b>{t.name || 'التريتور ديالك'}</b><small>{t.city}{t.city && t.phone && ' · '}{t.phone && <span dir="ltr">{prettyPhone(t.phone)}</span>}{!t.city && !t.phone && 'زيد المدينة والتيليفون'}</small></span>
           <button className="round glass" onClick={() => setEd(true)} aria-label="بدّل">{Ic.pen(17)}</button>
         </div>
       </Band>

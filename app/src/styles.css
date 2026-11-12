@@ -535,3 +535,4 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
   .welcome .in { padding: 40px 34px; border-radius: 32px; background: rgba(15, 42, 36, .72); border: 1px solid rgba(243, 237, 227, .12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .6) }
   .welcome .shade { background: linear-gradient(90deg, rgba(10, 26, 22, .2), rgba(10, 26, 22, .55)) }
 }
+.mncard .img .num small { display: inline; margin: 0; font-size: .58em; color: var(--mute) }
