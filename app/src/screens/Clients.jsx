@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { paidOf, totalOf, useStore } from '../lib/data'
-import { dayLabel, openExternal, prettyPhone, telLink, waLink } from '../lib/util'
+import { dayLabel, openExternal, prettyPhone, telLink, waLink, initial } from '../lib/util'
 import { DH, Empty, Ic, Sheet, TopBar } from '../ui'
 
 // clients are the families of the weddings, grouped by phone (or name when no phone)
@@ -32,7 +32,7 @@ export default function Clients({ go }) {
         <div className="list">
           {shown.map((c) => (
             <button className="crow" key={c.key} onClick={() => setOpen(c)}>
-              <span className="av">{c.family.replace('عائلة ', '').slice(0, 1)}</span>
+              <span className="av">{initial(c.family)}</span>
               <span className="mid"><b>{c.family}</b><span className="meta">{c.weddings.length > 1 ? `${c.weddings.length} عراسات · ` : ''}{dayLabel(c.weddings[0].day, false)}</span></span>
               {c.rest > 0 ? <span className="owe">باقي <DH v={c.rest} /></span> : <span className="paid">{Ic.check(13)} خالص</span>}
             </button>

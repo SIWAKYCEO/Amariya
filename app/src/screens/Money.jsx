@@ -33,7 +33,7 @@ export default function Money({ go }) {
           <button className="round sm flip" onClick={() => shift(1)} aria-label="الشهر الجاي">{Ic.back(18)}</button>
         </div>
         <div className="profit">
-          <small>الربح ديال هاد الشهر</small>
+          <small>الصافي ديال هاد الشهر (دخل − خرج)</small>
           <div className={'pv' + (profit < 0 ? ' neg' : '')}><DH v={profit} /></div>
           <div className="pr"><span><i className="dot in" />دخل <DH v={income} /></span><span><i className="dot out" />خرج <DH v={spent} /></span></div>
         </div>
@@ -71,7 +71,7 @@ function ExpenseSheet({ close }) {
   const [f, setF] = useState({ label: '', amount: '', wedding_id: '' })
   const soon = s.weddings.filter((w) => w.status !== 'cancelled').sort((a, b) => Math.abs(new Date(a.day) - Date.now()) - Math.abs(new Date(b.day) - Date.now())).slice(0, 4)
   const save = async () => {
-    try { await add('expenses', { label: f.label.trim(), amount: +f.amount, wedding_id: f.wedding_id || null, spent_on: dayKey(new Date()) }); toast(`تسجّل ${money(+f.amount)} DH`); close() } catch (e) { fail(e) }
+    try { await add('expenses', { label: f.label.trim(), amount: +f.amount, wedding_id: f.wedding_id || null, spent_on: dayKey(new Date()) }); toast(`تسجّل \u2066${money(+f.amount)} DH\u2069`); close() } catch (e) { fail(e) }
   }
   return (
     <Sheet title="مصروف جديد" onClose={close}>

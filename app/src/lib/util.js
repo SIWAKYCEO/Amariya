@@ -54,10 +54,12 @@ export const PHOTOS = {
   amariya: CDN + 'a20b1226-d2ee-485d-9819-badaf81d6b5b.jpg',
   kitchen: CDN + '59569914-f5b1-43be-a97b-1f352b0acb7a.jpg',
   a: CDN + '1fcdfa8b-cba8-4d91-b6f6-5d69119e5992.jpg',
-  b: CDN + 'd3a5b05a-4df5-43bb-bb18-dd06367e5f21.jpg',
+  b: CDN + '39eba763-bc05-4665-aae3-ecdd5b2a33cb.jpg',
   c: CDN + '42a4e807-5569-462e-85aa-475773630618.jpg',
 }
 const ROT = [PHOTOS.hall, PHOTOS.amariya, PHOTOS.b, PHOTOS.c, PHOTOS.a]
+// first meaningful letter of a name (skips «عائلة», «الشاف», the article «ال»)
+export const initial = (n = '') => { const w = n.replace(/^(عائلة|الشاف|للا|السيد|مدام)\s+/, '').trim(); return (w.replace(/^ال(?=\S{2})/, '') || w).slice(0, 1) }
 export const photoFor = (id = '') => ROT[[...id].reduce((s, c) => s + c.charCodeAt(0), 0) % ROT.length]
 
 export const ROLES = {

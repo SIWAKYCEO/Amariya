@@ -16,7 +16,8 @@ const TABS = ['weddings', 'staff', 'clients', 'money']
 // navigation lives in history.state so the phone's back button (web and Android) works everywhere
 function transition(update) {
   if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) { update(); return }
-  document.startViewTransition(() => flushSync(update))
+  const t = document.startViewTransition(() => flushSync(update))
+  t.ready.catch(() => {}); t.finished.catch(() => {}); t.updateCallbackDone.catch(() => {})
 }
 
 const inviteToken = () => {

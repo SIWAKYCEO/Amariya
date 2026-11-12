@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { add, remove, update, useStore } from '../lib/data'
-import { ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink } from '../lib/util'
+import { ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
 import { Empty, Fab, Field, Ic, Sheet, TopBar, fail, toast } from '../ui'
 
 export default function Staff() {
@@ -26,7 +26,7 @@ export default function Staff() {
             return (
               <div className="prow2" key={p.id}>
                 <button className="who" onClick={() => setEdit(p)}>
-                  <span className="av">{p.name.slice(0, 1)}</span>
+                  <span className="av">{initial(p.name)}</span>
                   <span className="mid"><b>{p.name}</b><span className="meta">{ROLES[p.role]}{+p.rate ? <> · <span dir="ltr">{money(p.rate)} DH</span> لليلة</> : ''}</span></span>
                   {n > 0 && <span className="badge">{n} {n === 1 ? 'عرس' : 'عراسات'}</span>}
                 </button>

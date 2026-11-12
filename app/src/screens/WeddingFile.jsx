@@ -41,7 +41,7 @@ export default function WeddingFile({ w, back, go }) {
     try {
       await add('payments', { wedding_id: w.id, amount: a, kind: paid ? 'payment' : 'arboun', paid_on: dayKey(new Date()) })
       if (w.status === 'devis') await update('weddings', w.id, { status: 'confirmed' })
-      setAmount(''); setSheet(null); toast(`تسجّل ${money(a)} DH`)
+      setAmount(''); setSheet(null); toast(`تسجّل \u2066${money(a)} DH\u2069`)
     } catch (e) { fail(e) }
   }
   async function toggleStaff(p) {
@@ -65,7 +65,7 @@ export default function WeddingFile({ w, back, go }) {
         </div>
         <div className="fh-in">
           <h1>{w.family}</h1>
-          <p className="meta">{dayLabel(w.day)} · <span dir="ltr">{w.time}</span>{w.hall ? ' · ' + w.hall : ''}{w.city ? '، ' + w.city : ''}</p>
+          <p className="meta">{dayLabel(w.day)} · <span dir="ltr">{w.time}</span>{w.hall ? ' · ' + w.hall : ''}{w.city ? (w.hall ? '، ' : ' · ') + w.city : ''}</p>
           <WeddingChips w={w} s={s} />
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function WeddingFile({ w, back, go }) {
         <div className="card">
           <div className="ch"><h3>المينو · {w.package_name}</h3><span className="muted"><span dir="ltr">{w.guests}</span> ضيف</span></div>
           <ul className="menu">{(pkg?.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
-          {(w.extras || []).length > 0 && <ul className="extras">{w.extras.map((e, i) => <li key={i}><span>{e.label}</span><DH v={e.amount} /></li>)}<li className="t"><span>الزيادات</span><DH v={extrasSum(w)} /></li></ul>}
+          {(w.extras || []).length > 0 && <ul className="extras">{w.extras.map((e, i) => <li key={i}><span>{e.label}</span><DH v={e.amount} /></li>)}{w.extras.length > 1 && <li className="t"><span>الزيادات</span><DH v={extrasSum(w)} /></li>}</ul>}
         </div>
 
         {w.notes && <div className="card note"><h3>ملاحظات</h3><p>{w.notes}</p></div>}
