@@ -9,5 +9,18 @@ import '@fontsource/alexandria/latin-700.css'
 import '@fontsource-variable/bricolage-grotesque/index.css'
 import './styles.css'
 import App from './App'
+import { registerSW } from 'virtual:pwa-register'
+
+// check for a new version often (installed app on the phone stays open for days):
+// every minute and every time the app comes back to the front; a new version reloads the app by itself
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, r) {
+    if (!r) return
+    const check = () => { if (navigator.onLine) r.update().catch(() => {}) }
+    setInterval(check, 60 * 1000)
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check() })
+  },
+})
 
 createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)
