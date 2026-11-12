@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { add, remove, update, useStore } from '../lib/data'
-import { ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
-import { Empty, Fab, Field, Ic, Sheet, TopBar, fail, toast } from '../ui'
+import { PHOTOS, ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
+import { Band, Empty, Fab, Field, Ic, Sheet, fail, toast } from '../ui'
 
 export default function Staff() {
   const s = useStore()
@@ -13,24 +13,24 @@ export default function Staff() {
 
   return (
     <div className="screen">
-      <TopBar title="الخدامة" />
-      <div className="content pt">
+      <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={<>{s.staff.filter((p) => p.active !== false).length} خدام · السرباية، النكافة والكوزينة</>} />
+      <div className="content pt" style={{ paddingTop: 16 }}>
         <div className="filters">
           <button className={role === 'all' ? 'on' : ''} onClick={() => setRole('all')}>كلهم <b>{s.staff.filter((p) => p.active !== false).length}</b></button>
           {Object.keys(ROLES).filter((r) => counts[r]).map((r) => <button key={r} className={role === r ? 'on' : ''} onClick={() => setRole(r)}>{ROLES_PL[r]} <b>{counts[r]}</b></button>)}
         </div>
         {people.length === 0 && <Empty title="ما كاين حتى خدام" sub="زيد السرباية والنكافة والكوزينة مرة وحدة، ومن بعد غير كتختارهم لكل عرس." />}
-        <div className="list">
+        <div>
           {people.map((p) => {
             const n = upcoming(p)
             return (
-              <div className="prow2" key={p.id}>
-                <button className="who" onClick={() => setEdit(p)}>
-                  <span className="av">{initial(p.name)}</span>
+              <div className="srow2" key={p.id} role="button" tabIndex={0} onClick={() => setEdit(p)}>
+                <span className="who" style={{ display: 'contents' }}>
+                  <span className="av2">{initial(p.name)}</span>
                   <span className="mid"><b>{p.name}</b><span className="meta">{ROLES[p.role]}{+p.rate ? <> · <span dir="ltr">{money(p.rate)} DH</span> لليلة</> : ''}</span></span>
-                  {n > 0 && <span className="badge">{n} {n === 1 ? 'عرس' : 'عراسات'}</span>}
-                </button>
-                {p.phone && <button className="round sm wa" onClick={() => openExternal(waLink(p.phone, `السلام ${p.name}`))} aria-label="واتساب">{Ic.wa(16)}</button>}
+                  {n > 0 && <span className="pill2 br">{n} {n === 1 ? 'عرس' : 'عراسات'}</span>}
+                </span>
+                {p.phone && <button className="wab" onClick={(e) => { e.stopPropagation(); openExternal(waLink(p.phone, `السلام ${p.name}`)) }} aria-label="واتساب">{Ic.wa(19)}</button>}
               </div>
             )
           })}

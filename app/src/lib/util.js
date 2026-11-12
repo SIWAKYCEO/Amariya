@@ -56,7 +56,25 @@ export const PHOTOS = {
   a: CDN + '1fcdfa8b-cba8-4d91-b6f6-5d69119e5992.jpg',
   b: CDN + '39eba763-bc05-4665-aae3-ecdd5b2a33cb.jpg',
   c: CDN + '42a4e807-5569-462e-85aa-475773630618.jpg',
+  // Gemini photos (nov 2026): hall at night, catering spread, bride hands, traiteur kitchen
+  hall2: CDN + '5f90ae54-588e-4b9f-b796-16019e12a39e.jpg',
+  food: CDN + '7d9edf02-6fff-43aa-a69d-415dc8ea2b93.jpg',
+  bride: CDN + 'f5c6a91f-b8fd-40bf-aee5-4dd0ce89b714.jpg',
+  prep: CDN + 'c463c508-3072-48bf-8037-947da6bf7291.jpg',
 }
+// square crops taken from the 572x1024 photos with CSS (no extra files)
+const crop = (img, x, y, w) => ({ img, x, y, w })
+export const CROPS = {
+  meat: crop('prep', 15, 760, 170), chick: crop('prep', 190, 700, 180), veg: crop('prep', 10, 490, 180), spice: crop('prep', 425, 600, 140),
+  sweet: crop('food', 358, 615, 214), pastilla: crop('food', 71, 645, 240), tajine: crop('food', 143, 372, 200),
+}
+export const cropStyle = (k) => {
+  const c = CROPS[k]; if (!c) return {}
+  const W = 572, H = 1024
+  return { backgroundImage: `url(${PHOTOS[c.img]})`, backgroundSize: `${(W / c.w) * 100}% auto`, backgroundPosition: `${(c.x / (W - c.w)) * 100}% ${(c.y / (H - c.w)) * 100}%` }
+}
+// expense label -> photo crop
+export const expenseCrop = (label = '') => /لحم|لحوم|غنم|خروف/.test(label) ? 'meat' : /دجاج|فراخ/.test(label) ? 'chick' : /خضر|فواكه/.test(label) ? 'veg' : /حلو|حلويات|سكر/.test(label) ? 'sweet' : /عطرية|توابل|زعفران/.test(label) ? 'spice' : null
 const ROT = [PHOTOS.hall, PHOTOS.amariya, PHOTOS.b, PHOTOS.c, PHOTOS.a]
 // first meaningful letter of a name (skips «عائلة», «الشاف», the article «ال»)
 export const initial = (n = '') => { const w = n.replace(/^(عائلة|الشاف|للا|السيد|مدام)\s+/, '').trim(); return (w.replace(/^ال(?=\S{2})/, '') || w).slice(0, 1) }

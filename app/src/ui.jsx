@@ -177,3 +177,44 @@ export const fail = (e) => { console.error(e); toast('ما تسجّلش، عاو
 
 export const Empty = ({ title, sub }) => <div className="empty"><Star size={22} /><b>{title}</b>{sub && <p>{sub}</p>}</div>
 export const Spin = () => <div className="spin" aria-label="loading" />
+
+// green header band with a real photo behind (every main screen)
+export function Band({ photo, pos = 'center 40%', kicker, title, back, right, children }) {
+  return (
+    <section className="band" style={photo ? { backgroundImage: `url(${photo})`, backgroundPosition: pos } : undefined}>
+      <div className="band-in">
+        <div className="band-top">
+          <div className="band-t">
+            {back && <button className="round glass" onClick={back} aria-label="رجوع">{Ic.back()}</button>}
+            <div>{kicker && <span className="kick">{kicker}</span>}<h1>{title}</h1></div>
+          </div>
+          {right}
+        </div>
+        {children}
+      </div>
+    </section>
+  )
+}
+
+// square photo thumbnail (crop of a bigger photo) or an icon tile
+export const Thumb = ({ style, icon, size = 44, radius = 14 }) => (
+  <span className="thumb" style={{ width: size, height: size, borderRadius: radius, ...style }}>{!style?.backgroundImage && icon}</span>
+)
+
+// big phone-style keypad for amounts (one hand, no keyboard popping up)
+export function Numpad({ value, onChange }) {
+  const press = (k) => {
+    haptic(6)
+    if (k === 'del') onChange(String(value).slice(0, -1))
+    else { const n = (String(value) + k).replace(/^0+/, ''); if (n.length <= 7) onChange(n) }
+  }
+  return (
+    <div className="numpad">
+      {['1', '2', '3', '4', '5', '6', '7', '8', '9', '000', '0', 'del'].map((k) => (
+        <button key={k} type="button" onClick={() => press(k)} aria-label={k === 'del' ? 'مسح' : k}>
+          {k === 'del' ? sv(<><path d="M21 5H9l-6 7 6 7h12z" /><path d="M17 9l-6 6M11 9l6 6" /></>, 24, 2) : k}
+        </button>
+      ))}
+    </div>
+  )
+}

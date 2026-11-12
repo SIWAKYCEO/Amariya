@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { paidOf, totalOf, useStore } from '../lib/data'
-import { dayLabel, openExternal, prettyPhone, telLink, waLink, initial } from '../lib/util'
-import { DH, Empty, Ic, Sheet, TopBar } from '../ui'
+import { DAYS, PHOTOS, dayLabel, fromKey, openExternal, prettyPhone, telLink, waLink } from '../lib/util'
+import { Band, DH, Empty, Ic, Sheet } from '../ui'
 
 // clients are the families of the weddings, grouped by phone (or name when no phone)
 export default function Clients({ go }) {
@@ -20,24 +20,43 @@ export default function Clients({ go }) {
     }
     return [...m.values()].map((c) => ({ ...c, weddings: c.weddings.sort((a, b) => b.day.localeCompare(a.day)) })).sort((a, b) => b.weddings[0].day.localeCompare(a.weddings[0].day))
   }, [s.weddings, s.payments])
+  const [tab, setTab] = useState('all')
   const n = q.trim()
-  const shown = n ? clients.filter((c) => c.family.includes(n) || (c.phone || '').includes(n.replace(/\D/g, '').replace(/^0/, ''))) : clients
+  const found = n ? clients.filter((c) => c.family.includes(n) || (c.phone || '').includes(n.replace(/\D/g, '').replace(/^0/, ''))) : clients
+  const shown = found.filter((c) => tab === 'all' || (tab === 'owe' ? c.rest > 0 : c.rest <= 0))
+  const restAll = clients.reduce((a, c) => a + c.rest, 0)
+  const owing = clients.filter((c) => c.rest > 0).length
+  const status = (c) => {
+    const w = c.weddings[0]
+    if (c.rest <= 0) return <span className="pill2 ok">✓ خالص كامل</span>
+    const paid = paidOf(w, s.payments)
+    return <><span className="r">باقي <DH v={c.rest} unit={false} /></span>{paid <= 0 ? <span className="pill2 hot">بلا عربون</span> : <span className="pill2 br">العربون ✓</span>}</>
+  }
 
   return (
     <div className="screen">
-      <TopBar title="الكليان" />
-      <div className="content pt">
-        <label className="search">{Ic.search()}<input value={q} onChange={(e) => setQ(e.target.value)} placeholder="قلب بالسمية ولا التيليفون" /></label>
-        {shown.length === 0 && <Empty title={n ? 'ما لقيناش' : 'باقي ما كاين حتى كليان'} sub={n ? '' : 'كل عائلة كتزيد ليها عرس كتبان هنا.'} />}
-        <div className="list">
-          {shown.map((c) => (
-            <button className="crow" key={c.key} onClick={() => setOpen(c)}>
-              <span className="av">{initial(c.family)}</span>
-              <span className="mid"><b>{c.family}</b><span className="meta">{c.weddings.length > 1 ? `${c.weddings.length} عراسات · ` : ''}{dayLabel(c.weddings[0].day, false)}</span></span>
-              {c.rest > 0 ? <span className="owe">باقي <DH v={c.rest} /></span> : <span className="paid">{Ic.check(13)} خالص</span>}
-            </button>
-          ))}
+      <Band photo={PHOTOS.bride} pos="center 60%" title="الكليان"
+        kicker={<>{clients.length} كليان{restAll > 0 && <> · <DH v={restAll} /> باقي</>}</>}
+        right={<button className="round glass" onClick={() => go('new')} aria-label="عرس جديد">{Ic.plus(20)}</button>}>
+        <label className="search">{Ic.search()}<input value={q} onChange={(e) => setQ(e.target.value)} placeholder="قلّب بالسمية ولا التيليفون" /></label>
+      </Band>
+      <div className="content">
+        <div className="tabs2">
+          <button className={tab === 'all' ? 'on' : ''} onClick={() => setTab('all')}>الكل <b>{clients.length}</b></button>
+          <button className={tab === 'owe' ? 'on' : ''} onClick={() => setTab('owe')}>ما خلّصوش <b>{owing}</b></button>
+          <button className={tab === 'paid' ? 'on' : ''} onClick={() => setTab('paid')}>خالصين <b>{clients.length - owing}</b></button>
         </div>
+        {shown.length === 0 && <Empty title={n ? 'ما لقيناش' : 'باقي ما كاين حتى كليان'} sub={n ? '' : 'كل عائلة كتزيد ليها عرس كتبان هنا.'} />}
+        {shown.map((c) => {
+          const w = c.weddings[0], d = fromKey(w.day)
+          return (
+            <div className="cli" key={c.key} role="button" tabIndex={0} onClick={() => setOpen(c)}>
+              <span className="calbox"><small>{DAYS[d.getDay()]}</small><b>{d.getDate()}</b></span>
+              <span className="mid"><b>{c.family}</b><span className="meta">{c.weddings.length > 1 ? `${c.weddings.length} عراسات · ` : ''}{[w.hall, w.guests ? `${w.guests} ضيف` : ''].filter(Boolean).join(' · ')}</span><span className="cst">{status(c)}</span></span>
+              {c.phone && <button className="wab" onClick={(e) => { e.stopPropagation(); openExternal(waLink(c.phone, `السلام عليكم ${c.family}`)) }} aria-label="واتساب">{Ic.wa(20)}</button>}
+            </div>
+          )
+        })}
       </div>
       {open && (
         <Sheet title={open.family} onClose={() => setOpen(null)}>

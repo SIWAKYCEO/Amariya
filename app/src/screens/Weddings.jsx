@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../lib/data'
-import { DAYS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
+import { DAYS, PHOTOS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
 import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
 
@@ -80,7 +80,7 @@ export default function Weddings({ go }) {
   return (
     <div className="screen">
       <section className="hero">
-        <div className="bgphoto" style={{ backgroundImage: `url(${photoFor('hall')})` }} />
+        <div className="bgphoto" style={{ backgroundImage: `url(${PHOTOS.hall2})` }} />
         <div className="shade" />
         <div className="hero-in">
           <div className="hero-top">

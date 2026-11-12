@@ -393,3 +393,131 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .rc-prev { margin: 4px 0 16px; border-radius: 18px; overflow: hidden; background: var(--green); max-height: 58vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(15,42,36,.18) }
 .rc-prev img { display: block; width: 100%; height: auto }
 .rc-skel { aspect-ratio: 1080/1500; width: 100% }
+
+/* ===================== v2 — photo bands, ivory body ===================== */
+.band { position: relative; color: var(--ivory); background: var(--green) center/cover no-repeat; border-radius: 0 0 30px 30px; overflow: hidden }
+.band::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 26, 22, .55), rgba(15, 42, 36, .86) 62%, #0F2A24) }
+.band::after { content: ''; position: absolute; inset: auto 0 0; height: 3px; background: linear-gradient(90deg, transparent, var(--brass), transparent); opacity: .7 }
+.band-in { position: relative; z-index: 1; padding: calc(14px + var(--sat)) 18px 22px }
+.band-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 52px }
+.band-t { display: flex; align-items: center; gap: 12px }
+.band h1 { font-size: 28px; font-weight: 900; line-height: 1.2; letter-spacing: -.01em }
+.kick { display: block; font-size: 12.5px; font-weight: 700; color: rgba(243, 237, 227, .66) }
+.kick .num { color: #F2A98C }
+.band .search { margin: 16px 0 0; background: rgba(243, 237, 227, .1); border-color: rgba(243, 237, 227, .18); color: rgba(243, 237, 227, .65) }
+.band .search input { color: var(--ivory) }
+.band .search input::placeholder { color: rgba(243, 237, 227, .6) }
+.thumb { flex: none; display: grid; place-items: center; background: var(--ivory) center/cover no-repeat; color: var(--green) }
+.sec2 { display: flex; justify-content: space-between; align-items: baseline; font-size: 15.5px; font-weight: 900; color: var(--green); margin: 22px 4px 10px }
+.sec2 .num { font-size: 14px; color: var(--henna) }
+.sec2 .mini { padding: 0 }
+
+/* dock: solid green, active tab = ivory pill with its name */
+.dock .in { background: var(--green); border: 0; padding: 7px; align-items: center }
+.dock .ind { display: none }
+.tab { flex-direction: row; justify-content: center; gap: 7px; height: 50px; padding: 0; color: rgba(243, 237, 227, .55); font-size: 13.5px; font-weight: 900; transition: flex .35s cubic-bezier(.2, .9, .25, 1), background .25s, color .25s }
+.tab span { max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0; transition: max-width .35s, opacity .2s }
+.tab.on { flex: 1.9; background: var(--ivory); color: var(--green) }
+.tab.on span { max-width: 90px; opacity: 1 }
+.tab.on svg { color: var(--green); transform: none }
+
+/* money */
+.netv { font-size: 52px; font-weight: 750; line-height: 1; margin-top: 12px; color: var(--ivory) }
+.netv.neg { color: #FF9D78 }
+.meter { display: flex; height: 8px; border-radius: 5px; overflow: hidden; background: rgba(243, 237, 227, .12); margin-top: 16px }
+.meter i { display: block; height: 100% }
+.split { display: flex; margin-top: 14px; border-radius: 18px; overflow: hidden; background: rgba(243, 237, 227, .07); border: 1px solid rgba(243, 237, 227, .1) }
+.split > div { flex: 1; padding: 11px 14px }
+.split > div + div { border-inline-start: 1px solid rgba(243, 237, 227, .1) }
+.split small { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: rgba(243, 237, 227, .62) }
+.split b { display: block; font-size: 19px; margin-top: 2px }
+.mnav { display: flex; gap: 8px }
+.hscroll { display: flex; gap: 10px; overflow-x: auto; margin: 0 -18px; padding: 2px 18px 16px; scroll-snap-type: x mandatory; scrollbar-width: none }
+.hscroll::-webkit-scrollbar { display: none }
+.owc { flex: none; width: 206px; scroll-snap-align: start; border-radius: 22px; overflow: hidden; background: var(--paper); box-shadow: var(--shadow); text-align: start }
+.owc .img { position: relative; display: block; height: 92px; background: var(--green2) center/cover }
+.owc .img span { position: absolute; bottom: 8px; inset-inline-start: 8px; background: rgba(15, 42, 36, .86); color: var(--ivory); font-size: 11px; font-weight: 700; border-radius: 8px; padding: 3px 8px 5px }
+.owc .bd { display: block; padding: 11px 14px 13px }
+.owc b { display: block; font-size: 15px; font-weight: 900; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.segs { display: flex; gap: 3px; margin-top: 9px }
+.segs i { flex: 1; height: 5px; border-radius: 3px; background: #E8E0D2 }
+.segs i.on { background: var(--green) }
+.owc .rest { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; font-size: 11.5px; font-weight: 700; color: var(--mute) }
+.owc .rest .num { font-size: 17px; color: var(--henna) }
+.ecard { border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); overflow: hidden }
+.erow2 { display: flex; align-items: center; gap: 12px; padding: 11px 14px }
+.erow2 + .erow2 { border-top: 1px solid var(--line) }
+.erow2 .mid b { font-size: 14.5px }
+.erow2 > .num { font-size: 15.5px; font-weight: 700 }
+.erow2.auto .thumb { background: rgba(200, 161, 90, .18) }
+
+/* expense sheet */
+.amtbox { position: relative; margin: 4px 0 0; border-radius: 24px; overflow: hidden; color: var(--ivory); text-align: center; padding: 18px 16px 16px; background: var(--green) center 30%/cover no-repeat }
+.amtbox::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 26, 22, .55), rgba(15, 42, 36, .9)) }
+.amtbox > * { position: relative }
+.amtbox small { font-size: 12.5px; font-weight: 700; color: rgba(243, 237, 227, .7) }
+.amtbox .num { display: block; font-size: 50px; font-weight: 750; line-height: 1.1; margin-top: 4px }
+.amtbox .num small { font-size: .42em; color: var(--brass); opacity: 1 }
+.amtbox .num.zero { opacity: .45 }
+.cats { display: flex; gap: 10px; overflow-x: auto; margin: 14px -18px 0; padding: 4px 18px 6px; scrollbar-width: none }
+.cats::-webkit-scrollbar { display: none }
+.cat { flex: none; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; color: var(--ink) }
+.cat .thumb { width: 74px; height: 74px; border-radius: 22px; background-color: var(--paper); box-shadow: var(--shadow); transition: box-shadow .2s, transform .15s }
+.cat:active .thumb { transform: scale(.95) }
+.cat.on .thumb { box-shadow: 0 0 0 3px var(--ivory), 0 0 0 5.5px var(--brass) }
+.cat.on { color: var(--brass2) }
+.wpick { display: flex; flex-direction: column; gap: 6px; margin-top: 4px }
+.wpick button { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 16px; background: var(--paper); text-align: start }
+.wpick button .mid b { font-size: 14px }
+.wpick .rad { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #CFC7B9; display: grid; place-items: center; color: var(--ivory) }
+.wpick button.on { box-shadow: 0 0 0 2px var(--green) inset }
+.wpick button.on .rad { background: var(--green); border-color: var(--green) }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; direction: ltr }
+.numpad button { height: 52px; border-radius: 16px; background: var(--paper); font: 700 22px var(--num); color: var(--green); display: grid; place-items: center; box-shadow: 0 6px 12px -10px rgba(20, 32, 29, .5); transition: transform .1s, background .1s }
+.numpad button:active { transform: scale(.94); background: #fff }
+.lbl-in { margin-top: 10px; width: 100%; height: 46px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--paper); padding: 0 14px; font-size: 15px; outline: none }
+.lbl-in:focus { border-color: var(--brass) }
+
+/* clients */
+.tabs2 { display: flex; gap: 8px; margin: 14px 0 12px; overflow-x: auto; scrollbar-width: none }
+.tabs2 button { flex: none; height: 38px; padding: 0 15px; border-radius: 12px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 900; color: var(--mute); background: var(--paper); box-shadow: 0 6px 14px -10px rgba(20, 32, 29, .4) }
+.tabs2 button b { font-family: var(--num); opacity: .55; font-size: 12px }
+.tabs2 button.on { background: var(--green); color: var(--ivory) }
+.cli { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); text-align: start }
+.cli + .cli { margin-top: 9px }
+.calbox { flex: none; width: 52px; border-radius: 15px; overflow: hidden; text-align: center; background: var(--ivory); border: 1px solid var(--line) }
+.calbox small { display: block; background: var(--green); color: var(--ivory); font-size: 10px; font-weight: 700; padding: 3px 0 4px }
+.calbox b { display: block; font: 700 21px/1.45 var(--num); color: var(--green) }
+.cli .mid b { font-size: 15.5px; font-weight: 900 }
+.cst { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 700 }
+.cst .r { color: var(--henna) } .cst .r .num { font-size: 14px }
+.pill2 { padding: 2px 9px 4px; border-radius: 8px; font-size: 11px; font-weight: 900 }
+.pill2.hot { background: #FBE7DF; color: var(--henna) }
+.pill2.br { background: #F1EADD; color: var(--brass2) }
+.pill2.ok { background: #E3F1E8; color: var(--ok) }
+.wab { flex: none; width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: #E7F3EA; color: #1F8A55 }
+
+/* staff */
+.srow2 { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); text-align: start }
+.srow2 + .srow2 { margin-top: 9px }
+.av2 { flex: none; width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: var(--green); color: var(--brass); font-weight: 900; font-size: 18px }
+
+/* settings */
+.prof { display: flex; align-items: center; gap: 14px; margin-top: 16px }
+.prof .lgx { flex: none; width: 60px; height: 60px; border-radius: 20px; background: var(--ivory); color: var(--green); display: grid; place-items: center; font-size: 26px; font-weight: 900; border: 2px solid var(--brass) }
+.prof b { display: block; font-size: 19px; font-weight: 900 }
+.prof small { font-size: 12.5px; color: rgba(243, 237, 227, .68) }
+.mncard { flex: none; width: 220px; scroll-snap-align: start; border-radius: 22px; overflow: hidden; background: var(--paper); box-shadow: var(--shadow); text-align: start }
+.mncard .img { position: relative; display: block; height: 108px; background: var(--green2) center/cover no-repeat }
+.mncard .img .num { position: absolute; bottom: 10px; inset-inline-start: 10px; background: var(--paper); border-radius: 12px; padding: 4px 10px 6px; font-size: 18px; font-weight: 750; color: var(--green) }
+.mncard .bd { display: block; padding: 11px 14px 14px }
+.mncard b { font-size: 15.5px; font-weight: 900; color: var(--ink) }
+.mncard small { display: block; font-size: 11.5px; color: var(--mute); margin-top: 4px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+.mncard.add { display: grid; place-items: center; align-content: center; gap: 6px; min-height: 196px; border: 2px dashed #D9CFBD; background: transparent; box-shadow: none; color: var(--brass2); font-weight: 900; font-size: 14px }
+.glist { border-radius: 22px; background: var(--paper); box-shadow: var(--shadow); overflow: hidden }
+.gli { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; font-size: 14.5px; font-weight: 700; text-align: start }
+.gli + .gli { border-top: 1px solid var(--line) }
+.gli .ic { flex: none; width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: var(--ivory); color: var(--green) }
+.gli .x { margin-inline-start: auto; font-size: 12.5px; color: var(--mute); font-weight: 500 }
+.gli.danger, .gli.danger .ic { color: var(--henna) }
+.mncard .img .num { white-space: nowrap }
