@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { isDemo, load, redeem, useStore } from './lib/data'
 import { setScreen, startPresence } from './lib/presence'
-import { Dock, Logo, Spin, Toaster } from './ui'
+import { Dock, Ic, Logo, Spin, Toaster } from './ui'
 import Weddings from './screens/Weddings'
 // home loads first; every other screen is fetched the first time it is opened
 const WeddingFile = lazy(() => import('./screens/WeddingFile'))
@@ -69,7 +69,7 @@ export default function App() {
   if (phase !== 'ready') {
     return (
       <div className="welcome">
-        <div className="bgphoto" style={{ backgroundImage: `url(${PHOTOS.amariya})` }} />
+        <div className="bgphoto" style={{ backgroundImage: `url(${PHOTOS.hall2})` }} />
         <div className="shade" />
         <div className="in">
           <Logo size={34} />
@@ -78,7 +78,7 @@ export default function App() {
               <span className="kicker">التطبيق ديال الـ<span dir="ltr">traiteur</span></span>
               <h1>العراسات ديالك<br />كاملين فبلاصة وحدة</h1>
               {err ? <p className="err">{err}</p> : <p>الكالوندري، العربون، الخدامة، الدوفي والفلوس… من التيليفون، بلا كارني.</p>}
-              <ul className="wfeat"><li>{'📅'} شكون حاجز وشمن نهار خاوي</li><li>{'💰'} العربون والباقي ديال كل عرس</li><li>{'👥'} السرباية والنكافة مأكدين</li></ul>
+              <ul className="wfeat"><li><i>{Ic.cal(18)}</i>شكون حاجز وشمن نهار خاوي</li><li><i>{Ic.cash(18)}</i>العربون والباقي ديال كل عرس</li><li><i>{Ic.team(18)}</i>السرباية والنكافة مأكدين</li></ul>
               <a className="btn brass" href="?demo=1">جرّب التطبيق دابا</a>
               <a className="btn glassbtn" href="https://amariya.vercel.app">بغيت نخدم بيه · سجّل</a>
               <small className="wsub">وصلك الرابط فالواتساب؟ حلّو مباشرة وغادي تدخل.</small>
