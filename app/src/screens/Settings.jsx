@@ -45,6 +45,7 @@ export default function Settings({ back }) {
           <InstallButton />
         </div>
 
+        <p className="privacy">كنسجلو شحال كتستعمل التطبيق، نوع التيليفون والمدينة (عن طريق IP) غير باش نحسنو الخدمة. ما كنعطيو هاد المعلومات لحتى واحد.</p>
         <button className="btn ghost wide danger" onClick={logout}>{isDemo ? 'خرج من التجربة' : 'خرج من الحساب'}</button>
         <p className="ver">Amariya · v0.1</p>
       </div>

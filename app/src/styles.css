@@ -389,3 +389,4 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .welcome .btn { width: 100% }
 .welcome .bgphoto { filter: blur(2px) saturate(.95) brightness(.62); inset: -8px }
 .dbox.t b { font-size: 16px }
+.privacy{font-size:12px;line-height:1.7;color:var(--mute,#7a7a72);margin:6px 4px 14px;text-align:center}

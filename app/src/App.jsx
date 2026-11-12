@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { isDemo, load, redeem, useStore } from './lib/data'
+import { setScreen, startPresence } from './lib/presence'
 import { Dock, Logo, Spin, Toaster } from './ui'
 import Weddings from './screens/Weddings'
 // home loads first; every other screen is fetched the first time it is opened
@@ -61,6 +62,8 @@ export default function App() {
   }
   const back = () => history.back()
   // prefetch the screens people open most, once the home is on screen
+  useEffect(() => { if (phase === 'ready') startPresence() }, [phase])
+  useEffect(() => { setScreen(route.v) }, [route.v])
   useEffect(() => { if (phase === 'ready') { const t = setTimeout(() => { import('./screens/WeddingFile'); import('./screens/NewWedding'); import('./screens/Calendar') }, 800); return () => clearTimeout(t) } }, [phase])
 
   if (phase !== 'ready') {
