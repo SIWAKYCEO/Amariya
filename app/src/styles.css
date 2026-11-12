@@ -388,3 +388,4 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .welcome .wsub { color: rgba(243,237,227,.6); font-size: 12.5px; text-align: center; margin-top: 4px }
 .welcome .btn { width: 100% }
 .welcome .bgphoto { filter: blur(2px) saturate(.95) brightness(.62); inset: -8px }
+.dbox.t b { font-size: 16px }

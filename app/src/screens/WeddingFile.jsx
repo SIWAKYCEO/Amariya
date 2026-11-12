@@ -109,7 +109,7 @@ export default function WeddingFile({ w, back, go }) {
             <button className="btn green" onClick={() => setSheet('pay')}>{Ic.plus(18)} {paid ? 'زيد خلاص' : 'سجّل العربون'}</button>
             {w.phone && <button className="btn ghost" onClick={() => openExternal(waLink(w.phone, devisText(w, s.traiteur)))}>{Ic.wa(17)} صيفط الدوفي</button>}
           </div>
-          {rest > 0 && paid > 0 && w.phone && <button className="linkrow" onClick={() => openExternal(waLink(w.phone, remindText(w, rest, s.traiteur)))}>{Ic.bell(16)} فكّرهم بالباقي (<DH v={rest} />) فالواتساب</button>}
+          {rest > 0 && paid > 0 && w.phone && <button className="linkrow" onClick={() => openExternal(waLink(w.phone, remindText(w, rest, s.traiteur)))}>{Ic.bell(16)} فكّرهم بالباقي فالواتساب · <DH v={rest} /></button>}
         </div>
 
         <div className="card">
