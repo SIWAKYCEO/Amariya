@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { isDemo, load, redeem, useStore } from './lib/data'
 import { Dock, Logo, Spin, Toaster } from './ui'
 import Weddings from './screens/Weddings'
-import WeddingFile from './screens/WeddingFile'
-import NewWedding from './screens/NewWedding'
-import Staff from './screens/Staff'
-import Clients from './screens/Clients'
-import Money from './screens/Money'
-import Settings from './screens/Settings'
+// home loads first; every other screen is fetched the first time it is opened
+const WeddingFile = lazy(() => import('./screens/WeddingFile'))
+const NewWedding = lazy(() => import('./screens/NewWedding'))
+const Staff = lazy(() => import('./screens/Staff'))
+const Clients = lazy(() => import('./screens/Clients'))
+const Money = lazy(() => import('./screens/Money'))
+const Settings = lazy(() => import('./screens/Settings'))
+const Calendar = lazy(() => import('./screens/Calendar'))
 import { PHOTOS } from './lib/util'
 import { InstallButton, InstallNudge } from './install'
 
@@ -58,6 +60,8 @@ export default function App() {
     })
   }
   const back = () => history.back()
+  // prefetch the screens people open most, once the home is on screen
+  useEffect(() => { if (phase === 'ready') { const t = setTimeout(() => { import('./screens/WeddingFile'); import('./screens/NewWedding'); import('./screens/Calendar') }, 800); return () => clearTimeout(t) } }, [phase])
 
   if (phase !== 'ready') {
     return (
@@ -68,9 +72,13 @@ export default function App() {
           <Logo size={34} />
           {phase === 'welcome' ? (
             <>
+              <span className="kicker">التطبيق ديال الـ<span dir="ltr">traiteur</span></span>
               <h1>العراسات ديالك<br />كاملين فبلاصة وحدة</h1>
-              {err ? <p className="err">{err}</p> : <p>هاد التطبيق كيتفتح بالرابط اللي صيفطنا ليك فالواتساب.</p>}
-              <a className="btn brass" href="?demo=1">شوف كيفاش خدام</a>
+              {err ? <p className="err">{err}</p> : <p>الكالوندري، العربون، الخدامة، الدوفي والفلوس… من التيليفون، بلا كارني.</p>}
+              <ul className="wfeat"><li>{'📅'} شكون حاجز وشمن نهار خاوي</li><li>{'💰'} العربون والباقي ديال كل عرس</li><li>{'👥'} السرباية والنكافة مأكدين</li></ul>
+              <a className="btn brass" href="?demo=1">جرّب التطبيق دابا</a>
+              <a className="btn glassbtn" href="https://amariya.vercel.app">بغيت نخدم بيه · سجّل</a>
+              <small className="wsub">وصلك الرابط فالواتساب؟ حلّو مباشرة وغادي تدخل.</small>
               <InstallButton className="btn glassbtn" />
             </>
           ) : <Spin />}
@@ -83,6 +91,8 @@ export default function App() {
   const w = route.id && s.weddings.find((x) => x.id === route.id)
   return (
     <div className="app">
+      <Suspense fallback={<div className="skel" />}>
+      {route.v === 'calendar' && <Calendar back={back} go={go} day={route.day} />}
       {route.v === 'weddings' && <><Weddings go={go} /><InstallNudge /></>}
       {route.v === 'staff' && <Staff go={go} />}
       {route.v === 'clients' && <Clients go={go} />}
@@ -91,6 +101,7 @@ export default function App() {
       {route.v === 'new' && <NewWedding back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
       {route.v === 'edit' && w && <NewWedding key={w.id} edit={w} back={back} done={back} />}
       {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : <Weddings go={go} />)}
+      </Suspense>
       {tab && <Dock tab={tab} go={go} />}
       <Toaster />
     </div>

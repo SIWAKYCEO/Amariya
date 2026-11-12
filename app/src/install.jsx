@@ -43,13 +43,13 @@ export function InstallButton({ className = 'btn ghost wide', label = 'زيد Am
       {help && (
         <Sheet title="زيد التطبيق للتيليفون" onClose={() => setHelp(false)}>
           {mode === 'ios' ? (
-            <ol className="steps">
+            <ol className="isteps">
               <li><b>1</b><span>كليكي على <span className="key"><ShareIcon /></span> اللي لتحت ف Safari</span></li>
               <li><b>2</b><span>طلع واختار «Sur l'écran d'accueil»</span></li>
               <li><b>3</b><span>كليكي على «Ajouter»… وصافي، Amariya غادي تبان بحال أي تطبيق</span></li>
             </ol>
           ) : (
-            <ol className="steps">
+            <ol className="isteps">
               <li><b>1</b><span>كليكي على القائمة <span className="key">⋮</span> لفوق</span></li>
               <li><b>2</b><span>اختار «Installer l'application» ولا «Ajouter à l'écran d'accueil»</span></li>
               <li><b>3</b><span>Amariya غادي تبان مع التطبيقات ديالك</span></li>

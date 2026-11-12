@@ -15,6 +15,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
     : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: '20:00', hall: '', city: s.traiteur?.city || '', guests: 200, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', ...prefill })
   const [arboun, setArboun] = useState('')
   const set = (p) => setF((x) => ({ ...x, ...p }))
+  const clash = s.weddings.filter((w) => w.day === f.day && w.status !== 'cancelled' && w.id !== edit?.id)
   const total = Math.round((+f.guests || 0) * (+f.price || 0) + extrasSum(f))
 
   const ok0 = f.family.trim().length > 1 && f.day
@@ -51,6 +52,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
             <Field label="النهار"><input type="date" value={f.day} onChange={(e) => set({ day: e.target.value })} /></Field>
             <Field label="الساعة"><input type="time" value={f.time} onChange={(e) => set({ time: e.target.value })} /></Field>
           </div>
+            {clash.length > 0 && <p className="clash">{Ic.cal(15)} عندك {clash.length === 1 ? 'عرس' : clash.length + ' عراسات'} هاد النهار: {clash.map((w) => w.family).join('، ')}</p>}
           <div className="two">
             <Field label="القاعة"><input value={f.hall} onChange={(e) => set({ hall: e.target.value })} placeholder="قاعة النخيل" /></Field>
             <Field label="المدينة"><input value={f.city} onChange={(e) => set({ city: e.target.value })} /></Field>

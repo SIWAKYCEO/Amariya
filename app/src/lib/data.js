@@ -128,3 +128,35 @@ export function problemsOf(w, s = state) {
   if (t.rows.some((a) => a.status === 'no')) out.push('refused')
   return out
 }
+
+// how ready a wedding is: the 4 things a traiteur checks before the night
+export function readinessOf(w, s = state) {
+  const t = teamOf(w, s)
+  const ok = (role) => t.rows.some((a) => a.person.role === role && a.status === 'ok')
+  const items = [
+    ['العربون', paidOf(w, s.payments) > 0],
+    ['السرباية', t.serveursOk >= t.need],
+    ['النكافة', ok('neggafa')],
+    ['الكوزينة', ok('cuisine') || ok('chef')],
+  ]
+  return { items, done: items.filter((i) => i[1]).length, total: items.length }
+}
+
+// shopping estimate from the menu × guests (rough ratios a traiteur can adjust by eye)
+const BUY = [
+  [/بسطيلة|البسطيلة/, 'البسطيلة', (g) => Math.ceil(g / 10), 'كبيرة'],
+  [/دجاج/, 'الدجاج', (g) => Math.ceil(g / 4), 'دجاجة'],
+  [/مشوي|لحم|خروف|طاجين/, 'اللحم', (g) => Math.round(g * 0.3), 'كيلو'],
+  [/حوت/, 'الحوت', (g) => Math.round(g * 0.12), 'كيلو'],
+  [/فواكه/, 'الفواكه', (g) => Math.round(g * 0.35), 'كيلو'],
+  [/حلويات/, 'الحلويات', (g) => g * 8, 'حبة'],
+  [/أتاي|اتاي/, 'النعناع', (g) => Math.ceil(g / 25), 'ربطة'],
+  [/عصير/, 'العصير', (g) => Math.round(g * 0.3), 'لتر'],
+]
+export function shoppingOf(w, s = state) {
+  const pkg = s.packages.find((p) => p.id === w.package_id)
+  const items = pkg?.items || []
+  const out = []
+  for (const [re, label, f, unit] of BUY) if (items.some((it) => re.test(it)) && !out.some((o) => o.label === label)) out.push({ label, qty: f(+w.guests || 0), unit })
+  return out
+}
