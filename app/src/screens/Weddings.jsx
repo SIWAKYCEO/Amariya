@@ -3,6 +3,7 @@ import { paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../l
 import { DAYS, PHOTOS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
 import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
+import { Inbox, QuickReplies } from './Inbox'
 
 const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا' }
 
@@ -67,6 +68,7 @@ function Row({ w, s, go }) {
 export default function Weddings({ go }) {
   const s = useStore()
   const [showPast, setShowPast] = useState(false)
+  const [qr, setQr] = useState(false)
   const today = todayKey()
   const live = s.weddings.filter((w) => w.status !== 'cancelled').sort((a, b) => (a.day + a.time).localeCompare(b.day + b.time))
   const todays = live.filter((w) => w.day === today)
@@ -86,6 +88,7 @@ export default function Weddings({ go }) {
           <div className="hero-top">
             <Logo size={20} />
             <span className="hero-act">
+              <button className="round glass" onClick={() => setQr(true)} aria-label="ردود جاهزين">{Ic.wa(19)}</button>
               <button className="round glass" onClick={() => go('calendar')} aria-label="الكالوندري">{Ic.cal()}</button>
               <button className="round glass" onClick={() => go('settings')} aria-label="الإعدادات">{Ic.gear()}</button>
             </span>
@@ -112,6 +115,7 @@ export default function Weddings({ go }) {
 
       <div className="content">
         <InstallNudge />
+        <Inbox go={go} />
         {todays.length > 0 && <><h4 className="sec">اليوم</h4>{todays.map((w) => <TodayCard key={w.id} w={w} s={s} go={go} />)}</>}
         {!todays.length && (week[0] || later[0]) && <><h4 className="sec">العرس الجاي</h4><TodayCard w={week[0] || later[0]} s={s} go={go} next /></>}
         {(todays.length ? week : week.slice(1)).length > 0 && <><h4 className="sec">هاد السيمانة</h4><div className="list">{(todays.length ? week : week.slice(1)).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
@@ -123,6 +127,7 @@ export default function Weddings({ go }) {
         {showPast && <div className="list dim">{past.map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div>}
       </div>
       <Fab onClick={() => go('new')}>عرس جديد</Fab>
+      {qr && <QuickReplies onClose={() => setQr(false)} />}
     </div>
   )
 }

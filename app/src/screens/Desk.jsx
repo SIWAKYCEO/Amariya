@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { paidOf, problemsOf, restOf, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Empty, Ic, Logo } from '../ui'
+import { Inbox, QuickReplies } from './Inbox'
 
 export function Side({ v, go }) {
   const s = useStore()
@@ -15,6 +16,7 @@ export function Side({ v, go }) {
     ['clients', 'الكليان', Ic.ppl],
     ['staff', 'الخدامة', Ic.team],
     ['money', 'الفلوس', Ic.cash, owing, true],
+    ['requests', 'طلبات الدوفي', Ic.doc, (s.requests || []).filter((r) => r.status === 'new').length + (s.proofs || []).filter((p) => p.status === 'pending').length, true],
   ]
   const tr = s.traiteur
   return (
@@ -43,6 +45,7 @@ export function Dashboard({ go }) {
   const s = useStore()
   const [f, setF] = useState('all')
   const [q, setQ] = useState('')
+  const [qr, setQr] = useState(false)
   const search = useRef(null)
   const today = todayKey()
   const now = new Date()
@@ -90,11 +93,12 @@ export function Dashboard({ go }) {
     <div className="dash">
       <section className="dhead" style={{ backgroundImage: `url(${PHOTOS.hall2})` }}>
         <div className="t">
-          <small>{DAYS[now.getDay()]} {now.getDate()} {MONTHS[now.getMonth()]}</small>
-          <h1>{greeting()}{first_ ? '، ' + first_ : ''} · {todays.length ? <>عندك <b dir="ltr">{todays.length}</b> {todays.length === 1 ? 'عرس' : 'عراسات'} اليوم</> : thisWeek.length ? <>عندك <b dir="ltr">{thisWeek.length}</b> {thisWeek.length === 1 ? 'عرس' : 'عراسات'} هاد السيمانة</> : 'ما عندك حتى عرس هاد السيمانة'}</h1>
+          <small>{greeting()}{first_ ? '، ' + first_ : ''} · {DAYS[now.getDay()]} {now.getDate()} {MONTHS[now.getMonth()]}</small>
+          <h1>{todays.length ? <>عندك <b dir="ltr">{todays.length}</b> {todays.length === 1 ? 'عرس' : 'عراسات'} اليوم</> : thisWeek.length ? <>عندك <b dir="ltr">{thisWeek.length}</b> {thisWeek.length === 1 ? 'عرس' : 'عراسات'} هاد السيمانة</> : 'ما عندك حتى عرس هاد السيمانة'}</h1>
         </div>
         <div className="ac">
           <label className="dsr">{Ic.search(18)}<input ref={search} value={q} onChange={(e) => setQ(e.target.value)} placeholder="قلّب على عائلة، قاعة، تيليفون…" /><kbd dir="ltr">Ctrl K</kbd></label>
+          <button className="dqr" onClick={() => setQr(true)} aria-label="ردود جاهزين">{Ic.wa(18)}<span>ردود جاهزين</span></button>
           <button className="dcta" onClick={() => go('new')}>{Ic.plus(18)} عرس جديد</button>
         </div>
       </section>
@@ -134,6 +138,7 @@ export function Dashboard({ go }) {
         </div>
 
         <div className="dcol">
+          <Inbox go={go} compact />
           <div className="dpn">
             <div className="dpn-h"><h2>{MONTHS[now.getMonth()]} <span dir="ltr">{now.getFullYear()}</span></h2><button className="dlink" onClick={() => go('calendar')}>الكالوندري كامل ←</button></div>
             <div className="mcal">
@@ -159,6 +164,7 @@ export function Dashboard({ go }) {
           </div>
         </div>
       </section>
+      {qr && <QuickReplies onClose={() => setQr(false)} />}
     </div>
   )
 }

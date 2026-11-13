@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { add, extrasSum, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
-import { ROLES, ROLES_PL, dayKey, dayLabel, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
+import { add, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
+import { ProofSheet, methodLabel, remindText } from './Inbox'
+import { ROLES, ROLES_PL, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
 import { Count, DH, Field, Ic, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
 import { receiptImage } from '../lib/receipt'
@@ -13,10 +14,10 @@ function devisText(w, traiteur) {
     `👥 ${w.guests} ضيف · ${w.package_name || 'المينو'} (${money(w.price)} DH للضيف) = ${money(w.guests * w.price)} DH`,
     ...(w.extras || []).map((e) => `➕ ${e.label}: ${money(e.amount)} DH`),
     `💰 المجموع: ${money(totalOf(w))} DH`,
-  ]
+    devisLink(w) && `\nالدوفي كامل وكيفاش تخلّصو العربون:\n${devisLink(w)}`,
+  ].filter(Boolean)
   return lines.join('\n')
 }
-const remindText = (w, rest, tr) => `السلام عليكم ${w.family} 🌿\nكنفكّروكم بلي باقي ${money(rest)} DH ديال العرس نهار ${dayLabel(w.day)}.\nالله يكمّل بالخير، ${tr?.name || 'التريتور'}`
 const receiptText = (w, p, paidSoFar, total, tr) => [`🧾 وصل · ${tr?.name || 'التريتور'}`, `العائلة: ${w.family}`, `العرس: ${dayLabel(w.day)}`, `${p.kind === 'arboun' ? 'العربون' : 'خلاص'}: ${money(p.amount)} DH · ${dayLabel(p.paid_on, false)}`, `تخلّص حتى لدابا: ${money(paidSoFar)} DH`, `الباقي: ${money(Math.max(0, total - paidSoFar))} DH`, 'شكرا على الثقة 🙏'].join('\n')
 const teamText = (w, rows) => [`📣 عرس ${w.family}`, `📅 ${dayLabel(w.day)} · ${w.time}`, `📍 ${[w.hall, w.city].filter(Boolean).join('، ')}`, `👥 ${w.guests} ضيف`, '', 'الخدامة:', ...rows.filter((a) => a.status !== 'no').map((a) => `• ${a.person.name} (${ROLES[a.person.role]})`), '', 'كونو تما قبل الوقت بساعة 🙏'].join('\n')
 const askText = (p, w) => `السلام ${p.name}، عندنا عرس نهار ${dayLabel(w.day)} مع ${w.time}${w.hall ? ' ف' + w.hall : ''}${w.city ? ' (' + w.city + ')' : ''}. واش معانا؟`
@@ -33,6 +34,10 @@ export default function WeddingFile({ w, back, go }) {
   const [sheet, setSheet] = useState(null)
   const [amount, setAmount] = useState('')
   const [rc, setRc] = useState(null)
+  const [proof, setProof] = useState(null)
+  const proofs = (s.proofs || []).filter((p) => p.wedding_id === w.id && p.status === 'pending')
+  const link = devisLink(w)
+  const remind = () => { openExternal(waLink(w.phone, remindText(w, rest, s.traiteur))); const n = daysFromToday(w.day); if (n >= 0 && n <= 7) markReminded(w, n <= 1 ? 'd1' : 'd7').catch(() => {}) }
   const total = totalOf(w), paid = paidOf(w, s.payments), rest = Math.max(0, total - paid)
   const pays = s.payments.filter((p) => p.wedding_id === w.id).sort((a, b) => a.paid_on.localeCompare(b.paid_on))
   const team = teamOf(w, s)
@@ -130,7 +135,15 @@ export default function WeddingFile({ w, back, go }) {
             <button className="btn green" onClick={() => setSheet('pay')}>{Ic.plus(18)} {paid ? 'زيد خلاص' : 'سجّل العربون'}</button>
             {w.phone && <button className="btn ghost" onClick={() => openExternal(waLink(w.phone, devisText(w, s.traiteur)))}>{Ic.wa(17)} صيفط الدوفي</button>}
           </div>
-          {rest > 0 && paid > 0 && w.phone && <button className="linkrow" onClick={() => openExternal(waLink(w.phone, remindText(w, rest, s.traiteur)))}>{Ic.bell(16)} فكّرهم بالباقي فالواتساب · <DH v={rest} /></button>}
+          {proofs.map((p) => <button key={p.id} className="prfrow" onClick={() => setProof(p)}>{Ic.receipt(17)}<span>وصل جديد <DH v={p.amount} /> · {methodLabel(p.method)}</span><b>شوف وأكّد</b></button>)}
+          {rest > 0 && paid > 0 && w.phone && <button className="linkrow" onClick={remind}>{Ic.bell(16)} فكّرهم بالباقي فالواتساب · <DH v={rest} /></button>}
+          {link && rest > 0 && (
+            <div className="dlinkrow">
+              <span><b>رابط الدوفي والعربون</b><small>الكليان كيشوف الدوفي، كيخلّص وكيصيفط الوصل</small></span>
+              <button className="round sm" onClick={async () => { try { await navigator.clipboard.writeText(link); toast('تنسخ الرابط') } catch { /* */ } }} aria-label="نسخ">{Ic.doc(16)}</button>
+              {w.phone && <button className="round sm wa" onClick={() => openExternal(waLink(w.phone, `السلام عليكم ${w.family} 🌿\nهادا الدوفي ديال العرس، ومنو تقدرو تخلّصو ${paid ? 'الباقي' : 'العربون'} وتصيفطو الوصل:\n${link}`))} aria-label="صيفط">{Ic.wa(16)}</button>}
+            </div>
+          )}
         </div>
 
         <div className="card">
@@ -227,6 +240,7 @@ export default function WeddingFile({ w, back, go }) {
           </div>
         </Sheet>
       )}
+      {proof && <ProofSheet p={proof} onClose={() => setProof(null)} />}
     </div>
   )
 }

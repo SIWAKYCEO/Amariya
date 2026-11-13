@@ -3,17 +3,18 @@
 import { createClient } from '@supabase/supabase-js'
 import { useSyncExternalStore } from 'react'
 import { demoSeed } from './seed'
+import { dayKey } from './util'
 
-const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
-const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
+export const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
+export const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
 
 export const isDemo = import.meta.env.VITE_DEMO === '1' || new URLSearchParams(location.search).has('demo')
 export const supabase = isDemo ? null : createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'amariya-auth' },
 })
 
-const TABLES = { packages: 'amr_packages', weddings: 'amr_weddings', payments: 'amr_payments', staff: 'amr_staff', assignments: 'amr_assignments', expenses: 'amr_expenses' }
-const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], payments: [], staff: [], assignments: [], expenses: [] })
+const TABLES = { packages: 'amr_packages', weddings: 'amr_weddings', payments: 'amr_payments', staff: 'amr_staff', assignments: 'amr_assignments', expenses: 'amr_expenses', requests: 'amr_requests', proofs: 'amr_proofs' }
+const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], payments: [], staff: [], assignments: [], expenses: [], requests: [], proofs: [] })
 
 let state = empty()
 const subs = new Set()
@@ -39,7 +40,7 @@ export async function load() {
   if (isDemo) {
     let saved = null
     try { saved = JSON.parse(localStorage.getItem('amariya-demo')) } catch { /* */ }
-    state = saved?.traiteur ? saved : demoSeed()
+    state = saved?.traiteur ? { ...empty(), ...saved } : demoSeed()
     emit()
     return true
   }
@@ -159,4 +160,50 @@ export function shoppingOf(w, s = state) {
   const out = []
   for (const [re, label, f, unit] of BUY) if (items.some((it) => re.test(it)) && !out.some((o) => o.label === label)) out.push({ label, qty: f(+w.guests || 0), unit })
   return out
+}
+
+/* ---------- public links, deposit proofs, reminders ---------- */
+export const APP_URL = 'https://amariya-app.vercel.app'
+export const devisLink = (w) => w.pub_token ? `${APP_URL}/d/${w.pub_token}` : ''
+export const shopLink = (t = state.traiteur) => t?.slug ? `${APP_URL}/t/${t.slug}` : ''
+
+// signed URL to look at a proof photo (private bucket)
+export async function proofUrl(p) {
+  if (isDemo || !p?.path) return p?.demo_url || null
+  const { data } = await supabase.storage.from('amr-proofs').createSignedUrl(p.path, 600)
+  return data?.signedUrl || null
+}
+// the traiteur accepts a proof: it becomes a real payment (arboun if it is the first one)
+export async function acceptProof(p) {
+  const w = state.weddings.find((x) => x.id === p.wedding_id)
+  const first = w && paidOf(w) <= 0
+  const pay = await add('payments', { wedding_id: p.wedding_id, amount: +p.amount, kind: first ? 'arboun' : 'payment', paid_on: dayKey(new Date()), note: 'وصل من الكليان' })
+  await update('proofs', p.id, { status: 'ok', payment_id: pay.id })
+  if (w?.status === 'devis') await update('weddings', w.id, { status: 'confirmed' })
+  return pay
+}
+
+// balance reminders: 7 days before (stage d7) and the day before / same day (stage d1)
+export function remindersDue(s = state) {
+  const out = []
+  for (const w of s.weddings) {
+    if (w.status === 'cancelled' || w.status === 'done' || w.status === 'devis' || !w.phone) continue
+    const n = Math.round((new Date(w.day + 'T00:00') - new Date(new Date().toDateString())) / 86400000)
+    const rest = restOf(w, s.payments)
+    if (rest <= 0 || n < 0 || n > 7) continue
+    const stage = n <= 1 ? 'd1' : 'd7'
+    if ((w.reminded || {})[stage]) continue
+    out.push({ w, rest, stage, n })
+  }
+  return out.sort((a, b) => a.n - b.n)
+}
+export const markReminded = (w, stage) => update('weddings', w.id, { reminded: { ...(w.reminded || {}), [stage]: new Date().toISOString() } })
+
+// pull fresh requests / proofs (they arrive from the public pages while the app is open)
+export async function refresh(kinds = ['requests', 'proofs']) {
+  if (isDemo || !state.traiteur) return
+  const res = await Promise.all(kinds.map((k) => supabase.from(TABLES[k]).select('*').order('created_at')))
+  const patch = {}
+  res.forEach((r, i) => { if (!r.error) patch[kinds[i]] = r.data })
+  set(patch)
 }

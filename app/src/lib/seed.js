@@ -37,8 +37,14 @@ export function demoSeed() {
     ['اللحم والدجاج', 18000, -3, 'w-0'], ['الخضرة والفواكه', 6500, -2, 'w-0'], ['كرا الطباسل', 2500, -10, null], ['المازوط', 1200, -1, null],
   ].map(([label, amount, n, wedding_id], i) => ({ id: id('e', i), label, amount, spent_on: d(n), wedding_id, created_at: new Date().toISOString() }))
   return {
-    traiteur: { id: 't1', name: 'تريتور الياقوت', city: 'سطات', phone: '212661000000' },
+    traiteur: { id: 't1', name: 'تريتور الياقوت', city: 'سطات', phone: '212661000000', slug: 'demo', bio: 'تريتور فسطات من 2012 · العراسات والخطوبات والعقيقة', public_on: true, arboun_pct: 30,
+      pay: { bank: 'CIH Bank', rib: '230 780 1234567890123456 78', holder: 'مراد الياقوتي', cashplus_name: 'مراد الياقوتي', cashplus_phone: '0661000000' } },
     me: { id: 'm1', name: 'مراد', role: 'owner' },
-    packages, weddings, payments, staff, assignments, expenses,
+    packages, weddings: weddings.map((w, i) => ({ ...w, pub_token: 'demo-token-' + i + '-xxxxxxxx', reminded: {} })), payments, staff, assignments, expenses,
+    requests: [
+      { id: 'r1', name: 'سلمى بنجلون', phone: '212670112233', day: d(40), guests: 180, package_id: 'p2', note: 'بغينا نعرفو واش كاين البسطيلة ديال الحوت', status: 'new', created_at: new Date(Date.now() - 3600e3).toISOString() },
+      { id: 'r2', name: 'عائلة المرابط', phone: '212661445566', day: d(65), guests: 250, package_id: 'p1', note: '', status: 'new', created_at: new Date(Date.now() - 26 * 3600e3).toISOString() },
+    ],
+    proofs: [{ id: 'pr1', wedding_id: 'w-4', amount: 10000, method: 'cashplus', path: '', demo_url: '', payer: 'عائلة الحسني', status: 'pending', created_at: new Date(Date.now() - 2 * 3600e3).toISOString() }],
   }
 }

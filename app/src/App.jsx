@@ -13,6 +13,8 @@ const Clients = lazy(() => import('./screens/Clients'))
 const Money = lazy(() => import('./screens/Money'))
 const Settings = lazy(() => import('./screens/Settings'))
 const Calendar = lazy(() => import('./screens/Calendar'))
+const Requests = lazy(() => import('./screens/Requests'))
+import { useInboxRefresh } from './screens/Inbox'
 import { PHOTOS } from './lib/util'
 import { InstallButton } from './install'
 
@@ -102,6 +104,7 @@ export default function App() {
       {route.v === 'clients' && <Clients go={go} />}
       {route.v === 'money' && <Money go={go} />}
       {route.v === 'settings' && <Settings back={back} />}
+      {route.v === 'requests' && <Requests go={go} back={back} />}
       {route.v === 'new' && <NewWedding back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
       {route.v === 'edit' && w && <NewWedding key={w.id} edit={w} back={back} done={back} />}
       {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : desk ? <Dashboard go={go} /> : <Weddings go={go} />)}
@@ -112,14 +115,16 @@ export default function App() {
     <div className="app desk">
       <Side v={route.v} go={go} />
       <main className="dmain">{screens}</main>
-      <Toaster />
+      <Toaster /><Fresh />
     </div>
   )
   return (
     <div className="app">
       {screens}
       {tab && <Dock tab={tab} go={go} />}
-      <Toaster />
+      <Toaster /><Fresh />
     </div>
   )
 }
+
+function Fresh() { useInboxRefresh(); return null }
