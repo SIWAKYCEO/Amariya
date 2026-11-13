@@ -138,7 +138,6 @@ form.addEventListener('submit',async function(e){
     var j=await r.json().catch(function(){return{}});
     if(!r.ok||!j.token){var m=j&&ERR[j.error];if(m){err.textContent=m;btn.disabled=false;btn.textContent='سجّلني وحل التطبيق';return}throw new Error('server')}
     try{localStorage.setItem('am_tok',j.token)}catch(_){}
-    try{fetch('https://formsubmit.co/ajax/amariyamaroc@gmail.com',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Amariya · تسجيل جديد: '+business+' ('+city+')',_template:'table',_captcha:'false','الاسم':business,'المدينة':city,'واتساب':'+212'+d,'الإيميل':email,'رابط واتساب':'https://wa.me/212'+d,'التطبيق':'تعطا ليه الرابط مباشرة'})}).catch(function(){})}catch(_){}
     showApp(j.token);
   }catch(x){
     err.textContent='وقع مشكل، عاود من بعد شوية';
