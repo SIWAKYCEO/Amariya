@@ -690,7 +690,8 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 @media (max-width: 1320px) { .dtbl .tr { grid-template-columns: 58px minmax(0, 1fr) 46px 86px 100px 88px; gap: 8px } .dsr { width: 220px } .dhead h1 { font-size: 21px } .dgrid { grid-template-columns: minmax(0, 1fr) 300px } }
 
 /* ===================== public pages (devis link + shop window) ===================== */
-.pub { min-height: 100dvh; background: var(--ivory); display: flex; flex-direction: column; direction: rtl }
+.pub { min-height: 100dvh; background: var(--ivory); display: flex; flex-direction: column; direction: rtl; overflow-x: clip }
+.pub input, .pub textarea, .pub select { min-width: 0; max-width: 100% }
 .pub-center { align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 30px; color: var(--mute) }
 .pub-center .spin { border-color: rgba(15,42,36,.15); border-top-color: var(--brass) }
 .pub-hero { position: relative; background: var(--green) center/cover no-repeat; color: var(--ivory); overflow: hidden; border-radius: 0 0 32px 32px }
@@ -754,13 +755,15 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .cprow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; border-radius: 15px; background: #fff; border: 1px solid var(--line) }
 .cprow small { display: block; font-size: 11.5px; color: var(--mute); font-weight: 700 }
 .cprow b { font-size: 15px; font-weight: 700; word-break: break-all }
+.cprow b[dir=ltr] { white-space: nowrap; word-break: normal; font-size: 14px; letter-spacing: -.01em }
+.cprow > span { min-width: 0; overflow: hidden }
 .cprow b[dir=ltr] { font-family: var(--num); letter-spacing: .02em }
 .cprow button { flex: none; height: 34px; min-width: 56px; padding: 0 12px; border-radius: 10px; background: rgba(15,42,36,.07); color: var(--green); font-size: 13px; font-weight: 700; display: grid; place-items: center }
 .cprow button.ok { background: var(--ok); color: #fff }
 .drop { width: 100%; min-height: 92px; border-radius: 18px; border: 2px dashed #D3C7B1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--brass2); font-size: 13.5px; font-weight: 700; padding: 14px }
 .drop.has { flex-direction: row; border-style: solid; border-color: var(--ok); color: var(--ok); background: #F0F8F3; min-height: 60px }
 .drop.has small { margin-inline-start: auto; color: var(--mute) }
-.ptwo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px }
+.ptwo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 12px }
 .pub label { display: block } .pub label small { display: block; font-size: 12.5px; font-weight: 700; color: var(--mute); margin: 0 2px 6px }
 .pub input, .pub textarea { width: 100%; height: 50px; padding: 0 14px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; font-size: 16px; outline: none }
 .pub textarea { height: auto; padding: 12px 14px; line-height: 1.7; resize: none }
