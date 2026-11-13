@@ -1,7 +1,23 @@
 {
   "rewrites": [
-    { "source": "/i/:token", "destination": "/index.html" },
-    { "source": "/d/:token", "destination": "/index.html" },
-    { "source": "/t/:slug", "destination": "/index.html" }
-  ]
+    {
+      "source": "/i/:token",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/d/:token",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/t/:slug",
+      "destination": "/index.html"
+    }
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "media-*": false,
+      "tmp*": false,
+      "temp*": false
+    }
+  }
 }
