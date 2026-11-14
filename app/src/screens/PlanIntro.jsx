@@ -102,16 +102,18 @@ export function PlanCarousel({ current = 'free', onFree, freeLabel, start = 'pro
       <div className="pc-track" ref={track} onScroll={onScroll}>
         {PLANS.map((p) => (
           <article key={p.k} data-k={p.k} className={'pc-card ' + p.k + (current === p.k ? ' cur' : '')}>
-            {p.badge && <span className="pc-badge">{p.k === 'ultra' && crown(12)}{p.badge}</span>}
-            <header className="pc-h">
-              <b>{p.k === 'ultra' && crown(20)}{p.name}</b>
-              <span className="pc-price"><i className="num" dir="ltr">{p.price}</i><small>{p.per}</small></span>
-            </header>
-            <p className="pc-line">{p.line}</p>
+            <div className="pc-top">
+              {p.badge && <span className="pc-badge">{p.k === 'ultra' && crown(12)}{p.badge}</span>}
+              <header className="pc-h">
+                <b>{p.k === 'ultra' && crown(20)}{p.name}</b>
+                <span className="pc-price"><i className="num" dir="ltr">{p.price}</i><small>{p.per}</small></span>
+              </header>
+              <p className="pc-line">{p.line}</p>
+            </div>
             <div className="pc-body">
               {p.all && <p className="pc-all">{p.all}</p>}
               <ul className="pc-list">
-                {p.items.map(([t, d]) => <li key={t}>{Ic.check(13)}<span><b>{t}</b>{d && <small>{d}</small>}</span></li>)}
+                {p.items.map(([t, d]) => <li key={t}><i className="pc-ic">{Ic.check(12)}</i><span><b>{t}</b>{d && <small>{d}</small>}</span></li>)}
               </ul>
             </div>
             <div className="pc-foot">

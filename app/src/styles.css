@@ -1218,3 +1218,70 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .pc-note { color: inherit; opacity: .6 }
 .pc-cur { background: #EEF4F1; color: var(--green) }
 .plansbox { background: #F4EFE6; border: 1px solid #E6DFD2 }
+
+/* ---- piani v3: base bianca, testata verde, Ultra nero e oro; griglia su tablet e PC ---- */
+.intro { background: #fff; color: var(--ink) }
+.in-wrap { max-width: none; padding: 0 0 calc(10px + var(--sab)); gap: 0 }
+.intro .in-top { background: var(--green); color: var(--ivory); padding: calc(18px + var(--sat)) 22px 54px; border-radius: 0 0 30px 30px; gap: 6px; position: relative }
+.intro .in-top .logo-mark { background: var(--ivory) !important }
+.in-k { font-size: 12px; font-weight: 800; letter-spacing: .04em; color: var(--brass); margin-top: 6px }
+.intro .in-top h1 { color: var(--ivory); font-size: 25px }
+.intro .in-top p { color: rgba(243,237,227,.72) }
+.intro .pcar { margin-top: -30px; position: relative; z-index: 2 }
+.pc-pills { margin: 0 16px; background: #fff; border: 1px solid #E8E2D6; box-shadow: 0 12px 28px -16px rgba(15,42,36,.4) }
+.pc-pill { color: #5f5a50 }
+.pc-pill.on { background: var(--green); color: #fff }
+.pc-pill.ultra, .pc-pill.ultra.on { background: #111; color: #E2BE64 }
+.pc-pill.ultra.on { box-shadow: inset 0 0 0 2px #C9A24A }
+.pc-track { padding-top: 18px }
+.pc-card { padding: 0; overflow: visible; border: 1px solid #E8E2D6; border-radius: 24px; background: #fff; box-shadow: 0 2px 4px rgba(20,16,8,.03), 0 18px 36px -24px rgba(20,16,8,.28) }
+.pc-top { position: relative; padding: 22px 20px 16px; border-radius: 23px 23px 0 0; background: #F7F4EE; border-bottom: 1px solid #EEE8DC }
+.pc-card.pro .pc-top { background: var(--green); color: #fff; border-bottom: 0 }
+.pc-card.premium .pc-top { background: #F3F7F5; border-bottom: 1px solid #E1ECE6 }
+.pc-card.ultra .pc-top { background: transparent; border-bottom: 1px solid #2b261a }
+.pc-card.pro { border: 0; box-shadow: 0 22px 44px -22px rgba(15,42,36,.55), 0 0 0 1.5px var(--green) }
+.pc-card.premium { border-color: #D7E5DD }
+.pc-card.ultra { background: #111; border: 0; box-shadow: 0 24px 48px -22px rgba(0,0,0,.55), 0 0 0 1.5px #C9A24A }
+.pc-h { margin: 0 }
+.pc-h b { font-size: 26px }
+.pc-card.pro .pc-h b, .pc-card.pro .pc-price i { color: #fff }
+.pc-card.premium .pc-h b, .pc-card.premium .pc-price i { color: var(--green) }
+.pc-line { border: 0; padding: 0; margin: 10px 0 0; font-size: 14.5px; line-height: 1.65 }
+.pc-card.pro .pc-line { color: rgba(255,255,255,.85) }
+.pc-badge { top: -12px; background: var(--brass); color: var(--ink) }
+.pc-card.pro .pc-badge { background: var(--brass); color: var(--ink) }
+.pc-body { padding: 14px 20px 0; margin: 0 }
+.pc-all { margin-bottom: 10px }
+.pc-list { gap: 11px }
+.pc-ic { flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; background: #EAF2EE; color: var(--green); margin-top: 1px }
+.pc-card.ultra .pc-ic { background: rgba(201,162,74,.16); color: #E2BE64 }
+.pc-list b { font-size: 14.5px }
+.pc-card.ultra .pc-list b { color: #F3EBD8 }
+.pc-card.ultra .pc-list small { color: #b9ae94; opacity: 1 }
+.pc-foot { padding: 12px 20px 18px }
+.pc-btn { background: #F1ECE2; color: var(--ink) }
+.pc-card.pro .pc-btn { background: var(--green); color: #fff }
+.pc-card.premium .pc-btn { background: var(--green); color: #fff }
+.pc-card.ultra .pc-btn { background: #C9A24A; color: #111 }
+.intro .ip-foot { margin: 6px 22px 0; color: #7a7366 }
+.plansbox { background: #fff; border: 1px solid #E8E2D6; padding-top: 14px }
+.plansbox .pc-pills { box-shadow: none }
+
+/* tablet e PC: i 4 piani uno accanto all'altro, niente schede da scorrere */
+@media (min-width: 760px) {
+  .intro .in-top { padding: calc(28px + var(--sat)) 22px 64px; text-align: center }
+  .intro .in-top h1 { font-size: 30px }
+  .in-scroll, .in-wrap { overflow-y: auto }
+  .intro .pcar { flex: none; max-width: 1180px; width: 100%; margin: -36px auto 0 }
+  .pc-pills { display: none }
+  .pc-track { overflow: visible; display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; padding: 28px 24px 8px }
+  .pc-card { min-height: 0 }
+  .pc-body { overflow: visible; flex: 1 }
+  .intro .ip-foot { max-width: 1180px; margin: 10px auto 24px; padding: 0 24px; justify-content: center }
+  .plansbox { height: auto; display: block }
+  .plansbox .pc-track { grid-template-columns: 1fr 1fr; padding: 22px 14px 6px }
+}
+@media (min-width: 1100px) {
+  .pc-track { grid-template-columns: repeat(4, 1fr) }
+  .intro .pc-card.pro, .intro .pc-card.ultra { transform: translateY(-8px) }
+}
