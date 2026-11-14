@@ -1173,3 +1173,48 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 /* pagina «الباقات»: le stesse schede su fondo verde */
 .plansbox { background: var(--green); border-radius: 28px; padding: 14px 0 16px; margin-top: 14px; height: min(640px, calc(100dvh - 210px)); display: flex }
 .plansbox .pcar { width: 100% }
+
+/* ---- piani v2: fondo chiaro, piatto, niente effetti; la scala porta all'Ultra ---- */
+.intro { background: #F4EFE6; color: var(--ink) }
+.intro .in-top h1 { font-size: 24px; color: var(--ink); letter-spacing: -.01em }
+.intro .in-top p { color: #6b6559; font-size: 14px }
+.intro .ip-foot { color: #7a7366 }
+.intro .in-top svg, .intro .in-top img { filter: none }
+.pc-pills { background: #fff; border: 1px solid #E6DFD2; padding: 4px; border-radius: 16px; gap: 4px }
+.pc-pill { height: 42px; border-radius: 12px; color: #6b6559; font-size: 14px }
+.pc-pill.on { background: var(--green); color: #fff }
+.pc-pill.ultra { background: #121212; color: #D8B45C }
+.pc-pill.ultra.on { background: #121212; color: #E9C76E; box-shadow: inset 0 0 0 2px #C9A24A }
+.pc-track { padding: 16px 7% 4px; gap: 10px }
+.pc-card { flex-basis: 86%; background: #fff; color: var(--ink); border: 1px solid #E6DFD2; border-radius: 24px; padding: 22px 20px 16px; box-shadow: 0 1px 2px rgba(20,16,8,.04), 0 12px 30px -20px rgba(20,16,8,.25) }
+.pc-card.pro { background: #fff; border: 2px solid var(--green); box-shadow: 0 12px 30px -18px rgba(15,42,36,.35) }
+.pc-card.premium { background: #fff; color: var(--ink); border: 1px solid #E6DFD2 }
+.pc-card.ultra { background: #121212; color: #F3EBD8; border: 1px solid #2a2418; box-shadow: 0 18px 40px -20px rgba(0,0,0,.6) }
+.pc-step { position: absolute; top: 14px; inset-inline-end: 18px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #a39b8b }
+.pc-card.ultra .pc-step { color: #6f6650 }
+.pc-badge { top: -11px; background: var(--green); color: #fff; font-size: 11.5px; padding: 4px 12px }
+.pc-card.ultra .pc-badge { background: #C9A24A; color: #121212 }
+.pc-h { margin-top: 6px }
+.pc-h b { font-size: 28px; letter-spacing: -.01em }
+.pc-card.ultra .pc-h b { color: #E2BE64; letter-spacing: 0 }
+.pc-price i { color: var(--ink); font-size: 36px }
+.pc-card.pro .pc-price i { color: var(--green) }
+.pc-card.ultra .pc-price i { background: none; -webkit-background-clip: initial; background-clip: initial; color: #E2BE64 }
+.pc-price small { color: inherit; opacity: .6 }
+.pc-line { font-size: 15px; font-weight: 700; color: inherit; border-bottom: 1px solid #EFE9DE; padding-bottom: 14px; margin: 14px 0 12px }
+.pc-card.ultra .pc-line { border-color: #2a2418 }
+.pc-body { mask-image: none; -webkit-mask-image: none; scrollbar-width: none }
+.pc-body::-webkit-scrollbar { display: none }
+.pc-all { color: #8a6d2f; font-size: 12.5px }
+.pc-card.pro .pc-all { color: var(--green) }
+.pc-card.ultra .pc-all { color: #C9A24A }
+.pc-list li > svg { color: var(--green) }
+.pc-card.ultra .pc-list li > svg { color: #C9A24A }
+.pc-list small { opacity: .62 }
+.pc-btn { background: #F1ECE2; color: var(--ink); border: 0; border-radius: 16px; height: 52px }
+.pc-card.pro .pc-btn { background: var(--green); color: #fff }
+.pc-card.premium .pc-btn { background: var(--ink); color: #fff }
+.pc-card.ultra .pc-btn { background: #C9A24A; color: #121212; box-shadow: none }
+.pc-note { color: inherit; opacity: .6 }
+.pc-cur { background: #EEF4F1; color: var(--green) }
+.plansbox { background: #F4EFE6; border: 1px solid #E6DFD2 }
