@@ -50,16 +50,16 @@ export function openExternal(url) { window.open(url, '_system') || (location.hre
 
 const CDN = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3EwI7DLWorMb9W5PVQhWvn3Gxvb/'
 export const PHOTOS = {
-  hall: CDN + 'e86c486f-3b7d-4960-8ee7-97537b38271c.jpg',
-  amariya: CDN + 'a20b1226-d2ee-485d-9819-badaf81d6b5b.jpg',
+  hall: '/ph/sala.jpg',
+  amariya: '/ph/amariya.jpg',
   kitchen: CDN + '59569914-f5b1-43be-a97b-1f352b0acb7a.jpg',
-  a: CDN + '1fcdfa8b-cba8-4d91-b6f6-5d69119e5992.jpg',
-  b: CDN + '39eba763-bc05-4665-aae3-ecdd5b2a33cb.jpg',
-  c: CDN + '42a4e807-5569-462e-85aa-475773630618.jpg',
+  a: '/ph/tavola.jpg',
+  b: '/ph/scrivania.jpg',
+  c: '/ph/dolci.jpg',
   // Gemini photos (nov 2026): hall at night, catering spread, bride hands, traiteur kitchen
-  hall2: CDN + '5f90ae54-588e-4b9f-b796-16019e12a39e.jpg',
+  hall2: '/ph/riad.jpg',
   food: CDN + '7d9edf02-6fff-43aa-a69d-415dc8ea2b93.jpg',
-  bride: CDN + 'f5c6a91f-b8fd-40bf-aee5-4dd0ce89b714.jpg',
+  bride: '/ph/amariya.jpg',
   prep: CDN + 'c463c508-3072-48bf-8037-947da6bf7291.jpg',
 }
 // square crops taken from the 572x1024 photos with CSS (no extra files)
@@ -75,7 +75,7 @@ export const cropStyle = (k) => {
 }
 // expense label -> photo crop
 export const expenseCrop = (label = '') => /لحم|لحوم|غنم|خروف/.test(label) ? 'meat' : /دجاج|فراخ/.test(label) ? 'chick' : /خضر|فواكه/.test(label) ? 'veg' : /حلو|حلويات|سكر/.test(label) ? 'sweet' : /عطرية|توابل|زعفران/.test(label) ? 'spice' : null
-const ROT = [PHOTOS.hall, PHOTOS.amariya, PHOTOS.b, PHOTOS.c, PHOTOS.a]
+const ROT = [PHOTOS.hall, PHOTOS.amariya, PHOTOS.a, PHOTOS.c, PHOTOS.hall2]
 // first meaningful letter of a name (skips «عائلة», «الشاف», the article «ال»)
 export const initial = (n = '') => { const w = n.replace(/^(عائلة|الشاف|للا|السيد|مدام)\s+/, '').trim(); return (w.replace(/^ال(?=\S{2})/, '') || w).slice(0, 1) }
 export const photoFor = (id = '') => ROT[[...id].reduce((s, c) => s + c.charCodeAt(0), 0) % ROT.length]
