@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { add, paidOf, remove, restOf, totalOf, useStore } from '../lib/data'
+import { add, paidOf, profitOf, remove, restOf, totalOf, useStore } from '../lib/data'
 import { MONTHS, PHOTOS, cropStyle, dayKey, dayLabel, expenseCrop, money, photoFor } from '../lib/util'
 import { Band, Count, DH, Empty, Fab, Ic, Numpad, Sheet, Thumb, fail, toast } from '../ui'
 
@@ -21,6 +21,7 @@ export default function Money({ go }) {
   const profit = income - spent
   const owed = s.weddings.filter((w) => w.status !== 'cancelled' && w.status !== 'devis').map((w) => ({ w, rest: restOf(w, s.payments) })).filter((x) => x.rest > 0).sort((a, b) => a.w.day.localeCompare(b.w.day))
   const owedTotal = owed.reduce((a, x) => a + x.rest, 0)
+  const monthW = s.weddings.filter((w) => w.status !== 'cancelled' && w.status !== 'devis' && inMonth(w.day)).sort((a, b) => a.day.localeCompare(b.day)).map((w) => ({ w, p: profitOf(w, s) })).filter((x) => x.p.income > 0)
   const shift = (n) => { const d = new Date(ym[0], ym[1] + n, 1); setYm([d.getFullYear(), d.getMonth()]) }
 
   const paidPct = (w) => { const t = totalOf(w); return t ? Math.min(1, paidOf(w, s.payments) / t) : 0 }
@@ -55,6 +56,18 @@ export default function Money({ go }) {
           })}</div>
         )}
 
+        {monthW.length > 0 && <>
+          <h4 className="sec2">الربح ديال كل عرس</h4>
+          <div className="ecard">{monthW.map(({ w, p }) => (
+            <button key={w.id} className="erow2 pfr" onClick={() => go('wedding', { id: w.id })}>
+              <Thumb size={44} style={{ backgroundImage: `url(${photoFor(w.id)})` }} />
+              <span className="mid"><b>{w.family}</b><span className="meta">{dayLabel(w.day)} · {p.estimated ? 'تقدير' : 'محسوب بالشرا ديالك'}</span></span>
+              <span className={'pfv' + (p.net < 0 ? ' neg' : '')}><DH v={p.net} unit={false} /></span>
+            </button>
+          ))}</div>
+          <p className="hint" style={{ margin: '8px 4px 0' }}>كليكي على العرس باش تشوف منين جا الربح ولا الخسارة.</p>
+        </>}
+
         <h4 className="sec2">المصاريف</h4>
         {exps.length === 0 && !staffCost && <Empty title="ما كاين حتى مصروف" sub="سجّل اللحم، الخضرة، الكرا… باش تعرف الربح الحقيقي." />}
         {(exps.length > 0 || staffCost > 0) && (
@@ -78,11 +91,13 @@ export default function Money({ go }) {
 }
 
 const QUICK = [['اللحم', 'meat'], ['الدجاج', 'chick'], ['الخضرة والفواكه', 'veg'], ['الحلويات', 'sweet'], ['العطرية', 'spice'], ['الحوت', null], ['كرا الماتريال', null], ['المازوط', null]]
-function ExpenseSheet({ close }) {
+export function ExpenseSheet({ close, weddingId = '' }) {
   const s = useStore()
-  const [f, setF] = useState({ label: '', amount: '', wedding_id: '' })
+  const [f, setF] = useState({ label: '', amount: '', wedding_id: weddingId })
   const [other, setOther] = useState(false)
-  const soon = s.weddings.filter((w) => w.status !== 'cancelled').sort((a, b) => Math.abs(new Date(a.day) - Date.now()) - Math.abs(new Date(b.day) - Date.now())).slice(0, 3)
+  let soon = s.weddings.filter((w) => w.status !== 'cancelled').sort((a, b) => Math.abs(new Date(a.day) - Date.now()) - Math.abs(new Date(b.day) - Date.now())).slice(0, 3)
+  const preset = weddingId && s.weddings.find((w) => w.id === weddingId)
+  if (preset && !soon.some((w) => w.id === weddingId)) soon = [preset, ...soon.slice(0, 2)]
   const save = async () => {
     try { await add('expenses', { label: f.label.trim(), amount: +f.amount, wedding_id: f.wedding_id || null, spent_on: dayKey(new Date()) }); toast(`تسجّل \u2066${money(+f.amount)} DH\u2069`); close() } catch (e) { fail(e) }
   }

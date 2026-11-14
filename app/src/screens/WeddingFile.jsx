@@ -5,6 +5,7 @@ import { ROLES, ROLES_PL, dayKey, dayLabel, daysFromToday, money, openExternal, 
 import { Count, DH, Field, Ic, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
 import { receiptImage } from '../lib/receipt'
+import { ProfitCard } from './Profit'
 
 function devisText(w, traiteur) {
   const lines = [
@@ -146,6 +147,8 @@ export default function WeddingFile({ w, back, go }) {
           )}
         </div>
 
+        {w.status !== 'cancelled' && <ProfitCard w={w} />}
+
         <div className="card">
           <div className="ch"><h3>الخدامة ديال الليلة</h3><button className="mini" onClick={() => setSheet('staff')}>{Ic.plus(16)} زيد</button></div>
           {team.rows.length === 0 && <p className="muted">باقي ما زدتي حتى واحد. زيد السرباية والنكافة والكوزينة.</p>}
@@ -169,7 +172,7 @@ export default function WeddingFile({ w, back, go }) {
         {shop.length > 0 && w.status !== 'cancelled' && (
           <div className="card">
             <div className="ch"><h3>{Ic.cart(17)} لائحة الشرا</h3><span className="muted">تقدير · <span dir="ltr">{w.guests}</span> ضيف</span></div>
-            <ul className="shop">{shop.map((x) => <li key={x.label}><span>{x.label}</span><b><span dir="ltr">{money(x.qty)}</span> {x.unit}</b></li>)}</ul>
+            <ul className="shop">{shop.map((x) => <li key={x.label}><span>{x.label}</span><b><span dir="ltr">{money(x.qty)}</span> {x.unit}</b><small className="sc">≈ <DH v={x.cost} /></small></li>)}</ul>
             <button className="linkrow" onClick={() => shareText([`🛒 لائحة الشرا · عرس ${w.family} (${w.guests} ضيف)`, ...shop.map((x) => `• ${x.label}: ${money(x.qty)} ${x.unit}`)].join('\n'))}>{Ic.share(16)} صيفطها للمول ديال السلعة</button>
           </div>
         )}

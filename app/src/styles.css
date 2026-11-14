@@ -886,3 +886,51 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .dhead .t { flex: 1; min-width: 0 }
 .dhead h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 @media (max-width: 1320px) { .dqr span, .dqr { font-size: 0; gap: 0; padding: 0 13px } .dqr svg { width: 20px; height: 20px } }
+
+/* ---------- profit of a wedding ---------- */
+.wprofit .pf-big { padding: 16px 18px; border-radius: 22px; background: var(--green); color: var(--ivory); display: flex; flex-direction: column; gap: 4px }
+.wprofit .pf-big small { font-size: 12.5px; color: rgba(243,237,227,.7) }
+.wprofit .pf-num { font-size: 40px; font-weight: 750; line-height: 1.05; color: var(--brass) }
+.wprofit .pf-num small { font-size: 16px; color: rgba(243,237,227,.7) }
+.wprofit .pf-sub { font-size: 12.5px; color: rgba(243,237,227,.82) }
+.wprofit.lost .pf-num { color: #FF9D78 }
+.pf-bar { display: flex; height: 10px; border-radius: 6px; overflow: hidden; margin: 14px 0 6px; background: rgba(15,42,36,.06); gap: 2px }
+.pf-bar i { display: block; height: 100% }
+.pf-bar .food, .pf-rows .k.food { background: var(--brass) }
+.pf-bar .staff, .pf-rows .k.staff { background: #5E7F74 }
+.pf-bar .other, .pf-rows .k.other { background: #B9B2A5 }
+.pf-bar .net, .pf-rows .k.in { background: var(--ok) }
+.pf-rows { list-style: none; display: grid; gap: 2px; margin-top: 6px }
+.pf-rows li { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--line) }
+.pf-rows li:last-child { border-bottom: 0 }
+.pf-rows .k { width: 10px; height: 10px; border-radius: 3px; flex: none }
+.pf-rows .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px }
+.pf-rows .t b { font-size: 14px; color: var(--green); display: flex; align-items: center; gap: 6px }
+.pf-rows .t small { font-size: 12px; color: var(--mute) }
+.pf-rows .v { font-weight: 700; color: var(--green); font-size: 14.5px; white-space: nowrap }
+.pf-rows .v.plus { color: var(--ok) }
+.est { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: rgba(200,161,90,.18); color: #6B5222 }
+.pf-warn { margin-top: 10px; padding: 12px 14px; border-radius: 16px; background: #FCE8DF; color: #9A3A18; font-size: 13px; line-height: 1.7 }
+.qm { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(200,161,90,.2); font-size: 12px; font-weight: 900 }
+.how { padding-inline-start: 20px; display: grid; gap: 10px; font-size: 14px; line-height: 1.8; color: var(--ink) }
+.how b { color: var(--green) }
+.howeq { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 16px 0; padding: 12px; border-radius: 16px; background: rgba(15,42,36,.05); font-size: 13px; font-weight: 700; color: var(--green) }
+.howeq b { color: var(--mute) }
+.howeq .r { color: var(--ok) }
+.prices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px }
+.prc { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 18px; background: rgba(15,42,36,.04); border: 1px solid var(--line) }
+.prc.wide { grid-column: 1 / -1 }
+.prc > span:first-child { display: flex; flex-direction: column; gap: 1px }
+.prc b { font-size: 14px; color: var(--green) }
+.prc small { font-size: 11.5px; color: var(--mute) }
+.pin { display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; border-radius: 12px; background: #fff; border: 1px solid var(--line) }
+.pin:focus-within { border-color: var(--brass) }
+.pin input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 17px; font-weight: 700; font-family: var(--num); color: var(--green) }
+.shop li .sc { font-size: 11.5px; color: var(--brass2) }
+.pfr { width: 100%; text-align: start }
+.pfv { font-weight: 750; font-size: 15px; color: var(--ok) }
+.pfv.neg { color: var(--henna) }
+.wprofit .pf-h { margin-bottom: 12px }
+.pf-btns .btn { flex: 1; min-width: 0; white-space: nowrap; font-size: 14px; padding: 0 12px }
+.prc { min-width: 0 }
+.pin input { width: 0 }

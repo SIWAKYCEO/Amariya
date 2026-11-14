@@ -154,12 +154,43 @@ const BUY = [
   [/أتاي|اتاي/, 'النعناع', (g) => Math.ceil(g / 25), 'ربطة'],
   [/عصير/, 'العصير', (g) => Math.round(g * 0.3), 'لتر'],
 ]
+// what the traiteur pays for each unit of the shopping list (he can change them in the app)
+export const PRICE_DEFAULTS = { 'البسطيلة': 220, 'الدجاج': 45, 'اللحم': 100, 'الحوت': 70, 'الفواكه': 15, 'الحلويات': 2, 'النعناع': 5, 'العصير': 12, misc: 10 }
+export const PRICE_UNITS = { 'البسطيلة': 'كبيرة', 'الدجاج': 'دجاجة', 'اللحم': 'كيلو', 'الحوت': 'كيلو', 'الفواكه': 'كيلو', 'الحلويات': 'حبة', 'النعناع': 'ربطة', 'العصير': 'لتر' }
+export const MISC_LABEL = 'الزيت، العطرية، الخبز والبوطة'
+export const priceOf = (label, s = state) => { const v = (s.traiteur?.costs || {})[label]; return v === undefined || v === '' ? PRICE_DEFAULTS[label] || 0 : +v }
+
 export function shoppingOf(w, s = state) {
   const pkg = s.packages.find((p) => p.id === w.package_id)
   const items = pkg?.items || []
   const out = []
-  for (const [re, label, f, unit] of BUY) if (items.some((it) => re.test(it)) && !out.some((o) => o.label === label)) out.push({ label, qty: f(+w.guests || 0), unit })
+  for (const [re, label, f, unit] of BUY) if (items.some((it) => re.test(it)) && !out.some((o) => o.label === label)) {
+    const qty = f(+w.guests || 0), price = priceOf(label, s)
+    out.push({ label, qty, unit, price, cost: Math.round(qty * price) })
+  }
   return out
+}
+
+// expenses the traiteur writes with these names are food: they replace the estimate
+const FOOD_RE = /لحم|دجاج|خضر|فواك|حلوي|عطري|حوت|زيت|خبز|سكر|أتاي|اتاي|نعناع|عصير|ماكلة|سلعة/
+export const isFood = (label) => FOOD_RE.test(label || '')
+
+// real profit of one wedding: income minus food, staff and other costs of that night
+export function profitOf(w, s = state) {
+  const income = totalOf(w)
+  const guests = +w.guests || 0
+  const shop = shoppingOf(w, s)
+  const misc = Math.round(guests * priceOf('misc', s))
+  const foodEst = shop.reduce((a, x) => a + x.cost, 0) + misc
+  const linked = s.expenses.filter((e) => e.wedding_id === w.id)
+  const foodReal = linked.filter((e) => isFood(e.label)).reduce((a, e) => a + +e.amount, 0)
+  const other = linked.filter((e) => !isFood(e.label)).reduce((a, e) => a + +e.amount, 0)
+  const past = w.status === 'done' || w.day < dayKey(new Date())
+  const team = s.assignments.filter((a) => a.wedding_id === w.id && (past ? a.status === 'ok' : a.status !== 'no'))
+  const staff = team.reduce((a, x) => a + (+x.pay || 0), 0)
+  const food = foodReal > 0 ? foodReal : foodEst
+  const net = income - food - staff - other
+  return { income, food, foodEst, foodReal, estimated: foodReal <= 0, misc, shop, staff, staffCount: team.length, other, otherCount: linked.length - linked.filter((e) => isFood(e.label)).length, net, perGuest: guests ? Math.round(net / guests) : 0, pct: income ? Math.round((net / income) * 100) : 0, past }
 }
 
 /* ---------- public links, deposit proofs, reminders ---------- */
