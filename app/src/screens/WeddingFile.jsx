@@ -37,6 +37,7 @@ export default function WeddingFile({ w, back, go }) {
   const [amount, setAmount] = useState('')
   const [rc, setRc] = useState(null)
   const [proof, setProof] = useState(null)
+  const [tab, setTab] = useState('money')
   const proofs = (s.proofs || []).filter((p) => p.wedding_id === w.id && p.status === 'pending')
   const link = devisLink(w)
   const remind = () => { openExternal(waLink(w.phone, remindText(w, rest, s.traiteur))); const n = daysFromToday(w.day); if (n >= 0 && n <= 7) markReminded(w, n <= 1 ? 'd1' : 'd7').catch(() => {}) }
@@ -89,40 +90,44 @@ export default function WeddingFile({ w, back, go }) {
 
   return (
     <div className="screen file">
-      <section className="fhero">
-        <div className="bgphoto sharp" style={{ backgroundImage: `url(${photoFor(w.id)})` }} />
-        <div className="shade" />
-        <div className="fh-top">
-          <button className="round glass" onClick={back} aria-label="رجوع">{Ic.back()}</button>
-          <span className="pill glass">{w.status === 'devis' ? 'دوفي' : w.status === 'done' ? 'داز' : w.status === 'cancelled' ? 'ملغي' : relDay(w.day)}</span>
-          <button className="round glass" onClick={() => setSheet('more')} aria-label="المزيد">{Ic.pen()}</button>
+      <section className="fhead">
+        <div className="fh-row">
+          <button className="round" onClick={back} aria-label="رجوع">{Ic.back()}</button>
+          <span className="fh-ph" style={{ backgroundImage: `url(${photoFor(w.id)})` }} />
+          <div className="fh-t">
+            <h1>{w.family}</h1>
+            <p className="meta">{dayLabel(w.day)} · <span dir="ltr">{w.time}</span>{w.hall ? ' · ' + w.hall : ''}{w.city ? (w.hall ? '، ' : ' · ') + w.city : ''}</p>
+          </div>
+          <span className="pill">{w.status === 'devis' ? 'دوفي' : w.status === 'done' ? 'داز' : w.status === 'cancelled' ? 'ملغي' : relDay(w.day)}</span>
         </div>
-        <div className="fh-in">
-          <h1>{w.family}</h1>
-          <p className="meta">{dayLabel(w.day)} · <span dir="ltr">{w.time}</span>{w.hall ? ' · ' + w.hall : ''}{w.city ? (w.hall ? '، ' : ' · ') + w.city : ''}</p>
-          <WeddingChips w={w} s={s} />
+        <div className="fh-act">
+          <button className="act" onClick={() => go('edit', { id: w.id })}>{Ic.pen(16)} بدّل</button>
+          {w.phone && <button className="act" onClick={() => openExternal(telLink(w.phone))}>{Ic.phone(16)} عيّط</button>}
+          {w.phone && <button className="act wa" onClick={() => openExternal(waLink(w.phone, `السلام عليكم ${w.family}`))}>{Ic.wa(16)} واتساب</button>}
+          <button className="act del" onClick={() => setSheet('del')}>{Ic.trash(16)} مسح</button>
         </div>
       </section>
 
       <div className="content">
-        {probs.length > 0 && (
-          <div className="alert">
-            {probs.includes('noArboun') && <p>ما خلّصوش العربون. سجّلو ملّي يخلّصو.</p>}
-            {probs.includes('serveurs') && <p>خاصك <b>{team.need - team.serveursOk}</b> سرباي باش تكمّل ({team.serveursOk}/{team.need}).</p>}
-            {probs.includes('refused') && <p>شي واحد قال ما جايش. قلب على واحد آخر.</p>}
-          </div>
-        )}
-
         {w.status !== 'cancelled' && (
           <div className="card ready">
-            <Ring done={ready.done} total={ready.total} size={58} />
+            <Ring done={ready.done} total={ready.total} size={54} />
             <div className="rd-l">
               <b>{ready.done === ready.total ? 'كلشي واجد ليهاد العرس' : 'واش العرس واجد؟'}</b>
               <div className="rd-i">{ready.items.map(([l, ok]) => <span key={l} className={ok ? 'y' : 'n'}>{ok ? Ic.check(12) : Ic.x(11)} {l}</span>)}</div>
+              {probs.includes('serveurs') && <small className="rd-p">خاصك <b>{team.need - team.serveursOk}</b> سرباي باش تكمّل</small>}
+              {probs.includes('refused') && <small className="rd-p">شي واحد قال ما جايش. قلب على واحد آخر.</small>}
             </div>
           </div>
         )}
 
+        <div className="segs" role="tablist">
+          {[['money', 'الفلوس', Ic.cash], ['team', 'الخدامة', Ic.team], ['food', 'الماكلة', Ic.cart], ['more', 'المزيد', Ic.doc]].map(([k, l, ic]) => (
+            <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{ic(17)}<span>{l}</span></button>
+          ))}
+        </div>
+
+        {tab === 'money' && <>
         <div className="card money">
           <div className="m3">
             <div><small>المجموع</small><DH v={total} /></div>
@@ -154,14 +159,9 @@ export default function WeddingFile({ w, back, go }) {
             <ProfitCard w={w} />
           </Locked>
         ))}
+        </>}
 
-        {w.status !== 'cancelled' && (pro ? <DocsCard w={w} /> : (
-          <Locked compact go={go} title="الدوفي والعقد PDF باللوغو ديالك" why="وراق نقيين كيبانو بحال شركة كبيرة. العائلة كتوقّع، والعربون كيبقى مضمون.">
-            <DocsCard w={w} />
-          </Locked>
-        ))}
-
-        <div className="card">
+        {tab === 'team' && <div className="card">
           <div className="ch"><h3>الخدامة ديال الليلة</h3><button className="mini" onClick={() => setSheet('staff')}>{Ic.plus(16)} زيد</button></div>
           {team.rows.length === 0 && <p className="muted">باقي ما زدتي حتى واحد. زيد السرباية والنكافة والكوزينة.</p>}
           {byRole.map(([r, list]) => (
@@ -179,14 +179,14 @@ export default function WeddingFile({ w, back, go }) {
           ))}
           {team.rows.length > 0 && <p className="hint">كليكي على السمية باش تبدّل: تسول ← جاي ← ما جايش</p>}
           {team.rows.length > 0 && <button className="linkrow" onClick={() => shareText(teamText(w, team.rows))}>{Ic.share(16)} صيفط البرنامج للخدامة كاملين</button>}
+        </div>}
+
+        {tab === 'food' && <>
+        <div className="card">
+          <div className="ch"><h3>المينو · {w.package_name}</h3><span className="muted"><span dir="ltr">{w.guests}</span> ضيف</span></div>
+          <ul className="menu">{(pkg?.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
+          {(w.extras || []).length > 0 && <ul className="extras">{w.extras.map((e, i) => <li key={i}><span>{e.label}</span><DH v={e.amount} /></li>)}{w.extras.length > 1 && <li className="t"><span>الزيادات</span><DH v={extrasSum(w)} /></li>}</ul>}
         </div>
-
-        {w.status !== 'cancelled' && (pro ? <MaterialCard w={w} go={go} /> : (
-          <Locked compact go={go} title="الماتريال ديال هاد العرس" why="شحال خرج من الطباسل والكيسان، شحال رجع وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.">
-            <MaterialCard w={w} go={go} />
-          </Locked>
-        ))}
-
         {shop.length > 0 && w.status !== 'cancelled' && (
           <div className="card">
             <div className="ch"><h3>{Ic.cart(17)} لائحة الشرا</h3><span className="muted">تقدير · <span dir="ltr">{w.guests}</span> ضيف</span></div>
@@ -194,22 +194,31 @@ export default function WeddingFile({ w, back, go }) {
             <button className="linkrow" onClick={() => shareText([`🛒 لائحة الشرا · عرس ${w.family} (${w.guests} ضيف)`, ...shop.map((x) => `• ${x.label}: ${money(x.qty)} ${x.unit}`)].join('\n'))}>{Ic.share(16)} صيفطها للمول ديال السلعة</button>
           </div>
         )}
+        </>}
 
-        <div className="card">
-          <div className="ch"><h3>المينو · {w.package_name}</h3><span className="muted"><span dir="ltr">{w.guests}</span> ضيف</span></div>
-          <ul className="menu">{(pkg?.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
-          {(w.extras || []).length > 0 && <ul className="extras">{w.extras.map((e, i) => <li key={i}><span>{e.label}</span><DH v={e.amount} /></li>)}{w.extras.length > 1 && <li className="t"><span>الزيادات</span><DH v={extrasSum(w)} /></li>}</ul>}
-        </div>
-
+        {tab === 'more' && <>
+        {w.status !== 'cancelled' && (pro ? <DocsCard w={w} /> : (
+          <Locked compact go={go} title="الدوفي والعقد PDF باللوغو ديالك" why="وراق نقيين كيبانو بحال شركة كبيرة. العائلة كتوقّع، والعربون كيبقى مضمون.">
+            <DocsCard w={w} />
+          </Locked>
+        ))}
+        {w.status !== 'cancelled' && (pro ? <MaterialCard w={w} go={go} /> : (
+          <Locked compact go={go} title="الماتريال ديال هاد العرس" why="شحال خرج من الطباسل والكيسان، شحال رجع وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.">
+            <MaterialCard w={w} go={go} />
+          </Locked>
+        ))}
         {w.notes && <div className="card note"><h3>ملاحظات</h3><p>{w.notes}</p></div>}
-
-        <div className="card contact">
-          <div><b>{w.family}</b><span dir="ltr">{prettyPhone(w.phone)}</span></div>
-          {w.phone && <div className="btnrow tight">
-            <button className="round" onClick={() => openExternal(telLink(w.phone))} aria-label="عيّط">{Ic.phone()}</button>
-            <button className="round wa" onClick={() => openExternal(waLink(w.phone, `السلام عليكم ${w.family}`))} aria-label="واتساب">{Ic.wa()}</button>
-          </div>}
+        <div className="card">
+          <div className="ch"><h3>العرس</h3></div>
+          <div className="menulist">
+            <button onClick={() => go('edit', { id: w.id })}>{Ic.pen()} بدّل المعلومات والضياف</button>
+            {w.status !== 'done' && w.status !== 'cancelled' && <button onClick={() => setStatus('done')}>{Ic.check(18)} العرس داز</button>}
+            {w.status !== 'cancelled' ? <button onClick={() => setStatus('cancelled')}>{Ic.x()} لغي العرس (يبقى فالأرشيف)</button>
+              : <button onClick={() => setStatus('confirmed')}>{Ic.check(18)} رجّع العرس</button>}
+            <button className="danger" onClick={() => setSheet('del')}>{Ic.trash()} مسح العرس نهائيا</button>
+          </div>
         </div>
+        </>}
       </div>
 
       {rc && (
@@ -250,15 +259,12 @@ export default function WeddingFile({ w, back, go }) {
         </Sheet>
       )}
 
-      {sheet === 'more' && (
-        <Sheet title={w.family} onClose={() => setSheet(null)}>
-          <div className="menulist">
-            <button onClick={() => { setSheet(null); go('edit', { id: w.id }) }}>{Ic.pen()} بدّل المعلومات والضياف</button>
-            {w.status !== 'done' && <button onClick={() => setStatus('done')}>{Ic.check(18)} العرس داز</button>}
-            {w.status !== 'cancelled' ? <button className="danger" onClick={() => setStatus('cancelled')}>{Ic.x()} لغي العرس</button>
-              : <button onClick={() => setStatus('confirmed')}>{Ic.check(18)} رجّع العرس</button>}
-            {w.status === 'cancelled' && <button className="danger" onClick={() => { if (confirm('تمسح هاد العرس نهائيا؟')) { remove('weddings', w.id).then(back).catch(fail) } }}>{Ic.trash()} مسح نهائيا</button>}
-          </div>
+      {sheet === 'del' && (
+        <Sheet title="تمسح هاد العرس؟" onClose={() => setSheet(null)}>
+          <p className="muted delp">غادي يتمسح العرس ديال <b>{w.family}</b> نهائيا، مع الخلاص والخدامة ديالو. ما يمكنش ترجعو.</p>
+          <button className="btn wide dangerbtn" onClick={() => remove('weddings', w.id).then(() => { toast('تمسح العرس'); back() }).catch(fail)}>{Ic.trash(18)} إيه، مسحو</button>
+          {w.status !== 'cancelled' && <button className="btn ghost wide" onClick={() => setStatus('cancelled')}>غير لغيه وخليه فالأرشيف</button>}
+          <button className="linkbtn" onClick={() => setSheet(null)}>لا، رجع</button>
         </Sheet>
       )}
       {proof && <ProofSheet p={proof} onClose={() => setProof(null)} />}

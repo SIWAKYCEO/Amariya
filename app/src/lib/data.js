@@ -118,6 +118,23 @@ export function planOf(t = state.traiteur) {
   return p
 }
 export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
+export const PRICES = { pro: 150, premium: 350 }
+export const SALES_WA = '212621287405'
+// message ready for our WhatsApp: who is asking, which plan, which feature they wanted
+export function planWaText(plan, feature) {
+  const t = state.traiteur || {}
+  const name = plan === 'pro' ? 'Pro' : 'Premium'
+  return [`السلام عليكم Amariya 👋`, `بغيت نفعّل ${name} (${PRICES[plan]} درهم فالشهر).`, feature && `بغيت خصوصا: ${feature}.`, t.name && `التريتور: ${t.name}${t.city ? ' · ' + t.city : ''}`, 'كيفاش نخلّص؟'].filter(Boolean).join('\n')
+}
+export const planWaLink = (plan, feature) => `https://wa.me/${SALES_WA}?text=${encodeURIComponent(planWaText(plan, feature))}`
+// opens our WhatsApp and records the request (dashboard sees it); the demo just turns the plan on
+export async function wantPlan(plan, feature) {
+  if (isDemo) return askPlan(plan)
+  window.open(planWaLink(plan, feature), '_blank', 'noopener')
+  askPlan(plan).catch(() => {})
+  return 'wa'
+}
+
 export async function askPlan(plan) {
   if (isDemo) { set({ traiteur: { ...state.traiteur, plan, plan_until: null } }); return 'demo' }
   const { error } = await supabase.from('amr_plan_requests').insert({ traiteur_id: state.traiteur.id, plan })

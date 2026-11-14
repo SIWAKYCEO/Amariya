@@ -19,6 +19,7 @@ const Plans = lazy(() => import('./screens/Plans'))
 import { useInboxRefresh } from './screens/Inbox'
 import { PHOTOS } from './lib/util'
 import { InstallButton } from './install'
+import PlanIntro, { shouldShowIntro } from './screens/PlanIntro'
 
 const TABS = ['weddings', 'staff', 'clients', 'money']
 
@@ -40,6 +41,7 @@ export default function App() {
   const [route, setRoute] = useState({ v: 'weddings' })
   const s = useStore()
   const desk = useDesk()
+  const [intro, setIntro] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -69,6 +71,7 @@ export default function App() {
   const back = () => history.back()
   // prefetch the screens people open most, once the home is on screen
   useEffect(() => { if (phase === 'ready') startPresence() }, [phase])
+  useEffect(() => { if (phase === 'ready' && shouldShowIntro(s.traiteur)) setIntro(true) }, [phase]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { setScreen(route.v) }, [route.v])
   useEffect(() => { if (phase === 'ready') { const t = setTimeout(() => { import('./screens/WeddingFile'); import('./screens/NewWedding'); import('./screens/Calendar') }, 800); return () => clearTimeout(t) } }, [phase])
 
@@ -97,6 +100,8 @@ export default function App() {
   }
 
   const tab = TABS.includes(route.v) ? route.v : null
+  // the bottom bar stays on every screen, so people can always go back or jump to another section
+  const dockTab = tab || (['wedding', 'new', 'edit', 'calendar', 'requests', 'stock'].includes(route.v) ? 'weddings' : null)
   const w = route.id && s.weddings.find((x) => x.id === route.id)
   const screens = (
       <Suspense fallback={<div className="skel" />}>
@@ -119,14 +124,16 @@ export default function App() {
     <div className="app desk">
       <Side v={route.v} go={go} />
       <main className="dmain">{screens}</main>
+      {intro && <PlanIntro onClose={() => setIntro(false)} />}
       <Toaster /><Fresh />
     </div>
   )
   return (
-    <div className={'app' + (desk ? ' deskfree' : '')}>
+    <div className={'app withdock' + (desk ? ' deskfree' : '')}>
       {desk && <button className="deskbar" onClick={() => go('plans')}>{Ic.lock(15)} النسخة الكاملة ديال الكمبيوتر كاينة فـ Pro · شوف الباقات</button>}
       {screens}
-      {tab && <Dock tab={tab} go={go} />}
+      <Dock tab={dockTab} go={go} />
+      {intro && <PlanIntro onClose={() => setIntro(false)} />}
       <Toaster /><Fresh />
     </div>
   )

@@ -1062,3 +1062,61 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .dir-p { font-size: 12.5px; color: var(--brass2); font-weight: 700 }
 .dir-ft { align-self: flex-start; height: 22px; padding: 0 10px; border-radius: 99px; background: var(--brass); color: var(--ink); font-size: 11.5px; font-weight: 700; display: grid; place-items: center }
 .pub-empty { text-align: center; color: var(--mute); padding: 30px 0 }
+
+/* ---- scheda matrimonio compatta (nov 14) ---- */
+.fhead { background: var(--green); color: var(--ivory); padding: calc(12px + var(--sat)) 14px 14px; border-radius: 0 0 26px 26px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px }
+.fh-row { display: flex; align-items: center; gap: 10px }
+.fh-row .round { flex: none; background: rgba(243,237,227,.12); color: var(--ivory) }
+.fh-ph { flex: none; width: 46px; height: 46px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid rgba(200,161,90,.5) }
+.fh-t { flex: 1; min-width: 0 }
+.fh-t h1 { font-size: 21px; font-weight: 900; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.fh-t .meta { color: rgba(243,237,227,.75); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.fhead .pill { flex: none; font-size: 12px; font-weight: 800; padding: 5px 11px; border-radius: 99px; background: rgba(200,161,90,.2); color: var(--brass) }
+.fh-act { display: flex; gap: 8px } .fh-act .act { flex: 1; min-width: 0 }
+.fh-act .act { height: 42px; border-radius: 14px; background: rgba(243,237,227,.1); color: var(--ivory); display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 800; font-size: 13.5px }
+.fh-act .act.wa { background: rgba(37,211,102,.16); color: #9ff0bf }
+.fh-act .act.del { background: rgba(224,99,58,.18); color: #ffb197 }
+.rd-p { color: var(--henna); font-weight: 700; font-size: 12.5px }
+.segs { position: sticky; top: calc(8px + var(--sat)); z-index: 12; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 5px; margin: 4px 0 14px; border-radius: 18px; background: rgba(243,237,227,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 6px 18px -10px rgba(11,21,19,.35), inset 0 0 0 1px rgba(15,42,36,.08) }
+.segs button { height: 46px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 12.5px; font-weight: 800; color: var(--mute) }
+.segs button.on { background: var(--green); color: var(--ivory) }
+.delp { margin-bottom: 14px; line-height: 1.7 }
+.dangerbtn { background: var(--henna); color: #fff; margin-bottom: 8px }
+.app.withdock .actionbar { bottom: calc(76px + var(--sab)) }
+.app.withdock .screen.form { padding-bottom: calc(200px + var(--sab)) }
+.desk .fhead { border-radius: 24px }
+
+/* ---- scelta del piano all'ingresso ---- */
+.intro { position: fixed; inset: 0; z-index: 70; background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' width='90' height='90'%3E%3Cg stroke='%23C8A15A' stroke-opacity='.14' stroke-width='.35' fill='none'%3E%3Cpath d='M5 0L10 5L15 0M5 20L10 15L15 20M0 5L5 10L0 15M20 5L15 10L20 15'/%3E%3Cpath d='M10 6.4L11.05 7.45H12.55V8.95L13.6 10L12.55 11.05V12.55H11.05L10 13.6L8.95 12.55H7.45V11.05L6.4 10L7.45 8.95V7.45H8.95Z'/%3E%3C/g%3E%3C/svg%3E"); color: var(--ivory); animation: fade .3s; transition: opacity .26s, transform .26s }
+.intro.out { opacity: 0; transform: scale(.98) }
+.in-scroll { height: 100%; overflow-y: auto; padding: calc(28px + var(--sat)) 18px calc(28px + var(--sab)); max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px }
+.in-top { text-align: center; display: grid; justify-items: center; gap: 10px; margin-bottom: 4px }
+.in-top h1 { font-size: 27px; font-weight: 900; line-height: 1.25 }
+.in-top p { color: rgba(243,237,227,.78); font-size: 14.5px; line-height: 1.7; max-width: 34ch }
+.ip { position: relative; border-radius: 26px; padding: 18px 18px 16px; background: rgba(243,237,227,.06); border: 1px solid rgba(243,237,227,.14) }
+.ip.pro { background: var(--ivory); color: var(--ink); border: 2px solid var(--brass); box-shadow: 0 30px 60px -30px rgba(0,0,0,.7) }
+.ip-badge { position: absolute; top: -12px; inset-inline-start: 18px; background: var(--brass); color: var(--ink); font-weight: 900; font-size: 12px; padding: 4px 12px; border-radius: 99px }
+.ip-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px }
+.ip-h b { font-size: 24px; font-weight: 900; font-family: 'Bricolage Grotesque', var(--font, sans-serif) }
+.ip-h span { font-size: 13px; font-weight: 700; opacity: .8 }
+.ip-h i { font-style: normal; font-size: 30px; font-weight: 800; margin-inline-end: 4px; color: var(--brass) }
+.ip.pro .ip-h i { color: var(--green) }
+.ip-why { font-size: 14px; font-weight: 700; line-height: 1.6; margin: 6px 0 10px; color: inherit; opacity: .9 }
+.ip-all { font-size: 12.5px; font-weight: 800; color: var(--brass); margin-bottom: 8px }
+.ip.pro .ip-all { color: #9c7a3c }
+.ip ul { list-style: none; display: grid; gap: 9px; margin-bottom: 14px }
+.ip li { display: flex; gap: 9px; align-items: flex-start }
+.ip li > svg { flex: none; margin-top: 3px; color: var(--brass) }
+.ip.pro li > svg { color: var(--green) }
+.ip li span { display: grid; gap: 1px }
+.ip li b { font-size: 14.5px; font-weight: 800 }
+.ip li small { font-size: 12.5px; opacity: .72 }
+.ip li em { font-style: normal; font-size: 11px; font-weight: 800; background: rgba(200,161,90,.22); color: var(--brass); border-radius: 99px; padding: 1px 8px; margin-inline-start: 6px }
+.ip.prem .btn.ghost { background: rgba(243,237,227,.12); color: var(--ivory); border: 0 }
+.ip.basic { padding-bottom: 14px }
+.ip-b li span { font-size: 14px; font-weight: 600; opacity: .88 }
+.ip-free { background: transparent; color: var(--ivory); border: 1.5px solid rgba(243,237,227,.35) }
+.ip-foot { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; line-height: 1.7; color: rgba(243,237,227,.7); padding: 4px 6px 10px }
+.ip-foot svg { flex: none; margin-top: 3px }
+.lk-more { margin-top: 6px; font-size: 13px }
+.pnote { font-size: 12.5px; opacity: .8; margin-top: 8px; text-align: center }

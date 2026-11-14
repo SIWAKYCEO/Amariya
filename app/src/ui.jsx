@@ -1,3 +1,4 @@
+import { PRICES, wantPlan } from './lib/data'
 import { useEffect, useRef, useState } from 'react'
 import { money } from './lib/util'
 
@@ -92,7 +93,7 @@ export function Dock({ tab, go }) {
   const items = [['weddings', 'العراسات', Ic.rings], ['staff', 'الخدامة', Ic.team], ['clients', 'الكليان', Ic.ppl], ['money', 'الفلوس', Ic.cash]]
   return (
     <nav className="dock" aria-label="menu"><div className="in" style={{ '--i': items.findIndex(([k]) => k === tab) }}>
-      <span className="ind" aria-hidden="true" />
+      {items.some(([k]) => k === tab) && <span className="ind" aria-hidden="true" />}
       {items.map(([k, l, ic]) => (
         <button key={k} className={'tab' + (tab === k ? ' on' : '')} onClick={() => go(k)} aria-current={tab === k ? 'page' : undefined}>
           {ic(23)}<span>{l}</span>
@@ -241,7 +242,8 @@ export function Locked({ title, why, go, children, compact }) {
         <span className="lk-ic">{Ic.lock(20)}</span>
         <b>{title}</b>
         {why && <p>{why}</p>}
-        <button className="btn brass" onClick={() => go('plans')}>فتح بـ Pro · <span className="num" dir="ltr">199</span> درهم</button>
+        <button className="btn brass" onClick={() => wantPlan('pro', title)}>{Ic.wa(16)} فتح بـ Pro · <span className="num" dir="ltr">{PRICES.pro}</span> درهم</button>
+        <button className="linkbtn lk-more" onClick={() => go('plans')}>شوف شنو كاين فـ Pro</button>
       </div>
     </div>
   )
