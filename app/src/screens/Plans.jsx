@@ -66,7 +66,7 @@ export default function Plans({ back }) {
 
         <div className={'plan prem' + (plan === 'premium' ? ' cur' : '')}>
           <span className="pbadge soon">قريبا</span>
-          <div className="ph"><span><b>Premium</b><small>الواتساب كيخدم بلاصتك</small></span><span className="pp"><span className="num" dir="ltr">449</span><small>درهم / الشهر</small></span></div>
+          <div className="ph"><span><b>Premium</b><small>الواتساب كيخدم بلاصتك</small></span><span className="pp"><span className="num" dir="ltr">399</span><small>درهم / الشهر</small></span></div>
           <p className="pall">كلشي اللي فـ Pro، وزيد:</p>
           <ul className="pf">{PREMIUM.map(([t, d]) => <li key={t}>{Ic.check(14)}<span><b>{t}</b><small>{d}</small></span></li>)}</ul>
           {plan !== 'premium' && (asked.premium
