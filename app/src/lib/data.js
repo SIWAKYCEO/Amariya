@@ -118,12 +118,13 @@ export function planOf(t = state.traiteur) {
   return p
 }
 export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
-export const PRICES = { pro: 150, premium: 350 }
+export const PRICES = { pro: 150, premium: 350, ultra: 990 }
+export const PLAN_NAME = { free: 'المجاني', pro: 'Pro', premium: 'Premium', ultra: 'Ultra' }
 export const SALES_WA = '212621287405'
 // message ready for our WhatsApp: who is asking, which plan, which feature they wanted
 export function planWaText(plan, feature) {
   const t = state.traiteur || {}
-  const name = plan === 'pro' ? 'Pro' : 'Premium'
+  const name = PLAN_NAME[plan]
   return [`السلام عليكم Amariya 👋`, `بغيت نفعّل ${name} (${PRICES[plan]} درهم فالشهر).`, feature && `بغيت خصوصا: ${feature}.`, t.name && `التريتور: ${t.name}${t.city ? ' · ' + t.city : ''}`, 'كيفاش نخلّص؟'].filter(Boolean).join('\n')
 }
 export const planWaLink = (plan, feature) => `https://wa.me/${SALES_WA}?text=${encodeURIComponent(planWaText(plan, feature))}`

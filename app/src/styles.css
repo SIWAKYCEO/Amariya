@@ -1121,3 +1121,55 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .lk-more { margin-top: 6px; font-size: 13px }
 .pnote { font-size: 12.5px; opacity: .8; margin-top: 8px; text-align: center }
 .card.money .bar { direction: rtl }
+
+/* ---- piani: 4 schede che scorrono (Basic, Pro, Premium, Ultra) ---- */
+.in-wrap { height: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; padding: calc(16px + var(--sat)) 0 calc(12px + var(--sab)) }
+.intro .in-top { padding: 0 20px; gap: 6px; margin: 0 }
+.intro .in-top h1 { font-size: 22px; line-height: 1.35 }
+.intro .in-top p { font-size: 13.5px; line-height: 1.6 }
+.intro .ip-foot { margin: 0 20px; padding: 0 }
+.pcar { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px }
+.pc-pills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0 16px; padding: 5px; border-radius: 18px; background: rgba(243,237,227,.08); border: 1px solid rgba(243,237,227,.12) }
+.pc-pill { height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 800; font-size: 13.5px; color: rgba(243,237,227,.75) }
+.pc-pill.on { background: var(--ivory); color: var(--green) }
+.pc-pill.ultra { color: #e8c773 }
+.pc-pill.ultra.on { background: linear-gradient(135deg, #f3d98a, #b8892f); color: #120d03 }
+.pc-track { flex: 1; min-height: 0; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 14px 8% 6px; scrollbar-width: none; overscroll-behavior-x: contain }
+.pc-track::-webkit-scrollbar { display: none }
+.pc-card { position: relative; flex: 0 0 84%; scroll-snap-align: center; display: flex; flex-direction: column; min-height: 0; border-radius: 28px; padding: 20px 18px 16px; background: rgba(243,237,227,.07); border: 1px solid rgba(243,237,227,.16); color: var(--ivory) }
+.pc-card.pro { background: var(--ivory); color: var(--ink); border: 2px solid var(--brass); box-shadow: 0 30px 60px -30px rgba(0,0,0,.7) }
+.pc-card.premium { background: linear-gradient(160deg, #1d4a3f, #0f2a24 70%); border-color: rgba(200,161,90,.45) }
+.pc-card.ultra { background: radial-gradient(120% 70% at 85% 0%, rgba(232,199,115,.22), transparent 60%), linear-gradient(170deg, #17130a, #050505 55%); border: 1.5px solid #c9a24a; box-shadow: 0 0 0 1px rgba(232,199,115,.15) inset, 0 30px 60px -28px rgba(201,162,74,.55); color: #f6ecd2 }
+.pc-badge { position: absolute; top: -12px; inset-inline-start: 18px; display: inline-flex; align-items: center; gap: 5px; background: var(--brass); color: var(--ink); font-weight: 900; font-size: 12px; padding: 4px 12px; border-radius: 99px; white-space: nowrap }
+.pc-card.ultra .pc-badge { background: linear-gradient(135deg, #f6dc8c, #b8892f); color: #120d03 }
+.pc-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px }
+.pc-h b { display: inline-flex; align-items: center; gap: 6px; font-size: 26px; font-weight: 900; line-height: 1 }
+.pc-card.ultra .pc-h b { color: #e8c773; letter-spacing: .02em }
+.pc-price { display: flex; align-items: baseline; gap: 5px; white-space: nowrap }
+.pc-price i { font-style: normal; font-size: 34px; font-weight: 800; line-height: 1; color: var(--brass) }
+.pc-card.pro .pc-price i { color: var(--green) }
+.pc-card.ultra .pc-price i { background: linear-gradient(135deg, #f6dc8c, #c9a24a); -webkit-background-clip: text; background-clip: text; color: transparent }
+.pc-price small { font-size: 12px; font-weight: 700; opacity: .75 }
+.pc-line { font-size: 14.5px; font-weight: 800; line-height: 1.6; margin: 12px 0 10px }
+.pc-body { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px; mask-image: linear-gradient(180deg, #000 88%, transparent); -webkit-mask-image: linear-gradient(180deg, #000 88%, transparent) }
+.pc-all { font-size: 12.5px; font-weight: 800; color: var(--brass); margin-bottom: 8px }
+.pc-card.pro .pc-all { color: #94712f }
+.pc-card.ultra .pc-all { color: #e8c773 }
+.pc-list { list-style: none; display: grid; gap: 10px; padding-bottom: 14px }
+.pc-list li { display: flex; gap: 9px; align-items: flex-start }
+.pc-list li > svg { flex: none; margin-top: 3px; color: var(--brass) }
+.pc-card.pro .pc-list li > svg { color: var(--green) }
+.pc-card.ultra .pc-list li > svg { color: #e8c773 }
+.pc-list span { display: grid; gap: 1px }
+.pc-list b { font-size: 14.5px; font-weight: 800; line-height: 1.45 }
+.pc-list small { font-size: 12.5px; line-height: 1.5; opacity: .72 }
+.pc-foot { display: grid; gap: 6px; padding-top: 10px }
+.pc-note { text-align: center; font-size: 12px; font-weight: 700; opacity: .75 }
+.pc-btn { height: 52px; font-size: 16px; font-weight: 900; background: rgba(243,237,227,.14); color: var(--ivory); border: 1px solid rgba(243,237,227,.22) }
+.pc-card.pro .pc-btn { background: var(--green); color: var(--ivory); border: 0 }
+.pc-card.premium .pc-btn { background: var(--brass); color: var(--ink); border: 0 }
+.pc-card.ultra .pc-btn { background: linear-gradient(135deg, #f6dc8c, #c9a24a 55%, #a87b26); color: #120d03; border: 0; box-shadow: 0 12px 26px -12px rgba(232,199,115,.8) }
+.pc-cur { display: flex; align-items: center; justify-content: center; gap: 6px; height: 46px; border-radius: 14px; font-weight: 800; font-size: 14px; background: rgba(200,161,90,.16); color: var(--brass) }
+/* pagina «الباقات»: le stesse schede su fondo verde */
+.plansbox { background: var(--green); border-radius: 28px; padding: 14px 0 16px; margin-top: 14px; height: min(640px, calc(100dvh - 210px)); display: flex }
+.plansbox .pcar { width: 100% }

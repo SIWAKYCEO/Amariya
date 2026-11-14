@@ -30,7 +30,7 @@ export default function Settings({ back, go }) {
       <div className="content">
         <button className={'planrow' + (isPro(t) ? ' on' : '')} onClick={() => go('plans')}>
           <span className="ic">{isPro(t) ? Ic.check(18) : Ic.lock(18)}</span>
-          <span className="gtx"><b>{isPro(t) ? `عندك ${planOf(t) === 'pro' ? 'Pro' : 'Premium'}` : 'عندك المجاني'}</b><small>{isPro(t) ? 'الربح، الوراق PDF، الخلاص والماتريال مفتوحين' : 'فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 150 درهم'}</small></span>
+          <span className="gtx"><b>{isPro(t) ? `عندك ${({ pro: 'Pro', premium: 'Premium', ultra: 'Ultra' })[planOf(t)]}` : 'عندك المجاني'}</b><small>{isPro(t) ? 'الربح، الوراق PDF، الخلاص والماتريال مفتوحين' : 'فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 150 درهم'}</small></span>
           <span className="x">{isPro(t) ? 'الباقات' : 'شوف Pro'}</span>
         </button>
 
