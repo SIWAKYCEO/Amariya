@@ -13,8 +13,8 @@ export const supabase = isDemo ? null : createClient(SUPABASE_URL, SUPABASE_KEY,
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'amariya-auth' },
 })
 
-const TABLES = { packages: 'amr_packages', weddings: 'amr_weddings', payments: 'amr_payments', staff: 'amr_staff', assignments: 'amr_assignments', expenses: 'amr_expenses', requests: 'amr_requests', proofs: 'amr_proofs' }
-const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], payments: [], staff: [], assignments: [], expenses: [], requests: [], proofs: [] })
+const TABLES = { packages: 'amr_packages', weddings: 'amr_weddings', payments: 'amr_payments', staff: 'amr_staff', assignments: 'amr_assignments', expenses: 'amr_expenses', requests: 'amr_requests', proofs: 'amr_proofs', items: 'amr_items', witems: 'amr_wedding_items' }
+const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], payments: [], staff: [], assignments: [], expenses: [], requests: [], proofs: [], items: [], witems: [] })
 
 let state = empty()
 const subs = new Set()
@@ -51,7 +51,8 @@ export async function load() {
   const keys = Object.keys(TABLES)
   const res = await Promise.all(keys.map((k) => supabase.from(TABLES[k]).select('*').order('created_at')))
   const next = { me, traiteur: me.traiteur }
-  res.forEach((r, i) => { if (r.error) throw r.error; next[keys[i]] = r.data })
+  // material tables are optional: an error there must never block the app
+  res.forEach((r, i) => { if (r.error) { if (keys[i] === 'items' || keys[i] === 'witems') { next[keys[i]] = []; return } throw r.error } next[keys[i]] = r.data })
   state = { ...empty(), ...next }
   emit()
   return true
@@ -88,7 +89,9 @@ export async function remove(kind, id) {
   if (kind === 'weddings') {
     drop.payments = state.payments.filter((p) => p.wedding_id !== id)
     drop.assignments = state.assignments.filter((a) => a.wedding_id !== id)
+    drop.witems = state.witems.filter((x) => x.wedding_id !== id)
   }
+  if (kind === 'items') drop.witems = state.witems.filter((x) => x.item_id !== id)
   set(drop)
   if (!isDemo) {
     const { error } = await supabase.from(TABLES[kind]).delete().eq('id', id)
@@ -102,6 +105,62 @@ export async function saveTraiteur(patch) {
     const { error } = await supabase.from('amr_traiteurs').update(patch).eq('id', before.id)
     if (error) { set({ traiteur: before }); throw error }
   }
+}
+
+/* ---------- plans: free · pro · premium ---------- */
+export function planOf(t = state.traiteur) {
+  const p = t?.plan || 'free'
+  if (p !== 'free' && t.plan_until && new Date(t.plan_until) < new Date()) return 'free'
+  return p
+}
+export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
+export async function askPlan(plan) {
+  if (isDemo) { set({ traiteur: { ...state.traiteur, plan, plan_until: null } }); return 'demo' }
+  const { error } = await supabase.from('amr_plan_requests').insert({ traiteur_id: state.traiteur.id, plan })
+  if (error) throw error
+  try { localStorage.setItem('amariya-asked-' + plan, String(Date.now())) } catch { /* */ }
+  return 'asked'
+}
+export const askedPlan = (plan) => { try { return +localStorage.getItem('amariya-asked-' + plan) || 0 } catch { return 0 } }
+
+/* ---------- staff pay ---------- */
+// nights a person worked (status ok, wedding passed) that are not paid yet
+export function owedOf(s = state) {
+  const today = dayKey(new Date())
+  const rows = s.assignments.filter((a) => a.status === 'ok' && !a.paid_at).map((a) => ({ a, w: s.weddings.find((x) => x.id === a.wedding_id) }))
+    .filter(({ w }) => w && w.status !== 'cancelled' && w.day <= today)
+  const by = new Map()
+  for (const { a, w } of rows) {
+    const p = s.staff.find((x) => x.id === a.staff_id)
+    if (!p) continue
+    const o = by.get(p.id) || { p, nights: [], total: 0 }
+    o.nights.push({ a, w }); o.total += +a.pay || 0
+    by.set(p.id, o)
+  }
+  return [...by.values()].sort((x, y) => y.total - x.total)
+}
+export async function payStaff(o) {
+  const at = new Date().toISOString()
+  for (const { a } of o.nights) await update('assignments', a.id, { paid_at: at })
+}
+
+/* ---------- material ---------- */
+// how many of each item are out right now (sent to a wedding and not back yet)
+export function stockOf(item, s = state) {
+  const rows = s.witems.filter((x) => x.item_id === item.id)
+  const out = rows.filter((x) => x.qty_back == null).reduce((a, x) => a + (+x.qty_out || 0), 0)
+  const broken = rows.reduce((a, x) => a + (+x.broken || 0), 0)
+  return { out, broken, free: Math.max(0, (+item.qty || 0) - out) }
+}
+// material of a wedding, with what is missing on the same day (other weddings use the same items)
+export function weddingItemsOf(w, s = state) {
+  return s.witems.filter((x) => x.wedding_id === w.id).map((x) => {
+    const item = s.items.find((i) => i.id === x.item_id)
+    if (!item) return null
+    const sameDay = s.witems.filter((y) => y.item_id === x.item_id && y.wedding_id !== w.id && s.weddings.find((ww) => ww.id === y.wedding_id && ww.day === w.day && ww.status !== 'cancelled'))
+    const used = sameDay.reduce((a, y) => a + (+y.qty_out || 0), 0) + (+x.qty_out || 0)
+    return { ...x, item, short: Math.max(0, used - (+item.qty || 0)), missing: x.qty_back == null ? 0 : Math.max(0, (+x.qty_out || 0) - (+x.qty_back || 0) - (+x.broken || 0)) }
+  }).filter(Boolean)
 }
 
 /* ---------- business rules ---------- */
@@ -164,7 +223,9 @@ export function shoppingOf(w, s = state) {
   const pkg = s.packages.find((p) => p.id === w.package_id)
   const items = pkg?.items || []
   const out = []
-  for (const [re, label, f, unit] of BUY) if (items.some((it) => re.test(it)) && !out.some((o) => o.label === label)) {
+  // a pastilla already has its filling (chicken or fish) inside its price: it doesn't count twice
+  const rest = items.filter((it) => !BUY[0][0].test(it))
+  for (const [re, label, f, unit] of BUY) if ((label === 'البسطيلة' ? items : rest).some((it) => re.test(it)) && !out.some((o) => o.label === label)) {
     const qty = f(+w.guests || 0), price = priceOf(label, s)
     out.push({ label, qty, unit, price, cost: Math.round(qty * price) })
   }

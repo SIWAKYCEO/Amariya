@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { add, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
+import { add, isPro, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
 import { ProofSheet, methodLabel, remindText } from './Inbox'
 import { ROLES, ROLES_PL, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
-import { Count, DH, Field, Ic, Ring, Sheet, fail, shareText, toast } from '../ui'
+import { Count, DH, Field, Ic, Locked, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
 import { receiptImage } from '../lib/receipt'
 import { ProfitCard } from './Profit'
+import { DocsCard, MaterialCard } from './ProExtras'
 
 function devisText(w, traiteur) {
   const lines = [
@@ -46,6 +47,7 @@ export default function WeddingFile({ w, back, go }) {
   const pkg = s.packages.find((p) => p.id === w.package_id)
   const ready = readinessOf(w, s)
   const shop = shoppingOf(w, s)
+  const pro = isPro(s.traiteur)
 
   async function openReceipt(p, soFar) {
     const text = receiptText(w, p, soFar, total, s.traiteur)
@@ -147,7 +149,17 @@ export default function WeddingFile({ w, back, go }) {
           )}
         </div>
 
-        {w.status !== 'cancelled' && <ProfitCard w={w} />}
+        {w.status !== 'cancelled' && (pro ? <ProfitCard w={w} /> : (
+          <Locked go={go} title="شحال كتربح بصّح فهاد العرس؟" why="Amariya كيحسب ليك الربح الصافي: الماكلة، الخدامة والمصاريف. كتعرف العرس اللي كيخسّرك قبل ما تأكّدو.">
+            <ProfitCard w={w} />
+          </Locked>
+        ))}
+
+        {w.status !== 'cancelled' && (pro ? <DocsCard w={w} /> : (
+          <Locked compact go={go} title="الدوفي والعقد PDF باللوغو ديالك" why="وراق نقيين كيبانو بحال شركة كبيرة. العائلة كتوقّع، والعربون كيبقى مضمون.">
+            <DocsCard w={w} />
+          </Locked>
+        ))}
 
         <div className="card">
           <div className="ch"><h3>الخدامة ديال الليلة</h3><button className="mini" onClick={() => setSheet('staff')}>{Ic.plus(16)} زيد</button></div>
@@ -169,10 +181,16 @@ export default function WeddingFile({ w, back, go }) {
           {team.rows.length > 0 && <button className="linkrow" onClick={() => shareText(teamText(w, team.rows))}>{Ic.share(16)} صيفط البرنامج للخدامة كاملين</button>}
         </div>
 
+        {w.status !== 'cancelled' && (pro ? <MaterialCard w={w} go={go} /> : (
+          <Locked compact go={go} title="الماتريال ديال هاد العرس" why="شحال خرج من الطباسل والكيسان، شحال رجع وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.">
+            <MaterialCard w={w} go={go} />
+          </Locked>
+        ))}
+
         {shop.length > 0 && w.status !== 'cancelled' && (
           <div className="card">
             <div className="ch"><h3>{Ic.cart(17)} لائحة الشرا</h3><span className="muted">تقدير · <span dir="ltr">{w.guests}</span> ضيف</span></div>
-            <ul className="shop">{shop.map((x) => <li key={x.label}><span>{x.label}</span><b><span dir="ltr">{money(x.qty)}</span> {x.unit}</b><small className="sc">≈ <DH v={x.cost} /></small></li>)}</ul>
+            <ul className="shop">{shop.map((x) => <li key={x.label}><span>{x.label}</span><b><span dir="ltr">{money(x.qty)}</span> {x.unit}</b>{pro && <small className="sc">≈ <DH v={x.cost} /></small>}</li>)}</ul>
             <button className="linkrow" onClick={() => shareText([`🛒 لائحة الشرا · عرس ${w.family} (${w.guests} ضيف)`, ...shop.map((x) => `• ${x.label}: ${money(x.qty)} ${x.unit}`)].join('\n'))}>{Ic.share(16)} صيفطها للمول ديال السلعة</button>
           </div>
         )}

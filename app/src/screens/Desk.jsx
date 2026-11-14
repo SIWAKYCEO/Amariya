@@ -28,7 +28,9 @@ export function Side({ v, go }) {
             {ic(20)}<span>{l}</span>{n > 0 && <b className={hot ? 'hot' : ''} dir="ltr">{n}</b>}
           </button>
         ))}
+        <button className={'dnav' + (v === 'stock' ? ' on' : '')} onClick={() => go('stock')}>{Ic.box(20)}<span>الماتريال</span></button>
         <h6>الحساب</h6>
+        <button className={'dnav' + (v === 'plans' ? ' on' : '')} onClick={() => go('plans')}>{Ic.lock(20)}<span>الباقات</span></button>
         <button className={'dnav' + (v === 'settings' ? ' on' : '')} onClick={() => go('settings')}>{Ic.gear(20)}<span>الإعدادات والمينوات</span></button>
       </nav>
       <button className="dme" onClick={() => go('settings')}>

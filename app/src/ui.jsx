@@ -30,6 +30,8 @@ export const Ic = {
   wa: (w = 18) => (
     <svg width={w} height={w} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2zm5.6 13.7c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1a16 16 0 0 1-1.6-.6 12.6 12.6 0 0 1-4.8-4.3c-.4-.5-1.1-1.6-1.1-3s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.3 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.1.1.7-.1 1.4z" /></svg>
   ),
+  lock: (w = 18) => sv(<><rect x="5" y="10.5" width="14" height="10" rx="3" /><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" /><path d="M12 14.5v2" /></>, w, 2),
+  box: (w = 18) => sv(<><path d="M3.5 8l8.5-4.5L20.5 8v8.5L12 21l-8.5-4.5z" /><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21" /></>, w, 2),
   ticks: (w = 18) => sv(<><path d="M2.5 12.5l4 4L14 9" /><path d="M10.5 16l.5.5L21.5 7" /></>, w, 2.2),
 }
 
@@ -229,3 +231,19 @@ export function Numpad({ value, onChange }) {
     </div>
   )
 }
+
+// a Pro feature for a free account: the real thing behind frosted glass, a lock, why it is worth it, one button
+export function Locked({ title, why, go, children, compact }) {
+  return (
+    <div className={'locked' + (compact ? ' compact' : '')}>
+      <div className="lk-prev" aria-hidden="true" inert="">{children}</div>
+      <div className="lk-over">
+        <span className="lk-ic">{Ic.lock(20)}</span>
+        <b>{title}</b>
+        {why && <p>{why}</p>}
+        <button className="btn brass" onClick={() => go('plans')}>فتح بـ Pro · <span className="num" dir="ltr">199</span> درهم</button>
+      </div>
+    </div>
+  )
+}
+export const ProTag = () => <span className="protag">{Ic.lock(11)} Pro</span>

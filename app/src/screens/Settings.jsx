@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { InstallButton } from '../install'
-import { add, isDemo, logout, remove, saveTraiteur, shopLink, update, useStore } from '../lib/data'
+import { add, isDemo, isPro, logout, planOf, remove, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
 
-export default function Settings({ back }) {
+export default function Settings({ back, go }) {
   const s = useStore()
   const t = s.traiteur || {}
   const [f, setF] = useState({ name: t.name || '', city: t.city || '', phone: prettyPhone(t.phone) })
@@ -28,6 +28,12 @@ export default function Settings({ back }) {
         </div>
       </Band>
       <div className="content">
+        <button className={'planrow' + (isPro(t) ? ' on' : '')} onClick={() => go('plans')}>
+          <span className="ic">{isPro(t) ? Ic.check(18) : Ic.lock(18)}</span>
+          <span className="gtx"><b>{isPro(t) ? `عندك ${planOf(t) === 'pro' ? 'Pro' : 'Premium'}` : 'عندك المجاني'}</b><small>{isPro(t) ? 'الربح، الوراق PDF، الخلاص والماتريال مفتوحين' : 'فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 199 درهم'}</small></span>
+          <span className="x">{isPro(t) ? 'الباقات' : 'شوف Pro'}</span>
+        </button>
+
         <h4 className="sec2">المينوهات والأثمنة <button className="mini" onClick={() => setPk({})}>{Ic.plus(16)} زيد مينو</button></h4>
         <div className="hscroll">
           {s.packages.map((p, i) => (
@@ -44,6 +50,8 @@ export default function Settings({ back }) {
         <div className="glist">
           <button className="gli" onClick={() => setSh('page')}><span className="ic">{Ic.share(17)}</span><span className="gtx"><b>الصفحة ديالك</b><small dir="ltr">{link ? link.replace('https://', '') : '—'}</small></span><span className="x">{t.public_on === false ? 'مسدودة' : 'خدامة'}</span></button>
           <button className="gli" onClick={() => setSh('pay')}><span className="ic">{Ic.cash(17)}</span><span className="gtx"><b>كيفاش كيخلّصوك العربون</b><small>{payLine || 'زيد الـ RIB ولا CashPlus'}</small></span><span className="x"><span dir="ltr">{t.arboun_pct || 30}%</span></span></button>
+          <button className="gli" onClick={() => (isPro(t) ? setSh('logo') : go('plans'))}><span className="ic">{t.logo ? <img src={t.logo} alt="" className="lgmini" /> : Ic.pen(17)}</span><span className="gtx"><b>اللوغو ديالك</b><small>كيبان فالدوفي والعقد PDF</small></span><span className="x">{isPro(t) ? (t.logo ? 'بدّل' : 'زيد') : <>{Ic.lock(13)} Pro</>}</span></button>
+          <button className="gli" onClick={() => go('stock')}><span className="ic">{Ic.box(17)}</span><span className="gtx"><b>الماتريال ديالك</b><small>الطباسل، الكيسان، الطناجر…</small></span>{!isPro(t) && <span className="x">{Ic.lock(13)} Pro</span>}</button>
           <button className="gli" onClick={() => setSh('qr')}><span className="ic">{Ic.wa(17)}</span><span className="gtx"><b>ردود جاهزين</b><small>الثمن، النهار، العربون، الصفحة</small></span></button>
         </div>
         <p className="muted" style={{ margin: '8px 4px 0' }}>الكليان كيشوفو المينوهات والنهارات الخاوين وكيطلبو الدوفي، وكيخلّصو العربون من الرابط ديال الدوفي.</p>
@@ -70,6 +78,7 @@ export default function Settings({ back }) {
       {sh === 'page' && <PageSheet t={t} close={() => setSh(null)} />}
       {sh === 'pay' && <PaySheet t={t} close={() => setSh(null)} />}
       {sh === 'qr' && <QuickReplies onClose={() => setSh(null)} />}
+      {sh === 'logo' && <LogoSheet t={t} close={() => setSh(null)} />}
     </div>
   )
 }
@@ -149,6 +158,29 @@ function PaySheet({ t, close }) {
         <Field label="التيليفون"><input inputMode="tel" dir="ltr" value={f.wafacash_phone} onChange={set('wafacash_phone')} placeholder="06…" /></Field>
       </div>
       <button className="btn brass wide" disabled={!ribOk} onClick={save}>سجّل</button>
+    </Sheet>
+  )
+}
+
+// logo: resized in the phone to 320px and kept as a small image inside the traiteur row
+async function shrinkLogo(file) {
+  const bmp = await createImageBitmap(file)
+  const k = Math.min(1, 320 / Math.max(bmp.width, bmp.height))
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k)
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height)
+  return c.toDataURL('image/png')
+}
+function LogoSheet({ t, close }) {
+  const [src, setSrc] = useState(t.logo || '')
+  const [busy, setBusy] = useState(false)
+  const pick = async (e) => { const f = e.target.files?.[0]; if (!f) return; setBusy(true); try { setSrc(await shrinkLogo(f)) } catch { toast('ما قدرناش نقراو هاد الصورة', 'err') } finally { setBusy(false) } }
+  const save = () => saveTraiteur({ logo: src || null }).then(() => { toast('تسجّل اللوغو'); close() }).catch(fail)
+  return (
+    <Sheet title="اللوغو ديالك" onClose={close}>
+      <p className="muted">اختار صورة اللوغو من التيليفون. كيبان فالفوق ديال الدوفي والعقد.</p>
+      <label className="logopick">{src ? <img src={src} alt="اللوغو" /> : <span>{busy ? '…' : 'كليكي هنا باش تختار الصورة'}</span>}<input type="file" accept="image/*" onChange={pick} hidden /></label>
+      <button className="btn brass wide" disabled={busy} onClick={save}>سجّل</button>
+      {src && <button className="linkbtn danger" onClick={() => setSrc('')}>حيد اللوغو</button>}
     </Sheet>
   )
 }

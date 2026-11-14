@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { add, remove, update, useStore } from '../lib/data'
+import { add, isPro, remove, update, useStore } from '../lib/data'
+import { StaffPayCard } from './ProExtras'
 import { PHOTOS, ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
-import { Band, Empty, Fab, Field, Ic, Sheet, fail, toast } from '../ui'
+import { Band, Empty, Fab, Field, Ic, Locked, Sheet, fail, toast } from '../ui'
 
-export default function Staff() {
+export default function Staff({ go }) {
   const s = useStore()
   const [role, setRole] = useState('all')
   const [edit, setEdit] = useState(null) // null | {} new | person
@@ -15,6 +16,11 @@ export default function Staff() {
     <div className="screen">
       <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={<>{s.staff.filter((p) => p.active !== false).length} خدام · السرباية، النكافة والكوزينة</>} />
       <div className="content pt" style={{ paddingTop: 16 }}>
+        {isPro(s.traiteur) ? <StaffPayCard /> : (
+          <Locked compact go={go} title="شكون خلّصتي وشكون باقي؟" why="التطبيق كيحسب الخلصة ديال كل خدام من العراسات اللي خدم فيهم، وكيصيفط ليه ميساج ملّي تخلّصو. ما تنسى حتى واحد.">
+            <StaffPayCard />
+          </Locked>
+        )}
         <div className="filters">
           <button className={role === 'all' ? 'on' : ''} onClick={() => setRole('all')}>كلهم <b>{s.staff.filter((p) => p.active !== false).length}</b></button>
           {Object.keys(ROLES).filter((r) => counts[r]).map((r) => <button key={r} className={role === r ? 'on' : ''} onClick={() => setRole(r)}>{ROLES_PL[r]} <b>{counts[r]}</b></button>)}

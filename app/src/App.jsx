@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { isDemo, load, redeem, useStore } from './lib/data'
+import { isDemo, isPro, load, redeem, useStore } from './lib/data'
 import { setScreen, startPresence } from './lib/presence'
 import { Dock, Ic, Logo, Spin, Toaster } from './ui'
 import Weddings from './screens/Weddings'
@@ -14,6 +14,8 @@ const Money = lazy(() => import('./screens/Money'))
 const Settings = lazy(() => import('./screens/Settings'))
 const Calendar = lazy(() => import('./screens/Calendar'))
 const Requests = lazy(() => import('./screens/Requests'))
+const Stock = lazy(() => import('./screens/Stock'))
+const Plans = lazy(() => import('./screens/Plans'))
 import { useInboxRefresh } from './screens/Inbox'
 import { PHOTOS } from './lib/util'
 import { InstallButton } from './install'
@@ -103,7 +105,9 @@ export default function App() {
       {route.v === 'staff' && <Staff go={go} />}
       {route.v === 'clients' && <Clients go={go} />}
       {route.v === 'money' && <Money go={go} />}
-      {route.v === 'settings' && <Settings back={back} />}
+      {route.v === 'settings' && <Settings back={back} go={go} />}
+      {route.v === 'stock' && <Stock back={back} go={go} />}
+      {route.v === 'plans' && <Plans back={back} />}
       {route.v === 'requests' && <Requests go={go} back={back} />}
       {route.v === 'new' && <NewWedding back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
       {route.v === 'edit' && w && <NewWedding key={w.id} edit={w} back={back} done={back} />}
@@ -111,7 +115,7 @@ export default function App() {
       </Suspense>
   )
   // PC: fixed side menu + wide main area; the phone layout below is unchanged
-  if (desk) return (
+  if (desk && isPro(s.traiteur)) return (
     <div className="app desk">
       <Side v={route.v} go={go} />
       <main className="dmain">{screens}</main>
@@ -119,7 +123,8 @@ export default function App() {
     </div>
   )
   return (
-    <div className="app">
+    <div className={'app' + (desk ? ' deskfree' : '')}>
+      {desk && <button className="deskbar" onClick={() => go('plans')}>{Ic.lock(15)} النسخة الكاملة ديال الكمبيوتر كاينة فـ Pro · شوف الباقات</button>}
       {screens}
       {tab && <Dock tab={tab} go={go} />}
       <Toaster /><Fresh />

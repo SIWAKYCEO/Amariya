@@ -271,8 +271,40 @@ export function PublicShop({ slug }) {
   )
 }
 
+/* ===================== «لقا تريتور فمدينتك» ===================== */
+export function PublicDirectory() {
+  const [d, setD] = useState(undefined)
+  const [city, setCity] = useState('')
+  useEffect(() => { document.title = 'لقا تريتور فمدينتك · Amariya'; db.rpc('amr_pub_directory').then(({ data }) => setD(data || []), () => setD([])) }, [])
+  if (d === undefined) return <Loading />
+  const cities = [...new Set(d.map((x) => x.city).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ar'))
+  const list = d.filter((x) => !city || x.city === city)
+  return (
+    <Shell head={<>
+      <span className="pub-k">Amariya · العراسات</span>
+      <h1>لقا تريتور فمدينتك</h1>
+      <p>شوف المينوهات والأثمنة والنهارات الخاوين، وطلب الدوفي مباشرة من عند التريتور.</p>
+    </>}>
+      {cities.length > 1 && <div className="dir-c"><button className={!city ? 'on' : ''} onClick={() => setCity('')}>كل المدن</button>{cities.map((c) => <button key={c} className={city === c ? 'on' : ''} onClick={() => setCity(c)}>{c}</button>)}</div>}
+      {list.length === 0 && <p className="pub-empty">ما كاين حتى تريتور هنا دابا.</p>}
+      <div className="dir-l">{list.map((x, i) => (
+        <a key={x.slug} className={'dir-i' + (x.featured ? ' ft' : '')} href={`/t/${x.slug}`}>
+          <span className="dir-img" style={cropStyle(PICS[i % PICS.length])} />
+          <span className="dir-b">
+            {x.featured && <span className="dir-ft">مميّز</span>}
+            <b>{x.name}</b>
+            <small>{x.city}{x.bio ? ' · ' + x.bio : ''}</small>
+            {+x.from > 0 && <span className="dir-p">من <b className="num" dir="ltr">{money(x.from)}</b> درهم للضيف</span>}
+          </span>
+        </a>
+      ))}</div>
+    </Shell>
+  )
+}
+
 export default function Public() {
   const p = location.pathname
+  if (/^\/traiteurs\/?$/.test(p)) return <PublicDirectory />
   const d = p.match(/^\/d\/([A-Za-z0-9_-]{16,64})/), t = p.match(/^\/t\/([a-z0-9-]{3,40})/i)
   if (d) return <PublicDevis token={d[1]} />
   if (t) return <PublicShop slug={t[1].toLowerCase()} />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { add, paidOf, profitOf, remove, restOf, totalOf, useStore } from '../lib/data'
+import { add, isPro, paidOf, profitOf, remove, restOf, totalOf, useStore } from '../lib/data'
 import { MONTHS, PHOTOS, cropStyle, dayKey, dayLabel, expenseCrop, money, photoFor } from '../lib/util'
-import { Band, Count, DH, Empty, Fab, Ic, Numpad, Sheet, Thumb, fail, toast } from '../ui'
+import { Band, Count, DH, Empty, Fab, Ic, Locked, Numpad, Sheet, Thumb, fail, toast } from '../ui'
 
 export default function Money({ go }) {
   const s = useStore()
@@ -58,14 +58,15 @@ export default function Money({ go }) {
 
         {monthW.length > 0 && <>
           <h4 className="sec2">الربح ديال كل عرس</h4>
-          <div className="ecard">{monthW.map(({ w, p }) => (
+          {(() => { const box = <div className="ecard">{monthW.map(({ w, p }) => (
             <button key={w.id} className="erow2 pfr" onClick={() => go('wedding', { id: w.id })}>
               <Thumb size={44} style={{ backgroundImage: `url(${photoFor(w.id)})` }} />
               <span className="mid"><b>{w.family}</b><span className="meta">{dayLabel(w.day)} · {p.estimated ? 'تقدير' : 'محسوب بالشرا ديالك'}</span></span>
               <span className={'pfv' + (p.net < 0 ? ' neg' : '')}><DH v={p.net} unit={false} /></span>
             </button>
           ))}</div>
-          <p className="hint" style={{ margin: '8px 4px 0' }}>كليكي على العرس باش تشوف منين جا الربح ولا الخسارة.</p>
+          return isPro(s.traiteur) ? box : <Locked compact go={go} title="شحال ربحتي فكل عرس هاد الشهر؟" why="الربح الصافي ديال كل عرس، والعراسات اللي كيخسّروك بالأحمر.">{box}</Locked> })()}
+          {isPro(s.traiteur) && <p className="hint" style={{ margin: '8px 4px 0' }}>كليكي على العرس باش تشوف منين جا الربح ولا الخسارة.</p>}
         </>}
 
         <h4 className="sec2">المصاريف</h4>
