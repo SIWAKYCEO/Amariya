@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Amariya · لائحة الانتظار</title>
-<meta name="description" content="تطبيق كيسيّر ليك العرس من تيليفون واحد: الحجوزات، العربون، الضياف، الفاتورة والسرباية. سجّل وكون من الأوائل.">
-<meta property="og:title" content="Amariya · لائحة الانتظار">
-<meta property="og:description" content="العرس ديالك كامل فتيليفون واحد. سجّل وكون من الأوائل اللي غادي يجربو Amariya.">
+<title>Amariya · جرّب التطبيق</title>
+<meta name="description" content="تطبيق كيسيّر ليك العرس من تيليفون واحد: الحجوزات، العربون، الضياف، الفاتورة والسرباية. سجّل ودخل جرّبو دابا بالمجان.">
+<meta property="og:title" content="Amariya · جرّب التطبيق">
+<meta property="og:description" content="العرس ديالك كامل فتيليفون واحد. سجّل ودخل جرّب Amariya دابا بالمجان.">
 <meta property="og:image" content="https://d2ol7oe51mr4n9.cloudfront.net/user_3EwI7DLWorMb9W5PVQhWvn3Gxvb/b2e8bc19-85d9-45ef-8cbe-b8dae0b33414.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -87,14 +87,14 @@ footer{margin-top:30px;text-align:center;font:500 13px "Bricolage Grotesque",sys
     <div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0"><input name="website" tabindex="-1" autocomplete="off"></div>
     <div class="err" id="err" aria-live="polite"></div>
     <button type="submit" class="send" id="send">سجّلني وحل التطبيق</button>
-    <div class="note">الرابط ديال التطبيق كيبان ليك هنا مباشرة.</div>
+    <div class="note">من بعد ما تسجّل كتدخل للتطبيق نيشان.</div>
   </form>
 
   <section class="card ok" id="ok" hidden aria-live="polite">
     <div class="check" aria-hidden="true">✓</div>
-    <h2 id="okt">التطبيق ديالك واجد!</h2>
-    <p id="okp">هاد الرابط خاص بيك بوحدك، ما تعطيهش لشي حد. حل التطبيق ودخل نيشان.</p>
-    <a class="go" id="go" href="#">جرّب التطبيق دابا ←</a>
+    <h2 id="okt">كندخلوك للتطبيق…</h2>
+    <p id="okp">إلا ما تحلّش بوحدو، ورك على الزر لتحت.</p>
+    <a class="go" id="go" href="#">دخل للتطبيق ←</a>
     <button type="button" class="cp" id="cp">نسخ الرابط</button>
     <div class="how" id="how"></div>
     <a class="ig" href="https://www.instagram.com/amariya_ma/" dir="ltr">@amariya_ma</a>
@@ -121,8 +121,11 @@ function showApp(tok,title){
   if(title)document.getElementById('okt').textContent=title;
   form.hidden=true;document.getElementById('ok').hidden=false;
   document.getElementById('ok').scrollIntoView({behavior:'smooth',block:'center'});
+  // straight into the app: no waiting page
+  if(INAPP){location.href=go.href;setTimeout(function(){if(document.visibilityState==='visible')location.href=url},1500)}
+  else location.replace(url);
 }
-try{var saved=localStorage.getItem('am_tok');if(saved&&/^[A-Za-z0-9_-]{20,64}$/.test(saved))showApp(saved,'التطبيق ديالك واجد!')}catch(_){}
+try{var saved=localStorage.getItem('am_tok');if(saved&&/^[A-Za-z0-9_-]{20,64}$/.test(saved))showApp(saved)}catch(_){}
 var ERR={bad_name:'كتب اسم التريتور أو القاعة',bad_phone:'رقم الواتساب ماشي صحيح، مثلاً 0612345678',bad_email:'الإيميل ماشي صحيح، مثلاً exemple@gmail.com',too_many:'بزاف ديال المحاولات، عاود من بعد',exists:'هاد الرقم عندو حساب من قبل. حل التطبيق من التيليفون اللي دخلتي بيه، ولا صيفط لينا فالإنستغرام @amariya_ma'};
 form.addEventListener('submit',async function(e){
   e.preventDefault();err.textContent='';
