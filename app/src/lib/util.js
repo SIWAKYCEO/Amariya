@@ -24,14 +24,28 @@ export function relDay(k) {
 
 export const money = (n) => Math.round(n || 0).toLocaleString('fr-FR').replace(/[  ]/g, ' ')
 
+// country of the traiteur: numbers typed without a prefix (06…) belong to it
+const CODES = ['212', '33', '34', '39', '32', '31', '49', '41', '352', '44', '353', '351', '1', '971', '966', '974', '965', '973', '968', '216', '213', '20', '90']
+let HOME = '212'
+export function setHomeFromPhone(p) {
+  const d = String(p || '').replace(/\D/g, '')
+  HOME = (d && CODES.filter((c) => d.startsWith(c)).sort((a, b) => b.length - a.length)[0]) || '212'
+}
 export function normPhone(raw) {
   if (!raw) return ''
   let s = String(raw).trim()
   const plus = s.startsWith('+') || s.startsWith('00')
   s = s.replace(/\D/g, '')
   if (s.startsWith('00')) s = s.slice(2)
-  if (!plus && s.length === 10 && s.startsWith('0')) s = '212' + s.slice(1)
-  if (!plus && s.length === 9 && /^[5-7]/.test(s)) s = '212' + s
+  if (plus) return s
+  if (HOME === '212') {
+    if (s.length === 10 && s.startsWith('0')) s = '212' + s.slice(1)
+    if (s.length === 9 && /^[5-7]/.test(s)) s = '212' + s
+    return s
+  }
+  // abroad: 06 12 34 56 78 → +33 6 12 34 56 78; a Moroccan number written 06… still needs +212
+  if (s.startsWith('0') && s.length >= 9 && s.length <= 11) return HOME + s.slice(1)
+  if (!s.startsWith(HOME) && s.length >= 8 && s.length <= 10) return HOME + s
   return s
 }
 export function prettyPhone(p) {

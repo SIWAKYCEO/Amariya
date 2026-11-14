@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { useSyncExternalStore } from 'react'
 import { demoSeed } from './seed'
-import { dayKey } from './util'
+import { dayKey, setHomeFromPhone } from './util'
 
 export const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
 export const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
@@ -19,7 +19,7 @@ const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], pay
 let state = empty()
 const subs = new Set()
 const emit = () => { if (isDemo) try { localStorage.setItem('amariya-demo', JSON.stringify(state)) } catch { /* */ } ; subs.forEach((f) => f()) }
-const set = (patch) => { state = { ...state, ...patch }; emit() }
+const set = (patch) => { state = { ...state, ...patch }; if (patch.traiteur) setHomeFromPhone(patch.traiteur.phone); emit() }
 export const useStore = () => useSyncExternalStore((f) => { subs.add(f); return () => subs.delete(f) }, () => state)
 export const getState = () => state
 
@@ -58,6 +58,7 @@ export async function load() {
   // material tables are optional: an error there must never block the app
   res.forEach((r, i) => { if (r.error) { if (keys[i] === 'items' || keys[i] === 'witems') { next[keys[i]] = []; return } throw r.error } next[keys[i]] = r.data })
   state = { ...empty(), ...next }
+  setHomeFromPhone(state.traiteur?.phone)
   emit()
   return true
 }
