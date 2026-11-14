@@ -130,11 +130,18 @@ export function planWaText(plan, feature) {
 }
 export const planWaLink = (plan, feature) => `https://wa.me/${SALES_WA}?text=${encodeURIComponent(planWaText(plan, feature))}`
 // opens our WhatsApp and records the request (dashboard sees it); the demo just turns the plan on
-export async function wantPlan(plan, feature) {
+export async function wantPlan(plan, feature, intro = false) {
   if (isDemo) return askPlan(plan)
   window.open(planWaLink(plan, feature), '_blank', 'noopener')
-  askPlan(plan).catch(() => {})
+  // from the first screen it counts as the choice (one notification), elsewhere as a request
+  if (intro) choosePlan(plan)
+  else askPlan(plan).catch(() => {})
   return 'wa'
+}
+// what the traiteur picked on the first screen (free included): the dashboard and the phone get it
+export function choosePlan(plan) {
+  if (isDemo) return
+  supabase.rpc('app_plan_choice', { p_app: 'amariya', p_plan: plan, p_kind: 'scelta' }).then(() => {}, () => {})
 }
 
 export async function askPlan(plan) {

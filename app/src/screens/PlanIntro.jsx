@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PRICES, ULTRA_SETUP, isDemo, planOf, useStore, wantPlan } from '../lib/data'
+import { PRICES, ULTRA_SETUP, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
 import { Ic, Logo, toast } from '../ui'
 
 // shown once per traiteur: new ones choose how to start, the ones already inside choose after trying it
@@ -57,7 +57,7 @@ export const PLANS = [
 ]
 
 // four plans side by side: pills on top to jump, cards that swipe; every plan reachable without scrolling the page
-export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start = 'pro', after }) {
+export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start = 'pro', after, intro = false }) {
   const current = cur0 === 'premium' ? 'pro' : cur0
   const [on, setOn] = useState(start === 'premium' ? 'pro' : start)
   const track = useRef(null)
@@ -77,8 +77,8 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
     if (best && best !== on) setOn(best)
   }
   async function pick(k) {
-    if (k === 'free') return onFree?.()
-    const r = await wantPlan(k).catch(() => null)
+    if (k === 'free') { if (intro) choosePlan('free'); return onFree?.() }
+    const r = await wantPlan(k, null, intro).catch(() => null)
     if (r === 'demo') toast(`تفعّل ${PLANS.find((p) => p.k === k).name} فالتجربة`)
     after?.()
   }
@@ -137,7 +137,7 @@ export default function PlanIntro({ onClose }) {
           <h1>{old ? 'اختار الباقة ديالك' : 'كيفاش بغيتي تبدا؟'}</h1>
           <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. تقدر تبدّل الباقة وقتما بغيتي.'}</p>
         </div>
-        <PlanCarousel current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
+        <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
         <p className="ip-foot">{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</p>
       </div>
     </div>
