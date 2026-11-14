@@ -59,53 +59,89 @@ input:focus,select:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(15,42,3
 .free{margin-top:22px;text-align:center;font-size:13px;color:rgba(243,237,227,.6)}
 footer{margin-top:30px;text-align:center;font:500 13px "Bricolage Grotesque",system-ui;color:rgba(243,237,227,.45)}
 [hidden]{display:none!important}
+.lang{display:flex;gap:4px;background:rgba(243,237,227,.08);border:1px solid rgba(243,237,227,.16);border-radius:999px;padding:3px;direction:ltr}
+.lang button{border:0;background:none;color:rgba(243,237,227,.75);font:700 13px Alexandria,system-ui;padding:6px 12px 8px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--br);color:var(--ink)}
+.ph select{flex:none;width:118px;padding:0 8px;font:700 15px "Bricolage Grotesque",system-ui;background:#efe7da;border-color:#efe7da}
+html[dir=ltr] .how{text-align:left}
 </style>
 </head>
 <body>
 <div class="pat" aria-hidden="true"></div><div class="glow" aria-hidden="true"></div>
 <main>
-  <header><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3EwI7DLWorMb9W5PVQhWvn3Gxvb/16a50125-64f2-4d65-8c6d-46bde20389c8.svg" alt="amariya"><span class="soon">جديد</span></header>
-  <h1>العرس ديالك كامل<br><em>فتيليفون واحد</em></h1>
-  <p class="sub">الحجوزات والعربون، الضياف والفاتورة، السرباية والنكافة… كلشي منظم فبلاصة وحدة. سجّل وجرّب <span dir="ltr">Amariya</span> دابا من التيليفون ديالك.</p>
+  <header><img src="https://d2ol7oe51mr4n9.cloudfront.net/user_3EwI7DLWorMb9W5PVQhWvn3Gxvb/16a50125-64f2-4d65-8c6d-46bde20389c8.svg" alt="amariya"><div class="lang" role="group" aria-label="Language"><button type="button" data-l="ar">الدارجة</button><button type="button" data-l="fr">FR</button><button type="button" data-l="en">EN</button></div></header>
+  <h1 data-i="h1">العرس ديالك كامل<br><em>فتيليفون واحد</em></h1>
+  <p class="sub" data-i="sub">الحجوزات والعربون، الضياف والفاتورة، السرباية والنكافة… كلشي منظم فبلاصة وحدة. سجّل وجرّب <span dir="ltr">Amariya</span> دابا من التيليفون ديالك.</p>
   <div class="feats">
-    <div class="f"><b>01</b>حتى تاريخ ما كيتحجز بلا عربون</div>
-    <div class="f"><b>02</b>كل ضيف زايد كيدخل فالفاتورة</div>
-    <div class="f"><b>03</b>السرباية كيأكدو من التيليفون</div>
+    <div class="f"><b>01</b><span data-i="f1">حتى تاريخ ما كيتحجز بلا عربون</span></div>
+    <div class="f"><b>02</b><span data-i="f2">كل ضيف زايد كيدخل فالفاتورة</span></div>
+    <div class="f"><b>03</b><span data-i="f3">السرباية كيأكدو من التيليفون</span></div>
   </div>
 
   <form class="card" id="form" novalidate>
-    <h2>سجّل وجرّب التطبيق</h2>
-    <p>كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا</p>
-    <label for="b">اسم التريتور أو القاعة</label>
+    <h2 data-i="fh">سجّل وجرّب التطبيق</h2>
+    <p data-i="fp">كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا</p>
+    <label for="b" data-i="lb">اسم التريتور أو القاعة</label>
     <input id="b" name="business" placeholder="مثلاً: تريتور الفرح" autocomplete="organization" maxlength="80">
-    <label for="c">المدينة</label>
+    <label for="c" data-i="lc">المدينة</label>
     <select id="c" name="city"><option value="" disabled selected>اختار المدينة</option></select>
-    <label for="w">رقم الواتساب</label>
-    <div class="ph"><span>+212</span><input id="w" name="whatsapp" type="tel" inputmode="tel" placeholder="6 12 34 56 78" autocomplete="tel" maxlength="20"></div>
-    <label for="m">الإيميل (Gmail)</label>
+    <label for="w" data-i="lw">رقم الواتساب</label>
+    <div class="ph"><select id="cc" aria-label="Country code"></select><input id="w" name="whatsapp" type="tel" inputmode="tel" placeholder="6 12 34 56 78" autocomplete="tel" maxlength="24"></div>
+    <label for="m" data-i="lm">الإيميل (Gmail)</label>
     <input id="m" name="email" type="email" inputmode="email" placeholder="exemple@gmail.com" autocomplete="email" maxlength="120" dir="ltr" style="text-align:left;font-family:'Bricolage Grotesque',system-ui">
     <div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0"><input name="website" tabindex="-1" autocomplete="off"></div>
     <div class="err" id="err" aria-live="polite"></div>
-    <button type="submit" class="send" id="send">سجّلني وحل التطبيق</button>
-    <div class="note">من بعد ما تسجّل كتدخل للتطبيق نيشان.</div>
+    <button type="submit" class="send" id="send" data-i="btn">سجّلني وحل التطبيق</button>
+    <div class="note" data-i="note">من بعد ما تسجّل كتدخل للتطبيق نيشان.</div>
   </form>
 
   <section class="card ok" id="ok" hidden aria-live="polite">
     <div class="check" aria-hidden="true">✓</div>
-    <h2 id="okt">كندخلوك للتطبيق…</h2>
-    <p id="okp">إلا ما تحلّش بوحدو، ورك على الزر لتحت.</p>
-    <a class="go" id="go" href="#">دخل للتطبيق ←</a>
-    <button type="button" class="cp" id="cp">نسخ الرابط</button>
+    <h2 id="okt" data-i="okt">كندخلوك للتطبيق…</h2>
+    <p id="okp" data-i="okp">إلا ما تحلّش بوحدو، ورك على الزر لتحت.</p>
+    <a class="go" id="go" href="#" data-i="go">دخل للتطبيق ←</a>
+    <button type="button" class="cp" id="cp" data-i="cp">نسخ الرابط</button>
     <div class="how" id="how"></div>
     <a class="ig" href="https://www.instagram.com/amariya_ma/" dir="ltr">@amariya_ma</a>
   </section>
 
-  <div class="free">التسجيل مجاني وبلا أي التزام</div>
+  <div class="free" data-i="free">التسجيل مجاني وبلا أي التزام</div>
   <footer dir="ltr">amariya.ma · @amariya_ma</footer>
 </main>
 <script>
-var CITIES=["الدار البيضاء","الرباط","مراكش","فاس","طنجة","أكادير","مكناس","وجدة","القنيطرة","تطوان","سطات","الجديدة","آسفي","بني ملال","خريبكة","المحمدية","تمارة","سلا","برشيد","الناظور","العيون","تازة","الخميسات","ورزازات","الصويرة","الحسيمة","العرائش","خنيفرة","تارودانت","مدينة أخرى"];
-var sel=document.getElementById('c');CITIES.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});
+var T={
+ar:{h1:'العرس ديالك كامل<br><em>فتيليفون واحد</em>',sub:'الحجوزات والعربون، الضياف والفاتورة، السرباية والنكافة… كلشي منظم فبلاصة وحدة. سجّل وجرّب <span dir="ltr">Amariya</span> دابا من التيليفون ديالك.',f1:'حتى تاريخ ما كيتحجز بلا عربون',f2:'كل ضيف زايد كيدخل فالفاتورة',f3:'السرباية كيأكدو من التيليفون',fh:'سجّل وجرّب التطبيق',fp:'كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا',lb:'اسم التريتور أو القاعة',lc:'المدينة',lw:'رقم الواتساب',lm:'الإيميل (Gmail)',btn:'سجّلني وحل التطبيق',note:'من بعد ما تسجّل كتدخل للتطبيق نيشان.',free:'التسجيل مجاني وبلا أي التزام',okt:'كندخلوك للتطبيق…',okp:'إلا ما تحلّش بوحدو، ورك على الزر لتحت.',go:'دخل للتطبيق ←',cp:'نسخ الرابط',copied:'تنسخ ✓',pb:'مثلاً: تريتور الفرح',pick:'اختار المدينة',out:'خارج المغرب',other:'مدينة أخرى',wait:'كنوجدو التطبيق ديالك…',
+ bad_name:'كتب اسم التريتور أو القاعة',bad_city:'اختار المدينة',bad_phone:'رقم الواتساب ماشي صحيح. اختار البلاد وكتب الرقم ديالك',bad_email:'الإيميل ماشي صحيح، مثلاً exemple@gmail.com',too_many:'بزاف ديال المحاولات، عاود من بعد',exists:'هاد الرقم عندو حساب من قبل. حل التطبيق من التيليفون اللي دخلتي بيه، ولا صيفط لينا فالإنستغرام @amariya_ma',fail:'وقع مشكل، عاود من بعد شوية',
+ hi:'باش يبقى عندك فالتيليفون: حل الرابط فـ Safari ← زر المشاركة ← «إضافة إلى الشاشة الرئيسية».',ha:'باش يبقى عندك فالتيليفون: حل الرابط فـ Chrome ← ⋮ ← «إضافة إلى الشاشة الرئيسية».'},
+fr:{h1:'Votre mariage, entièrement<br><em>dans un seul téléphone</em>',sub:'Réservations et acomptes, invités et facture, serveurs et neggafa… tout est organisé au même endroit. Inscrivez-vous et essayez <span dir="ltr">Amariya</span> dès maintenant sur votre téléphone.',f1:'Aucune date réservée sans acompte',f2:'Chaque invité en plus entre dans la facture',f3:'Les serveurs confirment depuis le téléphone',fh:'Inscrivez-vous et essayez l’application',fp:'Moins d’une minute, et votre application s’ouvre tout de suite',lb:'Nom du traiteur ou de la salle',lc:'Ville',lw:'Numéro WhatsApp',lm:'E-mail',btn:'M’inscrire et ouvrir l’application',note:'Après l’inscription, vous entrez directement dans l’application.',free:'Inscription gratuite et sans engagement',okt:'Ouverture de l’application…',okp:'Si elle ne s’ouvre pas toute seule, appuyez sur le bouton ci-dessous.',go:'Entrer dans l’application →',cp:'Copier le lien',copied:'Copié ✓',pb:'Ex. : Traiteur Al Farah',pick:'Choisissez la ville',out:'Hors du Maroc',other:'Autre ville',wait:'Nous préparons votre application…',
+ bad_name:'Écrivez le nom du traiteur ou de la salle',bad_city:'Choisissez la ville',bad_phone:'Numéro WhatsApp invalide. Choisissez le pays et écrivez votre numéro',bad_email:'E-mail invalide, ex. : exemple@gmail.com',too_many:'Trop de tentatives, réessayez plus tard',exists:'Ce numéro a déjà un compte. Ouvrez l’application depuis le téléphone utilisé à l’inscription, ou écrivez-nous sur Instagram @amariya_ma',fail:'Un problème est survenu, réessayez dans un instant',
+ hi:'Pour la garder sur votre téléphone : ouvrez le lien dans Safari → Partager → « Sur l’écran d’accueil ».',ha:'Pour la garder sur votre téléphone : ouvrez le lien dans Chrome → ⋮ → « Ajouter à l’écran d’accueil ».'},
+en:{h1:'Your whole wedding business<br><em>in one phone</em>',sub:'Bookings and deposits, guests and invoices, waiters and neggafa… all organised in one place. Sign up and try <span dir="ltr">Amariya</span> now on your phone.',f1:'No date is booked without a deposit',f2:'Every extra guest goes into the invoice',f3:'Waiters confirm from their phone',fh:'Sign up and try the app',fp:'It takes less than a minute, and your app opens right away',lb:'Caterer or venue name',lc:'City',lw:'WhatsApp number',lm:'Email',btn:'Sign me up and open the app',note:'After signing up you go straight into the app.',free:'Free sign-up, no commitment',okt:'Opening your app…',okp:'If it doesn’t open by itself, tap the button below.',go:'Open the app →',cp:'Copy link',copied:'Copied ✓',pb:'e.g. Traiteur Al Farah',pick:'Choose the city',out:'Outside Morocco',other:'Other city',wait:'Preparing your app…',
+ bad_name:'Write the caterer or venue name',bad_city:'Choose the city',bad_phone:'Invalid WhatsApp number. Pick your country and type your number',bad_email:'Invalid email, e.g. example@gmail.com',too_many:'Too many attempts, try again later',exists:'This number already has an account. Open the app from the phone you signed up with, or message us on Instagram @amariya_ma',fail:'Something went wrong, try again in a moment',
+ hi:'To keep it on your phone: open the link in Safari → Share → “Add to Home Screen”.',ha:'To keep it on your phone: open the link in Chrome → ⋮ → “Add to Home screen”.'}};
+var CITIES=[["الدار البيضاء","Casablanca"],["الرباط","Rabat"],["مراكش","Marrakech"],["فاس","Fès"],["طنجة","Tanger"],["أكادير","Agadir"],["مكناس","Meknès"],["وجدة","Oujda"],["القنيطرة","Kénitra"],["تطوان","Tétouan"],["سطات","Settat"],["الجديدة","El Jadida"],["آسفي","Safi"],["بني ملال","Béni Mellal"],["خريبكة","Khouribga"],["المحمدية","Mohammedia"],["تمارة","Témara"],["سلا","Salé"],["برشيد","Berrechid"],["الناظور","Nador"],["العيون","Laâyoune"],["تازة","Taza"],["الخميسات","Khémisset"],["ورزازات","Ouarzazate"],["الصويرة","Essaouira"],["الحسيمة","Al Hoceïma"],["العرائش","Larache"],["خنيفرة","Khénifra"],["تارودانت","Taroudant"]];
+// country codes: [dial, ISO, name]
+var CC=[["212","MA"],["33","FR"],["34","ES"],["39","IT"],["32","BE"],["31","NL"],["49","DE"],["41","CH"],["352","LU"],["44","UK"],["353","IE"],["351","PT"],["1","US/CA"],["971","AE"],["966","SA"],["974","QA"],["965","KW"],["973","BH"],["968","OM"],["216","TN"],["213","DZ"],["20","EG"],["90","TR"]];
+var TZ={'Europe/Paris':'33','Europe/Madrid':'34','Europe/Rome':'39','Europe/Brussels':'32','Europe/Amsterdam':'31','Europe/Berlin':'49','Europe/Zurich':'41','Europe/Luxembourg':'352','Europe/London':'44','Europe/Dublin':'353','Europe/Lisbon':'351','Asia/Dubai':'971','Asia/Riyadh':'966','Asia/Qatar':'974','Asia/Kuwait':'965','Asia/Bahrain':'973','Asia/Muscat':'968','Africa/Tunis':'216','Africa/Algiers':'213','Africa/Cairo':'20','Europe/Istanbul':'90','America/New_York':'1','America/Chicago':'1','America/Los_Angeles':'1','America/Toronto':'1','America/Montreal':'1'};
+var L='ar';try{L=localStorage.getItem('am_lang')||''}catch(_){}
+if(!T[L]){var nl=(navigator.language||'').slice(0,2);L=nl==='fr'?'fr':nl==='en'?'en':'ar'}
+var sel=document.getElementById('c'),ccs=document.getElementById('cc');
+CC.forEach(function(c){var o=document.createElement('option');o.value=c[0];o.textContent='+'+c[0]+' '+c[1];ccs.appendChild(o)});
+var tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(_){}
+ccs.value=TZ[tz]||'212';
+function cities(){var v=sel.value;sel.innerHTML='';var o=document.createElement('option');o.value='';o.disabled=true;o.textContent=T[L].pick;sel.appendChild(o);
+ CITIES.forEach(function(c){var x=document.createElement('option');x.value=c[0];x.textContent=L==='ar'?c[0]:c[1];sel.appendChild(x)});
+ [['خارج المغرب','out'],['مدينة أخرى','other']].forEach(function(c){var x=document.createElement('option');x.value=c[0];x.textContent=T[L][c[1]];sel.appendChild(x)});
+ sel.value=v||'';if(!sel.value){sel.selectedIndex=0;if(ccs.value!=='212')sel.value='خارج المغرب'}}
+function setLang(l){L=l;try{localStorage.setItem('am_lang',l)}catch(_){}
+ document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
+ document.querySelectorAll('[data-i]').forEach(function(e){var k=e.getAttribute('data-i');if(T[l][k]!=null)e.innerHTML=T[l][k]});
+ document.getElementById('b').placeholder=T[l].pb;
+ document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.l===l))});
+ cities();}
+document.querySelectorAll('.lang button').forEach(function(b){b.onclick=function(){setLang(b.dataset.l)}});
+ccs.onchange=function(){document.getElementById('w').placeholder=ccs.value==='212'?'6 12 34 56 78':'';if(ccs.value!=='212'&&!sel.value)sel.value='خارج المغرب'};
+setLang(L);ccs.onchange();
 var form=document.getElementById('form'),err=document.getElementById('err'),btn=document.getElementById('send');
 var APP='https://amariya-app.vercel.app/i/';
 var UA=navigator.userAgent,IOS=/iPhone|iPad|iPod/i.test(UA),AND=/Android/i.test(UA),INAPP=/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Snapchat/i.test(UA);
@@ -116,8 +152,8 @@ function showApp(tok,title){
   else if(INAPP&&IOS)go.href='x-safari-'+url;
   else go.href=url;
   go.onclick=function(){if(INAPP)setTimeout(function(){if(document.visibilityState==='visible')location.href=url},1500)};
-  document.getElementById('cp').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent='تنسخ ✓'},function(){prompt('نسخ الرابط:',url)})};
-  document.getElementById('how').textContent=IOS?'باش يبقى عندك فالتيليفون: حل الرابط فـ Safari ← زر المشاركة ← «إضافة إلى الشاشة الرئيسية».':'باش يبقى عندك فالتيليفون: حل الرابط فـ Chrome ← ⋮ ← «إضافة إلى الشاشة الرئيسية».';
+  document.getElementById('cp').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent=T[L].copied},function(){prompt('',url)})};
+  document.getElementById('how').textContent=IOS?T[L].hi:T[L].ha;
   if(title)document.getElementById('okt').textContent=title;
   form.hidden=true;document.getElementById('ok').hidden=false;
   document.getElementById('ok').scrollIntoView({behavior:'smooth',block:'center'});
@@ -126,25 +162,31 @@ function showApp(tok,title){
   else location.replace(url);
 }
 try{var saved=localStorage.getItem('am_tok');if(saved&&/^[A-Za-z0-9_-]{20,64}$/.test(saved))showApp(saved)}catch(_){}
-var ERR={bad_name:'كتب اسم التريتور أو القاعة',bad_phone:'رقم الواتساب ماشي صحيح، مثلاً 0612345678',bad_email:'الإيميل ماشي صحيح، مثلاً exemple@gmail.com',too_many:'بزاف ديال المحاولات، عاود من بعد',exists:'هاد الرقم عندو حساب من قبل. حل التطبيق من التيليفون اللي دخلتي بيه، ولا صيفط لينا فالإنستغرام @amariya_ma'};
+// any way people write a number: 0612…, 612…, +33 6…, 0033 6…, 33 6…
+function phoneOf(raw,cc){var t=raw.trim(),d=t.replace(/\D/g,'');if(!d)return '';
+ if(/^\+/.test(t))return d;if(/^00/.test(d))return d.slice(2);
+ if(cc!=='212'&&d.indexOf(cc)===0&&d.length>=cc.length+8)return d;
+ if(cc==='212'&&/^212/.test(d)&&d.length===12)return d;
+ return cc+d.replace(/^0+/,'')}
+function okPhone(p){return /^[1-9]\d{7,14}$/.test(p)&&(p.indexOf('212')!==0||/^212[5-7]\d{8}$/.test(p))}
 form.addEventListener('submit',async function(e){
-  e.preventDefault();err.textContent='';
-  var business=form.business.value.trim(),city=form.city.value,whatsapp=form.whatsapp.value.trim(),email=form.email.value.trim().toLowerCase();
-  if(business.length<2){err.textContent=ERR.bad_name;return}
-  if(!city){err.textContent='اختار المدينة';return}
-  var d=whatsapp.replace(/\D/g,'').replace(/^(212|0)/,'');
-  if(!/^[5-7]\d{8}$/.test(d)){err.textContent=ERR.bad_phone;return}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.textContent=ERR.bad_email;return}
-  btn.disabled=true;btn.textContent='كنوجدو التطبيق ديالك…';
+  e.preventDefault();err.textContent='';var M=T[L];
+  var business=form.business.value.trim(),city=form.city.value,email=form.email.value.trim().toLowerCase();
+  if(business.length<2){err.textContent=M.bad_name;return}
+  if(!city){err.textContent=M.bad_city;return}
+  var phone=phoneOf(form.whatsapp.value,ccs.value);
+  if(!okPhone(phone)){err.textContent=M.bad_phone;return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.textContent=M.bad_email;return}
+  btn.disabled=true;btn.textContent=M.wait;
   try{
-    var r=await fetch('https://tonxmajfvgflvlkkutou.supabase.co/functions/v1/amariya-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:business,city:city,phone:'212'+d,email:email,website:form.website.value,source:new URLSearchParams(location.search).get('src')||'bio'})});
+    var r=await fetch('https://tonxmajfvgflvlkkutou.supabase.co/functions/v1/amariya-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:business,city:city,phone:phone,email:email,website:form.website.value,source:new URLSearchParams(location.search).get('src')||'bio'})});
     var j=await r.json().catch(function(){return{}});
-    if(!r.ok||!j.token){var m=j&&ERR[j.error];if(m){err.textContent=m;btn.disabled=false;btn.textContent='سجّلني وحل التطبيق';return}throw new Error('server')}
+    if(!r.ok||!j.token){var m=j&&M[j.error];if(m){err.textContent=m;btn.disabled=false;btn.textContent=M.btn;return}throw new Error('server')}
     try{localStorage.setItem('am_tok',j.token)}catch(_){}
     showApp(j.token);
   }catch(x){
-    err.textContent='وقع مشكل، عاود من بعد شوية';
-    btn.disabled=false;btn.textContent='سجّلني وحل التطبيق';
+    err.textContent=M.fail;
+    btn.disabled=false;btn.textContent=M.btn;
   }
 });
 </script>
