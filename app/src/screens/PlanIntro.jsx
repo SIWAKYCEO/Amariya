@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PRICES, isDemo, planOf, useStore, wantPlan } from '../lib/data'
+import { PRICES, ULTRA_SETUP, isDemo, planOf, useStore, wantPlan } from '../lib/data'
 import { Ic, Logo, toast } from '../ui'
 
 // shown once per traiteur: new ones choose how to start, the ones already inside choose after trying it
@@ -39,7 +39,7 @@ export const PLANS = [
     ],
   },
   {
-    k: 'ultra', name: 'Ultra', price: PRICES.ultra, per: 'درهم / الشهر', badge: 'حنا كنخدمو عليك', note: 'أقل مدة: 3 شهور',
+    k: 'ultra', name: 'Ultra', price: PRICES.ultra, per: 'درهم / الشهر', badge: 'حنا كنخدمو عليك', setup: ULTRA_SETUP,
     line: 'فريق Amariya كيبني ليك البراند ديالك ويجيب ليك الكليان، وانت غير خدم.',
     all: 'كلشي اللي فـ Pro، وزيد:',
     items: [
@@ -100,6 +100,7 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
                 <b>{p.k === 'ultra' && crown(20)}{p.name}</b>
                 <span className="pc-price"><i className="num" dir="ltr">{p.price}</i><small>{p.per}</small></span>
               </header>
+              {p.setup && <p className="pc-setup">+ <span className="num" dir="ltr">{p.setup.toLocaleString('de-DE')}</span> درهم مرة وحدة فالبداية</p>}
               <p className="pc-line">{p.line}</p>
             </div>
             <div className="pc-body">
