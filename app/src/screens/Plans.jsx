@@ -12,12 +12,13 @@ const PRO = [
   ['الماتريال', 'شنو خرج، شنو رجع وشنو تهرّس.'],
   ['الصفحة ديالك فالأولين', 'فـ «لقا تريتور فمدينتك»، العرايس كيشوفوك قبل الآخرين.'],
   ['النسخة ديال الكمبيوتر', 'خدم بشاشة كبيرة فالبيرو.'],
+  ['مساعدة فالواتساب', 'فريق Amariya معاك إلا حبستي فشي حاجة.'],
 ]
 const PREMIUM = [
-  ['واتساب كيجاوب بوحدو 24/24 · قريبا', 'على «شحال للواحد؟» بالدوفي والنهارات الخاوين، حتى وانت ناعس.'],
+  ['واتساب كيجاوب بوحدو 24/24', 'وانت ناعس ولا مشغول فعرس، كيجاوب الكليان على «شحال للواحد؟» بالثمن، النهارات الخاوين والدوفي بالسمية ديالك.'],
+  ['كيحجز ليك النهار بوحدو', 'كيصيفط رابط العربون، وملّي يخلّصو كيتحجز النهار فالكالوندري.'],
+  ['تذكير وتأكيد أوتوماتيكي', 'العائلة كتوصلها بالباقي والوصل، والخدامة كيتفكّرو بالعرس، بلا ما تكليكي.'],
   ['الميساجات كاملين وسط التطبيق', 'واتساب وأنستغرام فبلاصة وحدة.'],
-  ['تذكير أوتوماتيكي', 'للعائلة بالباقي وللخدامة بالعرس، بلا ما تكليكي.'],
-  ['تأكيد أوتوماتيكي', 'ملّي يوصل العربون، العائلة كتوصل بالوصل بوحدها.'],
 ]
 
 export default function Plans({ back }) {
@@ -67,7 +68,7 @@ export default function Plans({ back }) {
 
         <div className={'plan prem' + (plan === 'premium' ? ' cur' : '')}>
           <span className="pbadge">كلشي كامل</span>
-          <div className="ph"><span><b>Premium</b><small>الواتساب كيخدم بلاصتك</small></span><span className="pp"><span className="num" dir="ltr">{PRICES.premium}</span><small>درهم / الشهر</small></span></div>
+          <div className="ph"><span><b>Premium</b><small>كيجاوب الكليان وانت ناعس</small></span><span className="pp"><span className="num" dir="ltr">{PRICES.premium}</span><small>درهم / الشهر</small></span></div>
           <p className="pall">كلشي اللي فـ Pro، وزيد:</p>
           <ul className="pf">{PREMIUM.map(([t, d]) => <li key={t}>{Ic.check(14)}<span><b>{t}</b><small>{d}</small></span></li>)}</ul>
           {plan !== 'premium' && <button className="btn ghost wide" onClick={() => ask('premium')}>{Ic.wa(17)} بغيت Premium · كلّمنا فالواتساب</button>}
