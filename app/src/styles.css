@@ -1285,3 +1285,7 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
   .pc-track { grid-template-columns: repeat(4, 1fr) }
   .intro .pc-card.pro, .intro .pc-card.ultra { transform: translateY(-8px) }
 }
+/* 3 piani */
+.pc-pills { grid-template-columns: repeat(3, 1fr) }
+@media (min-width: 1100px) { .pc-track { grid-template-columns: repeat(3, 1fr); max-width: 1080px; margin: 0 auto } }
+@media (min-width: 760px) and (max-width: 1099px) { .pc-track { grid-template-columns: repeat(3, 1fr); gap: 12px } }

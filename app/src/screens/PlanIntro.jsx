@@ -23,34 +23,25 @@ export const PLANS = [
   },
   {
     k: 'pro', name: 'Pro', price: PRICES.pro, per: 'درهم / الشهر', badge: 'الأكثر اختيار',
-    line: 'باش تعرف شحال كتربح فكل عرس، وما يضيع ليك حتى درهم.',
+    line: 'كتنظّم كلشي وكتعرف شحال كتربح، والواتساب ديالك كيجاوب الكليان حتى وانت ناعس.',
     all: 'كلشي اللي فالمجاني، وزيد:',
     items: [
+      ['واتساب كيجاوب بوحدو 24/24', 'الثمن، النهارات الخاوين والدوفي بالسمية ديالك، حتى فالليل'],
+      ['كيحجز ليك النهار بوحدو', 'كيصيفط رابط العربون، وملّي يخلّصو كيتحجز النهار'],
+      ['تذكير وتأكيد أوتوماتيكي', 'للعائلة بالباقي وللخدامة بالعرس'],
       ['الربح الصافي ديال كل عرس', 'شحال بقا ليك بصّح، ماشي غير شحال دخل'],
       ['لائحة الشرا بالأثمنة', 'شحال غادي تصرف قبل ما تشري'],
       ['الدوفي والعقد PDF باللوغو ديالك', 'كتبان محترف، والعائلة كتوقّع'],
-      ['خلاص الخدامة', 'شكون خدم وشكون باقي ما خلّصتيهش'],
-      ['الماتريال', 'شنو خرج، شنو رجع وشنو تهرّس'],
-      ['صفحتك فالأولين فمدينتك', 'العرايس كيشوفوك قبل الآخرين'],
-      ['النسخة ديال الكمبيوتر', 'خدم بشاشة كبيرة فالبيرو'],
-      ['مساعدة فالواتساب', 'فريق Amariya معاك'],
-    ],
-  },
-  {
-    k: 'premium', name: 'Premium', price: PRICES.premium, per: 'درهم / الشهر',
-    line: 'وانت ناعس ولا مشغول، الواتساب ديالك كيجاوب الكليان ويحجز ليك العراسات.',
-    all: 'كلشي اللي فـ Pro، وزيد:',
-    items: [
-      ['واتساب كيجاوب بوحدو 24/24', 'الثمن، النهارات الخاوين والدوفي بالسمية ديالك'],
-      ['كيحجز ليك النهار بوحدو', 'كيصيفط رابط العربون، وملّي يخلّصو كيتحجز النهار'],
-      ['تذكير وتأكيد أوتوماتيكي', 'للعائلة بالباقي وللخدامة بالعرس'],
+      ['خلاص الخدامة والماتريال', 'شكون خدم، شكون باقي، وشنو رجع'],
       ['الميساجات كاملين فبلاصة وحدة', 'واتساب وأنستغرام وسط التطبيق'],
+      ['صفحتك فالأولين فمدينتك', 'العرايس كيشوفوك قبل الآخرين'],
+      ['النسخة ديال الكمبيوتر ومساعدة فالواتساب', 'خدم بشاشة كبيرة، وفريق Amariya معاك'],
     ],
   },
   {
     k: 'ultra', name: 'Ultra', price: PRICES.ultra, per: 'درهم / الشهر', badge: 'حنا كنخدمو عليك', note: 'أقل مدة: 3 شهور',
     line: 'فريق Amariya كيبني ليك البراند ديالك ويجيب ليك الكليان، وانت غير خدم.',
-    all: 'كلشي اللي فـ Premium، وزيد:',
+    all: 'كلشي اللي فـ Pro، وزيد:',
     items: [
       ['سيت ويب كامل باسمك', 'دومين ديالك، المينو، الصور والأثمنة، والطلبات كيوصلو للتطبيق'],
       ['لوغو وهوية كاملة', 'اللوغو، الألوان، المينو للطباعة، الدوفي وبطائق الزيارة'],
@@ -66,8 +57,9 @@ export const PLANS = [
 ]
 
 // four plans side by side: pills on top to jump, cards that swipe; every plan reachable without scrolling the page
-export function PlanCarousel({ current = 'free', onFree, freeLabel, start = 'pro', after }) {
-  const [on, setOn] = useState(start)
+export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start = 'pro', after }) {
+  const current = cur0 === 'premium' ? 'pro' : cur0
+  const [on, setOn] = useState(start === 'premium' ? 'pro' : start)
   const track = useRef(null)
   const go = (k, smooth = true) => {
     setOn(k)
@@ -76,7 +68,7 @@ export function PlanCarousel({ current = 'free', onFree, freeLabel, start = 'pro
     const tr = t.getBoundingClientRect(), r = el.getBoundingClientRect()
     t.scrollBy({ left: (r.left + r.width / 2) - (tr.left + tr.width / 2), behavior: smooth ? 'smooth' : 'auto' })
   }
-  useEffect(() => { go(start, false) }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { go(start === 'premium' ? 'pro' : start, false) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const onScroll = () => {
     const t = track.current; if (!t) return
     const tr = t.getBoundingClientRect(), mid = tr.left + tr.width / 2
