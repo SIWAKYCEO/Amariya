@@ -41,6 +41,10 @@ export async function load() {
     let saved = null
     try { saved = JSON.parse(localStorage.getItem('amariya-demo')) } catch { /* */ }
     state = saved?.traiteur ? { ...empty(), ...saved } : demoSeed()
+    // ?demo=1&pro=1 → everything open (director view); ?demo=1&free=1 → what a new traiteur sees
+    const q = new URLSearchParams(location.search)
+    if (q.has('pro')) state.traiteur = { ...state.traiteur, plan: 'premium', plan_until: null }
+    if (q.has('free')) state.traiteur = { ...state.traiteur, plan: 'free', plan_until: null }
     emit()
     return true
   }

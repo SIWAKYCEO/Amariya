@@ -56,6 +56,23 @@ export default function Settings({ back, go }) {
         </div>
         <p className="muted" style={{ margin: '8px 4px 0' }}>الكليان كيشوفو المينوهات والنهارات الخاوين وكيطلبو الدوفي، وكيخلّصو العربون من الرابط ديال الدوفي.</p>
 
+        {t.internal && !isDemo && <>
+          <h4 className="sec2">المدير</h4>
+          <div className="glist">
+            <a className="gli" href="?demo=1&pro=1"><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>التجربة · كلشي مفتوح</b><small>أرقام وعراسات ماشي حقيقيين، Pro و Premium مفتوحين</small></span></a>
+            <a className="gli" href="?demo=1&free=1"><span className="ic">{Ic.lock(17)}</span><span className="gtx"><b>التجربة · بحال تريتور جديد</b><small>المجاني بالقفل، باش تشوف شنو كيشوف الكليان</small></span></a>
+          </div>
+          <p className="muted" style={{ margin: '8px 4px 0' }}>هاد الحساب ما كيبانش فالداشبورد وما كيصيفط حتى نوتيفيكاسيون.</p>
+        </>}
+        {isDemo && <>
+          <h4 className="sec2">التجربة</h4>
+          <div className="glist">
+            <a className="gli" href="?demo=1&pro=1"><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>كلشي مفتوح</b><small>Pro و Premium</small></span></a>
+            <a className="gli" href="?demo=1&free=1"><span className="ic">{Ic.lock(17)}</span><span className="gtx"><b>بحال تريتور جديد</b><small>المجاني بالقفل</small></span></a>
+            <a className="gli" href="./"><span className="ic">{Ic.back(17)}</span><span className="gtx"><b>رجع للحساب ديالي</b><small>الأرقام الحقيقيين</small></span></a>
+          </div>
+        </>}
+
         <h4 className="sec2">التطبيق</h4>
         <div className="glist">
           <InstallButton className="gli" label="زيد Amariya للتيليفون" />

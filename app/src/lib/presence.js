@@ -1,5 +1,5 @@
 // Battito di presenza: dice alla dashboard chi usa l'app, quando, da che telefono.
-import { isDemo, supabase } from './data'
+import { getState, isDemo, supabase } from './data'
 
 let timer = null
 let screen = null
@@ -28,7 +28,8 @@ async function device() {
 }
 
 export async function startPresence() {
-  if (isDemo || !supabase || timer) return
+  // director / internal accounts are never counted in the dashboard
+  if (isDemo || !supabase || timer || getState().traiteur?.internal) return
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true
   const { model, os } = await device()
   const base = {
