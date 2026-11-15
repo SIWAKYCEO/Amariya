@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { PLAN_NAME, paidOf, planOf, problemsOf, restOf, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
-import { DH, Empty, Ic, Logo } from '../ui'
+import { DH, Empty, Ic, LangPill, Logo } from '../ui'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar, ContactSheet } from './Account'
 
@@ -25,6 +25,7 @@ export function Side({ v, go }) {
     <aside className="dside">
       {help && <ContactSheet onClose={() => setHelp(false)} />}
       <div className="dlogo"><Logo size={26} /></div>
+      <div className="dlang"><LangPill light /></div>
       <nav>
         {items.map(([k, l, ic, n, hot]) => (
           <button key={k} className={'dnav' + (v === k || (k === 'weddings' && ['wedding', 'new', 'edit'].includes(v)) ? ' on' : '')} onClick={() => go(k)}>

@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { isDemo, isPro, load, redeem, useStore } from './lib/data'
 import { setScreen, startPresence } from './lib/presence'
-import { Dock, Ic, Logo, Spin, Toaster } from './ui'
+import { Dock, Ic, Logo, Spin, Toaster, LangPill } from './ui'
 import Weddings from './screens/Weddings'
 import { Dashboard, Side, useDesk } from './screens/Desk'
 // home loads first; every other screen is fetched the first time it is opened
@@ -132,6 +132,7 @@ export default function App() {
   )
   return (
     <div className={'app withdock' + (desk ? ' deskfree' : '')}>
+      {desk && <div className="desklang"><LangPill /></div>}
       {desk && <button className="deskbar" onClick={() => go('plans')}>{Ic.lock(15)} النسخة الكاملة ديال الكمبيوتر كاينة فـ Pro · شوف الباقات</button>}
       {screens}
       <Dock tab={dockTab} go={go} />
