@@ -120,7 +120,7 @@ export function planOf(t = state.traiteur) {
 }
 export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
 export const PRICES = { pro: 249, premium: 249, ultra: 590 }
-export const ULTRA_SETUP = 2000
+export const ULTRA_SETUP = 1790
 export const PLAN_NAME = { free: 'المجاني', pro: 'Pro', premium: 'Premium', ultra: 'Ultra' }
 export const SALES_WA = '212621287405'
 // message ready for our WhatsApp: who is asking, which plan, which feature they wanted
