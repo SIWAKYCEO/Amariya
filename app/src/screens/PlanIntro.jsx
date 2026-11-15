@@ -83,7 +83,7 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
     after?.()
   }
   return (
-    <div className="pcar">
+    <div className="pcar" data-keep-cur>
       <div className="pc-pills" role="tablist">
         {PLANS.map((p) => (
           <button key={p.k} role="tab" aria-selected={on === p.k} className={'pc-pill ' + p.k + (on === p.k ? ' on' : '')} onClick={() => go(p.k)}>

@@ -1,6 +1,7 @@
 import { PRICES, wantPlan } from './lib/data'
 import { useEffect, useRef, useState } from 'react'
 import { money } from './lib/util'
+import { LANG } from './lib/i18n'
 
 const sv = (d, w = 22, sw = 1.9) => (
   <svg width={w} height={w} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>
@@ -16,7 +17,7 @@ export const Ic = {
   receipt: (w = 17) => sv(<><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path d="M9 8h6M9 12h6" /></>, w, 2),
   cash: (w) => sv(<><rect x="3" y="6" width="18" height="12" rx="3.5" /><circle cx="12" cy="12" r="2.6" /><path d="M6.5 9.5v.01M17.5 14.5v.01" /></>, w),
   plus: (w = 22) => sv(<path d="M12 5v14M5 12h14" />, w, 2.4),
-  back: (w = 20) => sv(<path d="M9 5l7 7-7 7" />, w, 2.3),
+  back: (w = 20) => sv(<path d={LANG === 'ar' ? 'M9 5l7 7-7 7' : 'M15 5l-7 7 7 7'} />, w, 2.3),
   x: (w = 18) => sv(<path d="M7 7l10 10M17 7L7 17" />, w, 2.3),
   check: (w = 16) => sv(<path d="M5 12.5l4.5 4.5L19 7.5" />, w, 2.6),
   clock: (w = 15) => sv(<><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>, w, 2),

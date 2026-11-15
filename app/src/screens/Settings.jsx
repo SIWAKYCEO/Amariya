@@ -4,8 +4,13 @@ import { add, isDemo, isPro, logout, planOf, remove, saveTraiteur, shopLink, upd
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
+import { CUR, CURRENCIES, LANG, LANGS, setPrefs } from '../lib/i18n'
 
 export default function Settings({ back, go }) {
+  const savePrefs = async (lang, currency) => {
+    try { if (!isDemo) await saveTraiteur({ lang, currency }) } catch { /* saved on this phone anyway */ }
+    setPrefs(lang, currency)
+  }
   const s = useStore()
   const t = s.traiteur || {}
   const [f, setF] = useState({ name: t.name || '', city: t.city || '', phone: prettyPhone(t.phone) })
@@ -72,6 +77,15 @@ export default function Settings({ back, go }) {
             <a className="gli" href="./"><span className="ic">{Ic.back(17)}</span><span className="gtx"><b>رجع للحساب ديالي</b><small>الأرقام الحقيقيين</small></span></a>
           </div>
         </>}
+
+        <h4 className="sec2">اللغة والعملة</h4>
+        <div className="glist">
+          <label className="gli"><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>اللغة</b></span>
+            <select className="gsel" value={LANG} onChange={(e) => savePrefs(e.target.value, CUR)}>{LANGS.map(([k, n]) => <option key={k} value={k}>{n}</option>)}</select></label>
+          <label className="gli"><span className="ic">{Ic.cash(17)}</span><span className="gtx"><b>العملة</b></span>
+            <select className="gsel" data-keep value={CUR} onChange={(e) => savePrefs(LANG, e.target.value)}>{CURRENCIES.map(([k, , n]) => <option key={k} value={k}>{n}</option>)}</select></label>
+        </div>
+        <p className="privacy" style={{ marginTop: 8 }}>الأثمنة كيتكتبو بالعملة اللي ختاريتي. الباقات ديال Amariya كيبقاو بالدرهم.</p>
 
         <h4 className="sec2">التطبيق</h4>
         <div className="glist">

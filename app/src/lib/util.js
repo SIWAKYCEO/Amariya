@@ -1,3 +1,4 @@
+import { tr } from './i18n'
 export const pad = (n) => String(n).padStart(2, '0')
 export const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 export const fromKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d) }
@@ -56,7 +57,7 @@ export function prettyPhone(p) {
   }
   return '+' + p
 }
-export const waLink = (phone, text) => `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+export const waLink = (phone, text) => `https://wa.me/${phone}?text=${encodeURIComponent(phone === '212621287405' ? text : tr(text))}`
 export const telLink = (phone) => `tel:+${phone}`
 
 // opens WhatsApp / phone; inside the native app (Capacitor) _system leaves the webview

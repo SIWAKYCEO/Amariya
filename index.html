@@ -145,8 +145,11 @@ setLang(L);ccs.onchange();
 var form=document.getElementById('form'),err=document.getElementById('err'),btn=document.getElementById('send');
 var APP='https://amariya-app.vercel.app/i/';
 var UA=navigator.userAgent,IOS=/iPhone|iPad|iPod/i.test(UA),AND=/Android/i.test(UA),INAPP=/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Snapchat/i.test(UA);
+var CCUR={'212':'MAD','33':'EUR','34':'EUR','39':'EUR','32':'EUR','31':'EUR','49':'EUR','352':'EUR','353':'EUR','351':'EUR','41':'CHF','44':'GBP','1':'USD','971':'AED','966':'SAR','974':'QAR','965':'KWD','216':'TND','213':'DZD','20':'EGP','90':'TRY'};
 function showApp(tok,title){
-  var url=APP+tok,go=document.getElementById('go');
+  // abroad: the app opens in the chosen language and the country's currency (Morocco: nothing changes)
+  var cur=CCUR[ccs.value]||'MAD',qs=(L!=='ar'||cur!=='MAD')?'?lang='+L+'&cur='+cur:'';
+  var url=APP+tok+qs,go=document.getElementById('go');
   // inside Instagram/TikTok the app cannot be added to the phone: jump to the real browser
   if(INAPP&&AND)go.href='intent://'+url.replace(/^https:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(url)+';end';
   else if(INAPP&&IOS)go.href='x-safari-'+url;

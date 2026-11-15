@@ -1,6 +1,7 @@
 // Devis and contract as a real PDF (A4), drawn on canvas so the darija is shaped correctly,
 // with the traiteur's logo and the Amariya look. One page for the devis, two for the contract.
 import { jsPDF } from 'jspdf'
+import { LANG, tr } from './i18n'
 import { dayLabel, money, normPhone, prettyPhone } from './util'
 import { paidOf, totalOf } from './data'
 
@@ -10,6 +11,7 @@ const NUM = (w, s) => `${w} ${s}px "Bricolage Grotesque Variable", Alexandria, s
 const W = 1240, H = 1754, M = 96, R = W - M, L = M
 
 function text(ctx, t, x, y, font, color, align = 'right', dir = 'rtl') {
+  t = tr(t); if (LANG !== 'ar') dir = 'ltr'
   ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.direction = dir; ctx.fillText(t, x, y)
   return ctx.measureText(t).width
 }

@@ -9,6 +9,7 @@ import '@fontsource/alexandria/latin-700.css'
 import '@fontsource-variable/bricolage-grotesque/index.css'
 import './styles.css'
 import App from './App'
+import { initPrefs, startTranslator } from './lib/i18n'
 import { registerSW } from 'virtual:pwa-register'
 
 // check for a new version often (installed app on the phone stays open for days):
@@ -26,4 +27,6 @@ registerSW({
 // public pages (devis/deposit link and the traiteur's shop window) load without the app or a login
 const Public = lazy(() => import('./Public'))
 const pub = /^\/(d|t)\//.test(location.pathname) || /^\/traiteurs\/?$/.test(location.pathname)
+if (!pub) initPrefs()
 createRoot(document.getElementById('root')).render(<StrictMode>{pub ? <Suspense fallback={null}><Public /></Suspense> : <App />}</StrictMode>)
+startTranslator()

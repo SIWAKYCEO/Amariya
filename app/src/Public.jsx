@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_KEY, SUPABASE_URL } from './lib/data'
 import { DAYS, MONTHS, PHOTOS, addDays, cropStyle, dayKey, dayLabel, fromKey, money, waLink } from './lib/util'
 import { Ic, Logo } from './ui'
+import { applyPrefsOf } from './lib/i18n'
 
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'amariya-public' } })
 const PICS = ['pastilla', 'tajine', 'sweet']
@@ -62,6 +63,7 @@ export function PublicDevis({ token }) {
     db.rpc('amr_pub_devis', { p_token: token }).then(({ data }) => {
       setD(data || null)
       if (data) {
+        applyPrefsOf(data.traiteur)
         const p = data.traiteur.pay || {}
         setM(p.rib ? 'bank' : p.cashplus_phone ? 'cashplus' : p.wafacash_phone ? 'wafacash' : '')
         setPayer(data.w.family || '')
@@ -190,7 +192,7 @@ export function PublicShop({ slug }) {
   const [st, setSt] = useState('idle')
   const [mo, setMo] = useState(0)
   const formRef = useRef(null)
-  useEffect(() => { db.rpc('amr_pub_vetrina', { p_slug: slug }).then(({ data }) => setD(data || null), () => setD(null)) }, [slug])
+  useEffect(() => { db.rpc('amr_pub_vetrina', { p_slug: slug }).then(({ data }) => { setD(data || null); applyPrefsOf(data) }, () => setD(null)) }, [slug])
   useEffect(() => { if (d?.name) document.title = `${d.name} · Amariya` }, [d])
   const busy = useMemo(() => new Set(d?.busy || []), [d])
   if (d === undefined) return <Loading />

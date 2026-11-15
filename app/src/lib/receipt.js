@@ -1,4 +1,5 @@
 // Ricevuta di pagamento come immagine (PNG 1080px), stile Amariya.
+import { LANG, tr } from './i18n'
 import { dayLabel, money } from './util'
 
 const C = { green: '#0F2A24', green2: '#173A32', ivory: '#F3EDE3', paper: '#FBF8F2', brass: '#C8A15A', henna: '#E0633A', ink: '#14201D', mute: '#6E7A74', line: 'rgba(15,42,36,.12)', ok: '#2F7D5B' }
@@ -30,7 +31,7 @@ function rt(ctx, text, x, y, font, color, max, size) {
   let s = size
   ctx.font = font(s)
   while (max && ctx.measureText(text).width > max && s > 18) { s -= 2; ctx.font = font(s) }
-  ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.fillStyle = color; ctx.fillText(text, x, y)
+  ctx.direction = LANG === 'ar' ? 'rtl' : 'ltr'; ctx.textAlign = 'right'; ctx.fillStyle = color; ctx.fillText(tr(text), x, y)
   return ctx.measureText(text).width
 }
 // numero (LTR) allineato a sinistra o destra
@@ -107,7 +108,7 @@ export async function receiptImage({ w, p, pays, total, traiteur }) {
   ctx.save(); ctx.translate(L + 118, y + 115); ctx.rotate(-0.18)
   ctx.strokeStyle = C.brass; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(0, 0, 78, 0, 7); ctx.stroke()
   ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 66, 0, 7); ctx.stroke()
-  ctx.font = AR(900, 34); ctx.fillStyle = C.brass; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillText('تخلّص', 0, 12)
+  ctx.font = AR(900, 34); ctx.fillStyle = C.brass; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillText(tr('تخلّص'), 0, 12)
   ctx.restore()
 
   // dettagli
@@ -118,7 +119,7 @@ export async function receiptImage({ w, p, pays, total, traiteur }) {
     if (n) num(ctx, n, L, y, 34, C.ink, 'left', 700)
     else { ctx.save(); ctx.font = AR(700, 32); ctx.direction = 'rtl'; ctx.textAlign = 'left'; ctx.fillStyle = C.ink
       let s = 32; while (ctx.measureText(v).width > R - L - 260 && s > 20) { s -= 2; ctx.font = AR(700, s) }
-      ctx.fillText(v, L, y); ctx.restore() }
+      ctx.fillText(tr(v), L, y); ctx.restore() }
     ctx.fillStyle = C.line; ctx.fillRect(L, y + 26, R - L, 2)
   }
 
@@ -163,7 +164,7 @@ export async function receiptImage({ w, p, pays, total, traiteur }) {
   // piè di pagina
   y += 86
   ctx.font = AR(500, 27); ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.fillStyle = C.mute
-  ctx.fillText('شكرا على الثقة، الله يكمّل بالخير', W / 2, y)
+  ctx.fillText(tr('شكرا على الثقة، الله يكمّل بالخير'), W / 2, y)
   const contentEnd = y + 40
   const fy = H - 56
   ctx.font = AR(500, 24); ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(243,237,227,.55)'
@@ -171,7 +172,7 @@ export async function receiptImage({ w, p, pays, total, traiteur }) {
   const lw = lg ? 150 : 0, gap = 14, tw = ctx.measureText(label).width
   const start = W / 2 - (tw + gap + lw) / 2
   if (lg) ctx.drawImage(lg, start, fy - 34, lw, lw / 3.295)
-  ctx.fillText(label, start + lw + gap + tw, fy)
+  ctx.fillText(tr(label), start + lw + gap + tw, fy)
   return contentEnd
   }
 }
