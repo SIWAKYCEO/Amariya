@@ -2052,9 +2052,9 @@ export const EX = {
 "février",
 "February"
 ],
-"فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 249 درهم": [
-"Débloquez bénéfice, devis PDF, paie et matériel pour 249 DH",
-"Unlock profit, PDF quotes, pay and equipment for 249 DH"
+"فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 199 درهم": [
+"Débloquez bénéfice, devis PDF, paie et matériel pour 199 DH",
+"Unlock profit, PDF quotes, pay and equipment for 199 DH"
 ],
 "فتح بـ Pro ·": [
 "Débloquer avec Pro ·",

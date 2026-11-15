@@ -119,7 +119,7 @@ export function planOf(t = state.traiteur) {
   return p
 }
 export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
-export const PRICES = { pro: 249, premium: 249, ultra: 590 }
+export const PRICES = { pro: 199, premium: 199, ultra: 590 }
 export const ULTRA_SETUP = 1790
 export const PLAN_NAME = { free: 'المجاني', pro: 'Pro', premium: 'Premium', ultra: 'Ultra' }
 export const SALES_WA = '212621287405'
