@@ -1,10 +1,11 @@
 // PC layout only (screens 1024px and wider): side menu + dashboard home.
 // The phone layout never renders anything from this file.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { paidOf, problemsOf, restOf, teamOf, totalOf, useStore } from '../lib/data'
+import { PLAN_NAME, paidOf, planOf, problemsOf, restOf, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Empty, Ic, Logo } from '../ui'
 import { Inbox, QuickReplies } from './Inbox'
+import { AccountBar, ContactSheet } from './Account'
 
 export function Side({ v, go }) {
   const s = useStore()
@@ -19,8 +20,10 @@ export function Side({ v, go }) {
     ['requests', 'طلبات الدوفي', Ic.doc, (s.requests || []).filter((r) => r.status === 'new').length + (s.proofs || []).filter((p) => p.status === 'pending').length, true],
   ]
   const tr = s.traiteur
+  const [help, setHelp] = useState(false)
   return (
     <aside className="dside">
+      {help && <ContactSheet onClose={() => setHelp(false)} />}
       <div className="dlogo"><Logo size={26} /></div>
       <nav>
         {items.map(([k, l, ic, n, hot]) => (
@@ -30,7 +33,8 @@ export function Side({ v, go }) {
         ))}
         <button className={'dnav' + (v === 'stock' ? ' on' : '')} onClick={() => go('stock')}>{Ic.box(20)}<span>الماتريال</span></button>
         <h6>الحساب</h6>
-        <button className={'dnav' + (v === 'plans' ? ' on' : '')} onClick={() => go('plans')}>{Ic.lock(20)}<span>الباقات</span></button>
+        <button className={'dnav' + (v === 'plans' ? ' on' : '')} onClick={() => go('plans')}>{Ic.lock(20)}<span>الباقات</span><b className="dplan">{PLAN_NAME[planOf(tr)]}</b></button>
+        <button className="dnav" onClick={() => setHelp(true)}>{Ic.wa(20)}<span>تواصل معانا</span></button>
         <button className={'dnav' + (v === 'settings' ? ' on' : '')} onClick={() => go('settings')}>{Ic.gear(20)}<span>الإعدادات والمينوات</span></button>
       </nav>
       <button className="dme" onClick={() => go('settings')}>
@@ -104,6 +108,7 @@ export function Dashboard({ go }) {
           <button className="dcta" onClick={() => go('new')}>{Ic.plus(18)} عرس جديد</button>
         </div>
       </section>
+      <div className="dacc"><AccountBar go={go} /></div>
 
       <section className="dkpi">
         <div className="k"><small>عراسات {MONTHS[now.getMonth()]}</small><div className="v"><b className="num">{monthW.length}</b><u>{monthW.length === 1 ? 'عرس' : 'عراسات'}</u></div><span className="mut">{upcoming.length} جايين فالمجموع</span></div>

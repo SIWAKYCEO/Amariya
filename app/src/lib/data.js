@@ -129,6 +129,12 @@ export function planWaText(plan, feature) {
   const name = PLAN_NAME[plan]
   return [`السلام عليكم Amariya 👋`, `بغيت نفعّل ${name} (${PRICES[plan]} درهم فالشهر${plan === 'ultra' ? ` + ${ULTRA_SETUP} درهم مرة وحدة فالبداية` : ''}).`, feature && `بغيت خصوصا: ${feature}.`, t.name && `التريتور: ${t.name}${t.city ? ' · ' + t.city : ''}`, 'كيفاش نخلّص؟'].filter(Boolean).join('\n')
 }
+// any question or change: our WhatsApp with who is writing already filled in
+export function contactWaLink(topic) {
+  const t = state.traiteur || {}
+  const lines = ['السلام عليكم Amariya', topic, t.name && `التريتور: ${t.name}${t.city ? ' · ' + t.city : ''}`, `الباقة دابا: ${PLAN_NAME[planOf(t)]}`].filter(Boolean)
+  return `https://wa.me/${SALES_WA}?text=${encodeURIComponent(lines.join('\n'))}`
+}
 export const planWaLink = (plan, feature) => `https://wa.me/${SALES_WA}?text=${encodeURIComponent(planWaText(plan, feature))}`
 // opens our WhatsApp and records the request (dashboard sees it); the demo just turns the plan on
 export async function wantPlan(plan, feature, intro = false) {

@@ -4,6 +4,7 @@ import { DAYS, PHOTOS, addDays, dayKey, daysFromToday, fromKey, greeting, photoF
 import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
 import { Inbox, QuickReplies } from './Inbox'
+import { AccountBar } from './Account'
 
 const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا' }
 
@@ -98,6 +99,7 @@ export default function Weddings({ go }) {
             {todays.length ? <>عندك <b dir="ltr">{todays.length}</b> {todays.length === 1 ? 'عرس' : 'عراسات'} اليوم</> : 'ما عندك حتى عرس اليوم'}
             {problems > 0 ? <> · <span className="hotx">{problems} {problems === 1 ? 'حاجة' : 'حوايج'} خاصها تتحل</span></> : ''}
           </p>
+          <AccountBar go={go} />
           <div className="strip">
             {strip.map((k) => {
               const n = live.filter((w) => w.day === k).length

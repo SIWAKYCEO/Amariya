@@ -4,6 +4,7 @@ import { add, isDemo, isPro, logout, planOf, remove, saveTraiteur, shopLink, upd
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
+import { ContactSheet } from './Account'
 import { CUR, CURRENCIES, LANG, LANGS, setPrefs } from '../lib/i18n'
 
 export default function Settings({ back, go }) {
@@ -16,6 +17,7 @@ export default function Settings({ back, go }) {
   const [f, setF] = useState({ name: t.name || '', city: t.city || '', phone: prettyPhone(t.phone) })
   const [pk, setPk] = useState(null)
   const [ed, setEd] = useState(false)
+  const [help, setHelp] = useState(false)
   const [sh, setSh] = useState(null) // 'page' | 'pay' | 'qr'
   const link = shopLink(t), pay = t.pay || {}
   const payLine = [pay.rib && (pay.bank || 'بنك'), pay.cashplus_phone && 'CashPlus', pay.wafacash_phone && 'Wafacash'].filter(Boolean).join(' · ')
@@ -36,8 +38,14 @@ export default function Settings({ back, go }) {
         <button className={'planrow' + (isPro(t) ? ' on' : '')} onClick={() => go('plans')}>
           <span className="ic">{isPro(t) ? Ic.check(18) : Ic.lock(18)}</span>
           <span className="gtx"><b>{isPro(t) ? `عندك ${({ pro: 'Pro', premium: 'Premium', ultra: 'Ultra' })[planOf(t)]}` : 'عندك المجاني'}</b><small>{isPro(t) ? 'الربح، الوراق PDF، الخلاص والماتريال مفتوحين' : 'فتح الربح، الدوفي PDF، الخلاص والماتريال بـ 249 درهم'}</small></span>
-          <span className="x">{isPro(t) ? 'الباقات' : 'شوف Pro'}</span>
+          <span className="x">{isPro(t) ? 'بدّل الباقة' : 'شوف الباقات'}</span>
         </button>
+        <button className="planhelp" onClick={() => setHelp(true)}>
+          <span className="ic">{Ic.wa(20)}</span>
+          <span className="gtx"><b>تواصل معانا</b><small>بدّل الباقة، الحساب، ولا أي سؤال</small></span>
+          <span className="x">واتساب</span>
+        </button>
+        {help && <ContactSheet onClose={() => setHelp(false)} />}
 
         <h4 className="sec2">المينوهات والأثمنة <button className="mini" onClick={() => setPk({})}>{Ic.plus(16)} زيد مينو</button></h4>
         <div className="hscroll">
