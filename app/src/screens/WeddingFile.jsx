@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { add, isPro, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
+import { add, isPro, isSample, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
 import { ProofSheet, methodLabel, remindText } from './Inbox'
 import { ROLES, ROLES_PL, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
 import { Count, DH, Field, Ic, Locked, Ring, Sheet, fail, shareText, toast } from '../ui'
@@ -100,6 +100,7 @@ export default function WeddingFile({ w, back, go }) {
           </div>
           <span className="pill">{w.status === 'devis' ? 'دوفي' : w.status === 'done' ? 'داز' : w.status === 'cancelled' ? 'ملغي' : relDay(w.day)}</span>
         </div>
+        {isSample(w) && <div className="samplebar"><span>هادا عرس تجريبي باش تشوف كيفاش خدام التطبيق</span><button onClick={async () => { await remove('weddings', w.id); back() }}>مسحو</button></div>}
         <div className="fh-act">
           <button className="act" onClick={() => go('edit', { id: w.id })}>{Ic.pen(16)} بدّل</button>
           {w.phone && <button className="act" onClick={() => openExternal(telLink(w.phone))}>{Ic.phone(16)} عيّط</button>}

@@ -1334,3 +1334,14 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .lp-menu { position: absolute; top: calc(100% + 6px); inset-inline-end: 0; z-index: 6; min-width: 160px; list-style: none; margin: 0; padding: 6px; border-radius: 16px; background: #fff; box-shadow: 0 14px 40px rgba(11,21,19,.18); animation: fade .15s }
 .lp-menu button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--ink, #0B1513); font: inherit; font-weight: 700; font-size: 15px; cursor: pointer }
 .lp-menu button.on { background: #F1E6D2; color: var(--green, #0F2A24) }
+/* first-run guide */
+.startx { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px }
+.stc { display: flex; align-items: center; gap: 12px; width: 100%; text-align: start; background: var(--ivory, #fbf7ef); border: 1px solid rgba(15,42,36,.08); border-radius: 18px; padding: 14px 14px; color: var(--green); box-shadow: 0 6px 18px rgba(15,42,36,.06) }
+.stc i { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; font-style: normal; font-weight: 800; font-size: 14px }
+.stc span { flex: 1; display: flex; flex-direction: column; gap: 3px }
+.stc b { font-size: 15px }
+.stc small { font-size: 12.5px; color: var(--mute); line-height: 1.5 }
+.stc svg { flex: none; opacity: .45; transform: scaleX(-1) }
+.samplebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0 4px; padding: 9px 12px; border-radius: 12px; background: rgba(200,161,90,.16); font-size: 12.5px; line-height: 1.5 }
+.samplebar button { flex: none; border: 0; border-radius: 99px; padding: 6px 12px; background: rgba(224,99,58,.14); color: #c4502b; font-weight: 700; font-size: 12.5px }
+.actionbar .btn.ghost + .btn { margin-top: 8px }

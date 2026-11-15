@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../lib/data'
+import { useEffect, useState } from 'react'
+import { isSample, seedSample, paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, PHOTOS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
 import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
@@ -79,6 +79,9 @@ export default function Weddings({ go }) {
   const problems = live.filter((w) => daysFromToday(w.day) >= 0 && daysFromToday(w.day) <= 7).reduce((n, w) => n + problemsOf(w, s).length, 0)
   const strip = Array.from({ length: 7 }, (_, i) => dayKey(addDays(new Date(), i)))
   const first = (s.me?.name || '').split(' ')[0]
+  const sample = s.weddings.find(isSample)
+  const realCount = s.weddings.filter((w) => !isSample(w)).length
+  useEffect(() => { seedSample() }, [s.traiteur?.id, s.weddings.length])
 
   return (
     <div className="screen">
@@ -118,11 +121,19 @@ export default function Weddings({ go }) {
       <div className="content">
         <InstallNudge />
         <Inbox go={go} />
+        {realCount === 0 && (
+          <div className="startx">
+            <h4 className="sec">بدا من هنا</h4>
+            {sample && <button className="stc" onClick={() => go('wedding', { id: sample.id })}><i>1</i><span><b>شوف العرس التجريبي</b><small>الربح، العربون، الدوفي بالـPDF… كلشي واجد</small></span>{Ic.back(16)}</button>}
+            <button className="stc" onClick={() => go('new')}><i>{sample ? 2 : 1}</i><span><b>زيد أول عرس ديالك</b><small>غير السمية، النهار وعدد الضياف</small></span>{Ic.back(16)}</button>
+            <button className="stc" onClick={() => setQr(true)}><i>{sample ? 3 : 2}</i><span><b>جرّب الردود ديال الواتساب</b><small>جاوب الكليان فثانية بالثمن والنهارات الخاوين</small></span>{Ic.back(16)}</button>
+          </div>
+        )}
         {todays.length > 0 && <><h4 className="sec">اليوم</h4>{todays.map((w) => <TodayCard key={w.id} w={w} s={s} go={go} />)}</>}
         {!todays.length && (week[0] || later[0]) && <><h4 className="sec">العرس الجاي</h4><TodayCard w={week[0] || later[0]} s={s} go={go} next /></>}
         {(todays.length ? week : week.slice(1)).length > 0 && <><h4 className="sec">هاد السيمانة</h4><div className="list">{(todays.length ? week : week.slice(1)).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
         {(!todays.length && !week.length ? later.slice(1) : later).length > 0 && <><h4 className="sec">من بعد</h4><div className="list">{(!todays.length && !week.length ? later.slice(1) : later).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
-        {!todays.length && !week.length && !later.length && <Empty title="ما كاين حتى عرس جاي" sub="زيد أول عرس وغادي تلقاه هنا" />}
+        {!todays.length && !week.length && !later.length && realCount > 0 && <Empty title="ما كاين حتى عرس جاي" sub="زيد أول عرس وغادي تلقاه هنا" />}
         {past.length > 0 && (
           <button className="linkbtn" onClick={() => setShowPast(!showPast)}>{showPast ? 'خبّي العراسات اللي فاتو' : `العراسات اللي فاتو (${past.length})`}</button>
         )}

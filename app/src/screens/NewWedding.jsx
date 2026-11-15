@@ -14,6 +14,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
     ? { ...edit, phone: prettyPhone(edit.phone), extras: edit.extras || [] }
     : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: +ruleOf('guests', s.traiteur) || 200, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', ...prefill })
   const [arboun, setArboun] = useState('')
+  const [more, setMore] = useState(!!edit)
   const set = (p) => setF((x) => ({ ...x, ...p }))
   const clash = s.weddings.filter((w) => w.day === f.day && w.status !== 'cancelled' && w.id !== edit?.id)
   const total = Math.round((+f.guests || 0) * (+f.price || 0) + extrasSum(f))
@@ -47,16 +48,18 @@ export default function NewWedding({ back, done, edit, prefill }) {
       {step === 0 && (
         <div className="pane">
           <Field label="سمية العائلة"><input autoFocus value={f.family} onChange={(e) => set({ family: e.target.value })} placeholder="مثلا: عائلة بنعلي" /></Field>
-          <Field label="التيليفون"><input inputMode="tel" dir="ltr" value={f.phone} onChange={(e) => set({ phone: e.target.value })} placeholder="06 00 00 00 00" /></Field>
-          <div className="two">
-            <Field label="النهار"><input type="date" value={f.day} onChange={(e) => set({ day: e.target.value })} /></Field>
-            <Field label="الساعة"><input type="time" value={f.time} onChange={(e) => set({ time: e.target.value })} /></Field>
-          </div>
+          <Field label="النهار"><input type="date" value={f.day} onChange={(e) => set({ day: e.target.value })} /></Field>
+          <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>
             {clash.length > 0 && <p className="clash">{Ic.cal(15)} عندك {clash.length === 1 ? 'عرس' : clash.length + ' عراسات'} هاد النهار: {clash.map((w) => w.family).join('، ')}</p>}
+          {!more && <button className="linkbtn" onClick={() => setMore(true)}>+ التيليفون، الساعة، القاعة (تقدر تزيدهم من بعد)</button>}
+          {more && <>
+          <Field label="التيليفون"><input inputMode="tel" dir="ltr" value={f.phone} onChange={(e) => set({ phone: e.target.value })} placeholder="06 00 00 00 00" /></Field>
+          <Field label="الساعة"><input type="time" value={f.time} onChange={(e) => set({ time: e.target.value })} /></Field>
           <div className="two">
             <Field label="القاعة"><input value={f.hall} onChange={(e) => set({ hall: e.target.value })} placeholder="قاعة النخيل" /></Field>
             <Field label="المدينة"><input value={f.city} onChange={(e) => set({ city: e.target.value })} /></Field>
           </div>
+          </>}
         </div>
       )}
 
@@ -103,13 +106,13 @@ export default function NewWedding({ back, done, edit, prefill }) {
               <input inputMode="numeric" dir="ltr" value={arboun} onChange={(e) => setArboun(e.target.value.replace(/\D/g, ''))} placeholder="0" />
             </Field>
           )}
-          <Field label="ملاحظات"><textarea rows={3} value={f.notes || ''} onChange={(e) => set({ notes: e.target.value })} placeholder="شي حاجة خاصك تعقل عليها" /></Field>
+          <Field label="ملاحظات"><textarea rows={3} value={f.notes === '__sample' ? '' : f.notes || ''} onChange={(e) => set({ notes: e.target.value })} placeholder="شي حاجة خاصك تعقل عليها" /></Field>
         </div>
       )}
 
       <div className="actionbar">
         {step < 2
-          ? <button className="btn brass wide" disabled={step === 0 ? !ok0 : !ok1} onClick={() => setStep(step + 1)}>كمّل</button>
+          ? <>{step === 0 && !edit && <button className="btn ghost wide" disabled={!ok0 || busy || !(+f.price > 0)} onClick={save}>سجّل دابا · <DH v={total} /></button>}<button className="btn brass wide" disabled={step === 0 ? !ok0 : !ok1} onClick={() => setStep(step + 1)}>كمّل</button></>
           : <button className="btn brass wide" disabled={busy} onClick={save}>{edit ? 'سجّل التبديلات' : 'سجّل العرس'} · <DH v={total} /></button>}
       </div>
     </div>

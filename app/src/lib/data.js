@@ -352,3 +352,23 @@ export async function refresh(kinds = ['requests', 'proofs']) {
   res.forEach((r, i) => { if (!r.error) patch[kinds[i]] = r.data })
   set(patch)
 }
+
+/* ---------- sample wedding: a new traiteur sees the app working before typing anything ---------- */
+export const isSample = (w) => w?.notes === '__sample'
+let seeding = false
+export async function seedSample() {
+  const t = state.traiteur
+  if (isDemo || seeding || !t || state.weddings.length || (t.rules || {}).sample_done) return
+  seeding = true
+  try {
+    const pk = state.packages[0]
+    const price = +pk?.price || 250
+    const w = await add('weddings', {
+      family: 'عائلة المثال (تجريبي)', phone: t.phone || '', day: dayKey(addDays(new Date(), 21)), time: ruleOf('time', t),
+      hall: 'قاعة النخيل', city: t.city || '', guests: 200, package_id: pk?.id || null, package_name: pk?.name || '', price,
+      extras: [{ label: 'الحلويات', amount: 3000 }], notes: '__sample', status: 'confirmed',
+    })
+    await add('payments', { wedding_id: w.id, amount: Math.round(price * 200 * 0.3), kind: 'arboun', paid_on: dayKey(new Date()) })
+    await saveTraiteur({ rules: { ...(t.rules || {}), sample_done: true } })
+  } catch { /* the app works without the sample */ } finally { seeding = false }
+}
