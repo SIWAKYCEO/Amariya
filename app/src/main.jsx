@@ -12,10 +12,22 @@ import App from './App'
 import { initPrefs, startTranslator } from './lib/i18n'
 import { registerSW } from 'virtual:pwa-register'
 
-// check for a new version often (installed app on the phone stays open for days):
-// every minute and every time the app comes back to the front; a new version reloads the app by itself
+// every update reaches everyone by itself, nobody has to refresh:
+// the app checks for a new version every minute and whenever it comes back to the front,
+// then switches to it at a quiet moment (never while a form or a sheet is open, so nothing typed is lost)
+const busy = () => {
+  const a = document.activeElement
+  return (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) || !!document.querySelector('.sheet, [data-editing]')
+}
+let pending = null
+const applyWhenQuiet = () => {
+  if (!pending) return
+  if (document.visibilityState === 'hidden' || !busy()) { const go = pending; pending = null; go() }
+}
 registerSW({
   immediate: true,
+  // the new version is already active: reload into it at a quiet moment
+  onNeedReload() { pending = () => location.reload(); applyWhenQuiet() },
   onRegisteredSW(_url, r) {
     if (!r) return
     const check = () => { if (navigator.onLine) r.update().catch(() => {}) }
@@ -23,6 +35,10 @@ registerSW({
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check() })
   },
 })
+setInterval(applyWhenQuiet, 3000)
+document.addEventListener('visibilitychange', applyWhenQuiet)
+// a screen from an old version that is no longer online: load the new version
+addEventListener('vite:preloadError', () => location.reload())
 
 // public pages (devis/deposit link and the traiteur's shop window) load without the app or a login
 const Public = lazy(() => import('./Public'))

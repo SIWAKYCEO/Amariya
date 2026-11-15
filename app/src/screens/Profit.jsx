@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MISC_LABEL, PRICE_DEFAULTS, PRICE_UNITS, profitOf, saveTraiteur, useStore } from '../lib/data'
+import { MISC_LABEL, PRICE_DEFAULTS, PRICE_UNITS, QTY_DEFAULTS, profitOf, qtyPer100, saveTraiteur, useStore } from '../lib/data'
 import { money } from '../lib/util'
 import { Count, DH, Ic, Sheet, fail, toast } from '../ui'
 import { ExpenseSheet } from './Money'
@@ -81,16 +81,22 @@ export function PricesSheet({ close }) {
   const saved = s.traiteur?.costs || {}
   const keys = Object.keys(PRICE_UNITS)
   const [f, setF] = useState(() => Object.fromEntries([...keys, 'misc'].map((k) => [k, saved[k] ?? PRICE_DEFAULTS[k]])))
+  const [q, setQ] = useState(() => Object.fromEntries(keys.map((k) => [k, String(qtyPer100(k, s))])))
   const set = (k, v) => setF({ ...f, [k]: v.replace(/\D/g, '') })
-  const save = () => saveTraiteur({ costs: Object.fromEntries(Object.entries(f).map(([k, v]) => [k, +v || 0])) }).then(() => { toast('تسجّلو الأثمنة'); close() }).catch(fail)
+  const setq = (k, v) => setQ({ ...q, [k]: v.replace(/[^\d.]/g, '') })
+  const save = () => saveTraiteur({
+    costs: Object.fromEntries(Object.entries(f).map(([k, v]) => [k, +v || 0])),
+    rules: { ...(s.traiteur?.rules || {}), qty: Object.fromEntries(keys.map((k) => [k, q[k] === '' ? QTY_DEFAULTS[k] : +q[k]])) },
+  }).then(() => { toast('تسجّلو الأثمنة'); close() }).catch(fail)
   return (
     <Sheet title="بشحال كتشري؟" onClose={close}>
-      <p className="muted" style={{ marginBottom: 12 }}>حط الثمن اللي كتشري بيه انتا. كنحسبو بيه الربح ديال كل عرس بوحدو. إلا ما عرفتيش، خلّي الثمن اللي كاين.</p>
+      <p className="muted" style={{ marginBottom: 12 }}>حط الثمن اللي كتشري بيه انتا، وشحال كتشري لكل 100 ضيف. كنحسبو بيهم الربح ولائحة الشرا ديال كل عرس. إلا ما عرفتيش، خلّي اللي كاين.</p>
       <div className="prices">
         {keys.map((k) => (
           <label key={k} className="prc">
             <span><b>{k}</b><small>للـ{PRICE_UNITS[k]}</small></span>
             <span className="pin"><input inputMode="numeric" dir="ltr" value={f[k]} onChange={(e) => set(k, e.target.value)} /><small>DH</small></span>
+            <span className="pin qty"><input inputMode="decimal" dir="ltr" value={q[k]} onChange={(e) => setq(k, e.target.value)} /><small>{PRICE_UNITS[k]} / 100 ضيف</small></span>
           </label>
         ))}
         <label className="prc wide">

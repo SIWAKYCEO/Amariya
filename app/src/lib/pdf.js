@@ -3,7 +3,7 @@
 import { jsPDF } from 'jspdf'
 import { LANG, tr } from './i18n'
 import { dayLabel, money, normPhone, prettyPhone } from './util'
-import { paidOf, totalOf } from './data'
+import { paidOf, ruleOf, totalOf } from './data'
 
 const C = { green: '#0F2A24', green2: '#173A32', ivory: '#F3EDE3', paper: '#FBF8F2', brass: '#C8A15A', brassL: '#F1E6CF', ink: '#14201D', mute: '#6E7A74', line: 'rgba(15,42,36,.12)', ok: '#2F7D5B' }
 const AR = (w, s) => `${w} ${s}px Alexandria, system-ui, sans-serif`
@@ -139,14 +139,14 @@ function page1(ctx, d, kind) {
 
   // how to pay
   const pay = tr?.pay || {}
-  const ways = [pay.rib && [`${pay.bank || 'البنك'}${pay.holder ? ' · ' + pay.holder : ''}`, pay.rib], pay.cashplus_phone && [`CashPlus${pay.cashplus_name ? ' · ' + pay.cashplus_name : ''}`, prettyPhone(normPhone(pay.cashplus_phone))], pay.wafacash_phone && [`Wafacash${pay.wafacash_name ? ' · ' + pay.wafacash_name : ''}`, prettyPhone(normPhone(pay.wafacash_phone))]].filter(Boolean)
+  const ways = [pay.rib && [`${pay.bank || 'البنك'}${pay.holder ? ' · ' + pay.holder : ''}`, pay.rib], pay.cashplus_phone && [`CashPlus${pay.cashplus_name ? ' · ' + pay.cashplus_name : ''}`, prettyPhone(normPhone(pay.cashplus_phone))], pay.wafacash_phone && [`Wafacash${pay.wafacash_name ? ' · ' + pay.wafacash_name : ''}`, prettyPhone(normPhone(pay.wafacash_phone))], pay.other_info && [pay.other_name || 'طريقة أخرى', pay.other_info]].filter(Boolean)
   if (ways.length && y < H - 330) {
     y = section(ctx, 'كيفاش تخلّصو', y)
-    for (const [k, v] of ways) { text(ctx, k, R, y + 6, AR(500, 23), C.mute); text(ctx, v, L, y + 6, NUM(700, 27), C.ink, 'left', 'ltr'); y += 50 }
+    for (const [k, v] of ways) { text(ctx, k, R, y + 6, AR(500, 23), C.mute); if (/[\u0600-\u06FF]/.test(v)) text(ctx, v, L, y + 6, AR(700, 25), C.ink, 'left'); else text(ctx, v, L, y + 6, NUM(700, 27), C.ink, 'left', 'ltr'); y += 50 }
     y += 10
   }
   if (kind !== 'contract' && y < H - 170) {
-    para(ctx, 'هاد الدوفي صالح 15 يوم. الداتة كتتحجز غير ملّي يتخلّص العربون.', R, Math.max(y + 20, H - 170), AR(500, 23), C.mute, R - L, 38)
+    para(ctx, `هاد الدوفي صالح ${ruleOf('devisDays', d.tr)} يوم. الداتة كتتحجز غير ملّي يتخلّص العربون.`, R, Math.max(y + 20, H - 170), AR(500, 23), C.mute, R - L, 38)
   }
 }
 
@@ -157,11 +157,9 @@ function page2(ctx, d) {
   y = section(ctx, 'الشروط', y)
   const clauses = [
     `الداتة ديال العرس (${dayLabel(w.day)}) كتتحجز غير ملّي يتخلّص العربون: ${money(arboun)} درهم.`,
-    'إلا تلغى العرس من جيهة العائلة، العربون ما كيرجعش.',
-    'العدد النهائي ديال الضياف كيتعطى 10 أيام قبل العرس. كل ضيف زايد كيتحسب بنفس الثمن ديال الضيف.',
+    `العدد النهائي ديال الضياف كيتعطى ${ruleOf('finalCountDays', tr)} أيام قبل العرس. كل ضيف زايد كيتحسب بنفس الثمن ديال الضيف.`,
     d.paid > 0 ? `باقي ${money(d.rest)} درهم ديال الخلاص، كيتخلّص كامل قبل ما تبدا الخدمة نهار العرس.` : `الباقي (${money(Math.max(0, total - arboun))} درهم من بعد العربون) كيتخلّص كامل قبل ما تبدا الخدمة نهار العرس.`,
-    'التريتور مسؤول على الماكلة والخدمة اللي مكتوبين فهاد العقد، فالوقت والبلاصة اللي متافقين عليهم.',
-    'الماتريال ديال التريتور اللي تهرّس من عند الضياف كيتحسب على العائلة بالثمن ديالو.',
+    ...(ruleOf('clauses', tr) || []).filter((c) => String(c).trim()),
   ]
   clauses.forEach((c, i) => {
     rr(ctx, R - 46, y - 30, 46, 46, 14, C.green)

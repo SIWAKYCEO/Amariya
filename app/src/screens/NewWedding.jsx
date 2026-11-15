@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { add, extrasSum, update, useStore } from '../lib/data'
+import { add, extrasSum, ruleOf, update, useStore } from '../lib/data'
 import { addDays, dayKey, dayLabel, normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, Stepper, TopBar, fail, toast } from '../ui'
 
@@ -12,7 +12,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
   const [busy, setBusy] = useState(false)
   const [f, setF] = useState(() => edit
     ? { ...edit, phone: prettyPhone(edit.phone), extras: edit.extras || [] }
-    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: '20:00', hall: '', city: s.traiteur?.city || '', guests: 200, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', ...prefill })
+    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: +ruleOf('guests', s.traiteur) || 200, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', ...prefill })
   const [arboun, setArboun] = useState('')
   const set = (p) => setF((x) => ({ ...x, ...p }))
   const clash = s.weddings.filter((w) => w.day === f.day && w.status !== 'cancelled' && w.id !== edit?.id)
@@ -40,7 +40,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
 
   const steps = ['شكون؟', 'الضياف', edit ? 'راجع' : 'الدوفي']
   return (
-    <div className="screen form">
+    <div className="screen form" data-editing>
       <TopBar title={edit ? 'بدّل العرس' : 'عرس جديد'} back={step ? () => setStep(step - 1) : back} />
       <div className="steps">{steps.map((t, i) => <span key={t} className={i === step ? 'on' : i < step ? 'done' : ''}><i>{i < step ? Ic.check(12) : i + 1}</i>{t}</span>)}</div>
 

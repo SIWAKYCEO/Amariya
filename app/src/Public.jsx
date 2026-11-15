@@ -65,7 +65,7 @@ export function PublicDevis({ token }) {
       if (data) {
         applyPrefsOf(data.traiteur)
         const p = data.traiteur.pay || {}
-        setM(p.rib ? 'bank' : p.cashplus_phone ? 'cashplus' : p.wafacash_phone ? 'wafacash' : '')
+        setM(p.rib ? 'bank' : p.cashplus_phone ? 'cashplus' : p.wafacash_phone ? 'wafacash' : p.other_info ? 'other' : '')
         setPayer(data.w.family || '')
       }
     }, () => setD(null))
@@ -83,7 +83,7 @@ export function PublicDevis({ token }) {
 
   const t = d.traiteur, w = d.w, p = t.pay || {}
   const rest = Math.max(0, d.total - d.paid)
-  const methods = [p.rib && ['bank', 'تحويل بنكي'], p.cashplus_phone && ['cashplus', 'CashPlus'], p.wafacash_phone && ['wafacash', 'Wafacash']].filter(Boolean)
+  const methods = [p.rib && ['bank', 'تحويل بنكي'], p.cashplus_phone && ['cashplus', 'CashPlus'], p.wafacash_phone && ['wafacash', 'Wafacash'], p.other_info && ['other', p.other_name || 'طريقة أخرى']].filter(Boolean)
   const ex = (w.extras || []).filter((e) => +e.amount > 0)
 
   async function send(e) {
@@ -146,6 +146,7 @@ export function PublicDevis({ token }) {
                 {m === 'bank' && <>{p.bank && <CopyRow label="البنك" value={p.bank} />}{p.holder && <CopyRow label="سمية الحساب" value={p.holder} />}<CopyRow label="RIB" value={p.rib} ltr /></>}
                 {m === 'cashplus' && <>{p.cashplus_name && <CopyRow label="السمية" value={p.cashplus_name} />}<CopyRow label="التيليفون" value={p.cashplus_phone} ltr /><p className="hint">سير لأقرب وكالة CashPlus وعطيهم السمية والتيليفون.</p></>}
                 {m === 'wafacash' && <>{p.wafacash_name && <CopyRow label="السمية" value={p.wafacash_name} />}<CopyRow label="التيليفون" value={p.wafacash_phone} ltr /><p className="hint">سير لأقرب وكالة Wafacash وعطيهم السمية والتيليفون.</p></>}
+                {m === 'other' && <><CopyRow label={p.other_name || 'طريقة أخرى'} value={p.other_info} /></>}
               </div>
 
               <span className="plab">2 · حمّل صورة الوصل</span>

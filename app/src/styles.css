@@ -1319,3 +1319,8 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .ctopic .go { color: rgba(11,21,19,.35); display: grid }
 .ctopic.main { background: var(--green); color: var(--ivory); border-color: transparent }
 .ctopic.main .go { color: rgba(243,237,227,.6) }
+.pin.qty { height: 38px; background: rgba(255,255,255,.6) }
+.pin.qty input { font-size: 15px }
+.pin.qty small { white-space: nowrap; font-size: 10.5px }
+.rchk { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-weight: 600; color: var(--ink) }
+.rchk input { width: 20px; height: 20px; accent-color: var(--green) }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { InstallButton } from '../install'
-import { add, isDemo, isPro, logout, planOf, remove, saveTraiteur, shopLink, update, useStore } from '../lib/data'
+import { RULE_DEFAULTS, add, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
@@ -65,6 +65,7 @@ export default function Settings({ back, go }) {
           <button className="gli" onClick={() => setSh('pay')}><span className="ic">{Ic.cash(17)}</span><span className="gtx"><b>كيفاش كيخلّصوك العربون</b><small>{payLine || 'زيد الـ RIB ولا CashPlus'}</small></span><span className="x"><span dir="ltr">{t.arboun_pct || 30}%</span></span></button>
           <button className="gli" onClick={() => (isPro(t) ? setSh('logo') : go('plans'))}><span className="ic">{t.logo ? <img src={t.logo} alt="" className="lgmini" /> : Ic.pen(17)}</span><span className="gtx"><b>اللوغو ديالك</b><small>كيبان فالدوفي والعقد PDF</small></span><span className="x">{isPro(t) ? (t.logo ? 'بدّل' : 'زيد') : <>{Ic.lock(13)} Pro</>}</span></button>
           <button className="gli" onClick={() => go('stock')}><span className="ic">{Ic.box(17)}</span><span className="gtx"><b>الماتريال ديالك</b><small>الطباسل، الكيسان، الطناجر…</small></span>{!isPro(t) && <span className="x">{Ic.lock(13)} Pro</span>}</button>
+          <button className="gli" onClick={() => setSh('rules')}><span className="ic">{Ic.pen(17)}</span><span className="gtx"><b>القواعد ديال الخدمة ديالك</b><small>السرباية، الدوفي، شروط العقد، العرس الجديد</small></span><span className="x">بدّل</span></button>
           <button className="gli" onClick={() => setSh('qr')}><span className="ic">{Ic.wa(17)}</span><span className="gtx"><b>ردود جاهزين</b><small>الثمن، النهار، العربون، الصفحة</small></span></button>
         </div>
         <p className="muted" style={{ margin: '8px 4px 0' }}>الكليان كيشوفو المينوهات والنهارات الخاوين وكيطلبو الدوفي، وكيخلّصو العربون من الرابط ديال الدوفي.</p>
@@ -116,6 +117,7 @@ export default function Settings({ back, go }) {
       {pk && <PackageSheet p={pk} close={() => setPk(null)} />}
       {sh === 'page' && <PageSheet t={t} close={() => setSh(null)} />}
       {sh === 'pay' && <PaySheet t={t} close={() => setSh(null)} />}
+      {sh === 'rules' && <RulesSheet t={t} close={() => setSh(null)} />}
       {sh === 'qr' && <QuickReplies onClose={() => setSh(null)} />}
       {sh === 'logo' && <LogoSheet t={t} close={() => setSh(null)} />}
     </div>
@@ -168,12 +170,12 @@ function PageSheet({ t, close }) {
 
 function PaySheet({ t, close }) {
   const p = t.pay || {}
-  const [f, setF] = useState({ bank: p.bank || '', holder: p.holder || '', rib: p.rib || '', cashplus_name: p.cashplus_name || '', cashplus_phone: p.cashplus_phone || '', wafacash_name: p.wafacash_name || '', wafacash_phone: p.wafacash_phone || '', pct: String(t.arboun_pct || 30) })
+  const [f, setF] = useState({ bank: p.bank || '', holder: p.holder || '', rib: p.rib || '', cashplus_name: p.cashplus_name || '', cashplus_phone: p.cashplus_phone || '', wafacash_name: p.wafacash_name || '', wafacash_phone: p.wafacash_phone || '', other_name: p.other_name || '', other_info: p.other_info || '', pct: String(t.arboun_pct || 30) })
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
   const rib = f.rib.replace(/\D/g, '')
   const ribOk = !rib || rib.length === 24
   const save = async () => {
-    const pay = Object.fromEntries(Object.entries({ bank: f.bank, holder: f.holder, rib: rib ? rib.replace(/(\d{3})(\d{3})(\d{16})(\d{2})/, '$1 $2 $3 $4') : '', cashplus_name: f.cashplus_name, cashplus_phone: f.cashplus_phone.replace(/[^\d+]/g, ''), wafacash_name: f.wafacash_name, wafacash_phone: f.wafacash_phone.replace(/[^\d+]/g, '') }).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v))
+    const pay = Object.fromEntries(Object.entries({ bank: f.bank, holder: f.holder, rib: rib ? rib.replace(/(\d{3})(\d{3})(\d{16})(\d{2})/, '$1 $2 $3 $4') : '', cashplus_name: f.cashplus_name, cashplus_phone: f.cashplus_phone.replace(/[^\d+]/g, ''), wafacash_name: f.wafacash_name, wafacash_phone: f.wafacash_phone.replace(/[^\d+]/g, ''), other_name: f.other_name, other_info: f.other_info }).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v))
     try { await saveTraiteur({ pay, arboun_pct: Math.min(100, Math.max(5, +f.pct || 30)) }); toast('تسجّل'); close() } catch (e) { fail(e) }
   }
   return (
@@ -196,7 +198,64 @@ function PaySheet({ t, close }) {
         <Field label="السمية"><input value={f.wafacash_name} onChange={set('wafacash_name')} /></Field>
         <Field label="التيليفون"><input inputMode="tel" dir="ltr" value={f.wafacash_phone} onChange={set('wafacash_phone')} placeholder="06…" /></Field>
       </div>
+      <h4 className="lab">💳 طريقة أخرى</h4>
+      <div className="two">
+        <Field label="السمية ديال الطريقة"><input value={f.other_name} onChange={set('other_name')} placeholder="Barid Cash، كاش فالمحل…" /></Field>
+        <Field label="المعلومات"><input value={f.other_info} onChange={set('other_info')} placeholder="النمرة، العنوان…" /></Field>
+      </div>
       <button className="btn brass wide" disabled={!ribOk} onClick={save}>سجّل</button>
+    </Sheet>
+  )
+}
+
+// the traiteur's own rules: nothing in the app is fixed for him
+function RulesSheet({ t, close }) {
+  const r = (k) => ruleOf(k, t)
+  const [f, setF] = useState({
+    perServeur: String(r('perServeur')), minServeurs: String(r('minServeurs')),
+    needNeggafa: !!r('needNeggafa'), needCuisine: !!r('needCuisine'),
+    devisDays: String(r('devisDays')), finalCountDays: String(r('finalCountDays')),
+    time: r('time'), guests: String(r('guests')),
+    clauses: (r('clauses') || []).join('\n'),
+  })
+  const num = (k) => (e) => setF({ ...f, [k]: e.target.value.replace(/\D/g, '').slice(0, 4) })
+  const save = async () => {
+    const n = (k, min) => Math.max(min, +f[k] || RULE_DEFAULTS[k])
+    const rules = {
+      ...(t.rules || {}),
+      perServeur: n('perServeur', 1), minServeurs: Math.max(0, +f.minServeurs || 0),
+      needNeggafa: f.needNeggafa, needCuisine: f.needCuisine,
+      devisDays: n('devisDays', 1), finalCountDays: Math.max(0, +f.finalCountDays || 0),
+      time: /^\d{1,2}:\d{2}$/.test(f.time) ? f.time : RULE_DEFAULTS.time, guests: n('guests', 1),
+      clauses: f.clauses.split('\n').map((x) => x.trim()).filter(Boolean),
+    }
+    try { await saveTraiteur({ rules }); toast('تسجّلو القواعد ديالك'); close() } catch (e) { fail(e) }
+  }
+  return (
+    <Sheet title="القواعد ديال الخدمة ديالك" onClose={close}>
+      <p className="muted">التطبيق كيخدم بهاد الأرقام. بدّلهم بحال ما كتخدم نتا.</p>
+      <h4 className="lab">السرباية</h4>
+      <div className="two">
+        <Field label="ضياف لكل سرباي"><input inputMode="numeric" dir="ltr" value={f.perServeur} onChange={num('perServeur')} /></Field>
+        <Field label="أقل عدد سرباية"><input inputMode="numeric" dir="ltr" value={f.minServeurs} onChange={num('minServeurs')} /></Field>
+      </div>
+      <h4 className="lab">شنو خاصو يتأكّد قبل العرس</h4>
+      <label className="rchk"><input type="checkbox" checked disabled /> العربون والسرباية</label>
+      <label className="rchk"><input type="checkbox" checked={f.needNeggafa} onChange={(e) => setF({ ...f, needNeggafa: e.target.checked })} /> النكافة</label>
+      <label className="rchk"><input type="checkbox" checked={f.needCuisine} onChange={(e) => setF({ ...f, needCuisine: e.target.checked })} /> الكوزينة / الشاف</label>
+      <h4 className="lab">العرس الجديد كيبدا بـ</h4>
+      <div className="two">
+        <Field label="الوقت"><input type="time" dir="ltr" value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></Field>
+        <Field label="عدد الضياف"><input inputMode="numeric" dir="ltr" value={f.guests} onChange={num('guests')} /></Field>
+      </div>
+      <h4 className="lab">الدوفي والعقد</h4>
+      <div className="two">
+        <Field label="الدوفي صالح (أيام)"><input inputMode="numeric" dir="ltr" value={f.devisDays} onChange={num('devisDays')} /></Field>
+        <Field label="العدد النهائي قبل (أيام)"><input inputMode="numeric" dir="ltr" value={f.finalCountDays} onChange={num('finalCountDays')} /></Field>
+      </div>
+      <Field label="الشروط ديالك فالعقد (كل شرط فسطر)" hint="العربون والباقي كيتزادو بوحدهم بالأرقام ديال كل عرس"><textarea rows={6} value={f.clauses} onChange={(e) => setF({ ...f, clauses: e.target.value })} /></Field>
+      <button className="btn brass wide" onClick={save}>سجّل</button>
+      <button className="linkbtn" onClick={() => setF({ ...f, ...Object.fromEntries(Object.entries(RULE_DEFAULTS).map(([k, v]) => [k, Array.isArray(v) ? v.join('\n') : typeof v === 'boolean' ? v : String(v)])) })}>رجّع الأرقام الأولين</button>
     </Sheet>
   )
 }

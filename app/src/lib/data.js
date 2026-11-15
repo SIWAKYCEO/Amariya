@@ -205,8 +205,20 @@ export const extrasSum = (w) => (w.extras || []).reduce((s, e) => s + (+e.amount
 export const totalOf = (w) => Math.round((+w.guests || 0) * (+w.price || 0) + extrasSum(w))
 export const paidOf = (w, payments = state.payments) => payments.filter((p) => p.wedding_id === w.id).reduce((s, p) => s + (+p.amount || 0), 0)
 export const restOf = (w, payments) => Math.max(0, totalOf(w) - paidOf(w, payments))
-// one serveur every 20 guests, at least 2
-export const serveursNeeded = (w) => Math.max(2, Math.ceil((+w.guests || 0) / 20))
+// the traiteur's own rules (Settings → قواعد الخدمة); these are only the starting values
+export const RULE_DEFAULTS = {
+  perServeur: 20, minServeurs: 2, // one serveur every N guests, at least M
+  needNeggafa: true, needCuisine: true, // what must be confirmed before the night
+  devisDays: 15, finalCountDays: 10, // devis valid N days; final guest count N days before
+  time: '20:00', guests: 200, // new wedding starts with these
+  clauses: [
+    'إلا تلغى العرس من جيهة العائلة، العربون ما كيرجعش.',
+    'التريتور مسؤول على الماكلة والخدمة اللي مكتوبين فهاد العقد، فالوقت والبلاصة اللي متافقين عليهم.',
+    'الماتريال ديال التريتور اللي تهرّس من عند الضياف كيتحسب على العائلة بالثمن ديالو.',
+  ],
+}
+export const ruleOf = (k, t = state.traiteur) => { const v = (t?.rules || {})[k]; return v === undefined || v === null || v === '' ? RULE_DEFAULTS[k] : v }
+export const serveursNeeded = (w) => Math.max(+ruleOf('minServeurs') || 0, Math.ceil((+w.guests || 0) / Math.max(1, +ruleOf('perServeur') || 20)))
 
 export function teamOf(w, s = state) {
   const rows = s.assignments.filter((a) => a.wedding_id === w.id).map((a) => ({ ...a, person: s.staff.find((p) => p.id === a.staff_id) })).filter((a) => a.person)
@@ -233,23 +245,26 @@ export function readinessOf(w, s = state) {
   const items = [
     ['العربون', paidOf(w, s.payments) > 0],
     ['السرباية', t.serveursOk >= t.need],
-    ['النكافة', ok('neggafa')],
-    ['الكوزينة', ok('cuisine') || ok('chef')],
-  ]
+    ruleOf('needNeggafa', s.traiteur) && ['النكافة', ok('neggafa')],
+    ruleOf('needCuisine', s.traiteur) && ['الكوزينة', ok('cuisine') || ok('chef')],
+  ].filter(Boolean)
   return { items, done: items.filter((i) => i[1]).length, total: items.length }
 }
 
 // shopping estimate from the menu × guests (rough ratios a traiteur can adjust by eye)
 const BUY = [
-  [/بسطيلة|البسطيلة/, 'البسطيلة', (g) => Math.ceil(g / 10), 'كبيرة'],
-  [/دجاج/, 'الدجاج', (g) => Math.ceil(g / 4), 'دجاجة'],
-  [/مشوي|لحم|خروف|طاجين/, 'اللحم', (g) => Math.round(g * 0.3), 'كيلو'],
-  [/حوت/, 'الحوت', (g) => Math.round(g * 0.12), 'كيلو'],
-  [/فواكه/, 'الفواكه', (g) => Math.round(g * 0.35), 'كيلو'],
-  [/حلويات/, 'الحلويات', (g) => g * 8, 'حبة'],
-  [/أتاي|اتاي/, 'النعناع', (g) => Math.ceil(g / 25), 'ربطة'],
-  [/عصير/, 'العصير', (g) => Math.round(g * 0.3), 'لتر'],
+  [/بسطيلة|البسطيلة/, 'البسطيلة'],
+  [/دجاج/, 'الدجاج'],
+  [/مشوي|لحم|خروف|طاجين/, 'اللحم'],
+  [/حوت/, 'الحوت'],
+  [/فواكه/, 'الفواكه'],
+  [/حلويات/, 'الحلويات'],
+  [/أتاي|اتاي/, 'النعناع'],
+  [/عصير/, 'العصير'],
 ]
+// how much for every 100 guests (the traiteur can change it next to the prices)
+export const QTY_DEFAULTS = { 'البسطيلة': 10, 'الدجاج': 25, 'اللحم': 30, 'الحوت': 12, 'الفواكه': 35, 'الحلويات': 800, 'النعناع': 4, 'العصير': 30 }
+export const qtyPer100 = (label, s = state) => { const v = (s.traiteur?.qty || s.traiteur?.rules?.qty || {})[label]; return v === undefined || v === '' ? QTY_DEFAULTS[label] || 0 : +v }
 // what the traiteur pays for each unit of the shopping list (he can change them in the app)
 export const PRICE_DEFAULTS = { 'البسطيلة': 220, 'الدجاج': 45, 'اللحم': 100, 'الحوت': 70, 'الفواكه': 15, 'الحلويات': 2, 'النعناع': 5, 'العصير': 12, misc: 10 }
 export const PRICE_UNITS = { 'البسطيلة': 'كبيرة', 'الدجاج': 'دجاجة', 'اللحم': 'كيلو', 'الحوت': 'كيلو', 'الفواكه': 'كيلو', 'الحلويات': 'حبة', 'النعناع': 'ربطة', 'العصير': 'لتر' }
@@ -262,8 +277,9 @@ export function shoppingOf(w, s = state) {
   const out = []
   // a pastilla already has its filling (chicken or fish) inside its price: it doesn't count twice
   const rest = items.filter((it) => !BUY[0][0].test(it))
-  for (const [re, label, f, unit] of BUY) if ((label === 'البسطيلة' ? items : rest).some((it) => re.test(it)) && !out.some((o) => o.label === label)) {
-    const qty = f(+w.guests || 0), price = priceOf(label, s)
+  for (const [re, label] of BUY) if ((label === 'البسطيلة' ? items : rest).some((it) => re.test(it)) && !out.some((o) => o.label === label)) {
+    const unit = PRICE_UNITS[label]
+    const qty = Math.ceil(((+w.guests || 0) * qtyPer100(label, s)) / 100), price = priceOf(label, s)
     out.push({ label, qty, unit, price, cost: Math.round(qty * price) })
   }
   return out
