@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { PRICES, ULTRA_SETUP, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
-import { Ic, Logo, toast } from '../ui'
+import { Ic, LangPill, Logo, toast } from '../ui'
 
 // shown once per traiteur: new ones choose how to start, the ones already inside choose after trying it
 const KEY = (id) => 'amariya-intro-' + (id || 'x')
@@ -133,7 +133,7 @@ export default function PlanIntro({ onClose }) {
     <div className={'intro' + (leaving ? ' out' : '')} role="dialog" aria-modal="true" aria-label="اختار الباقة">
       <div className="in-wrap">
         <div className="in-top">
-          <Logo size={24} />
+          <div className="in-bar"><Logo size={24} /><LangPill /></div>
           <h1>{old ? 'اختار الباقة ديالك' : 'كيفاش بغيتي تبدا؟'}</h1>
           <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. تقدر تبدّل الباقة وقتما بغيتي.'}</p>
         </div>

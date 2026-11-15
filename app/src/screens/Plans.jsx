@@ -1,6 +1,6 @@
 import { PLAN_NAME, PRICES, isDemo, planOf, totalOf, useStore } from '../lib/data'
 import { PHOTOS, dayLabel, money } from '../lib/util'
-import { Band, Ic } from '../ui'
+import { Band, Ic, LangPill } from '../ui'
 import { PlanCarousel } from './PlanIntro'
 import { ContactSheet } from './Account'
 import { useState } from 'react'
@@ -17,7 +17,7 @@ export default function Plans({ back }) {
 
   return (
     <div className="screen plans">
-      <Band photo={PHOTOS.hall2} title="الباقات" back={back} kicker={<>دابا عندك: <b>{PLAN_NAME[plan]}</b></>} />
+      <Band photo={PHOTOS.hall2} title="الباقات" back={back} right={<LangPill light />} kicker={<>دابا عندك: <b>{PLAN_NAME[plan]}</b></>} />
       <div className="content" style={{ paddingTop: 4 }}>
         <button className="planhelp" onClick={() => setHelp(true)}>
           <span className="ic">{Ic.wa(20)}</span>

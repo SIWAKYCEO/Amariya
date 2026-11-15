@@ -1,7 +1,7 @@
 import { PRICES, wantPlan } from './lib/data'
 import { useEffect, useRef, useState } from 'react'
 import { money } from './lib/util'
-import { LANG } from './lib/i18n'
+import { LANG, LANGS, CUR, setPrefs } from './lib/i18n'
 
 const sv = (d, w = 22, sw = 1.9) => (
   <svg width={w} height={w} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>
@@ -250,3 +250,35 @@ export function Locked({ title, why, go, children, compact }) {
   )
 }
 export const ProTag = () => <span className="protag">{Ic.lock(11)} Pro</span>
+
+
+// language pill: shows the current language, tap to see all of them
+export function LangPill({ light }) {
+  const [open, setOpen] = useState(false)
+  const pick = async (k) => {
+    setOpen(false)
+    if (k === LANG) return
+    try { const { saveTraiteur, isDemo } = await import('./lib/data'); if (!isDemo) await saveTraiteur({ lang: k, currency: CUR }) } catch { /* saved on this phone anyway */ }
+    setPrefs(k, CUR)
+  }
+  const cur = LANGS.find(([k]) => k === LANG)
+  return (
+    <div className={'langpill' + (light ? ' light' : '')} data-keep>
+      <button type="button" className="lp-btn" onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" /></svg>
+        <span>{cur ? cur[1] : LANG}</span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+      </button>
+      {open && <>
+        <div className="lp-shade" onClick={() => setOpen(false)} />
+        <ul className="lp-menu" role="listbox">
+          {LANGS.map(([k, n]) => (
+            <li key={k}><button type="button" role="option" aria-selected={k === LANG} className={k === LANG ? 'on' : ''} onClick={() => pick(k)} dir={k === 'ar' ? 'rtl' : 'ltr'}>
+              <span>{n}</span>{k === LANG && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M5 12l5 5 9-10" /></svg>}
+            </button></li>
+          ))}
+        </ul>
+      </>}
+    </div>
+  )
+}
