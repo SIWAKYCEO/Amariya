@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { PRICES, ULTRA_SETUP, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
-import { Ic, LangPill, Logo, toast } from '../ui'
+import { Ic, LangPill, Logo, Sheet, toast } from '../ui'
+import PayCard from './PayCard'
 
 // shown once per traiteur: new ones choose how to start, the ones already inside choose after trying it
 const KEY = (id) => 'amariya-intro-' + (id || 'x')
@@ -76,8 +77,13 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
     t.querySelectorAll('[data-k]').forEach((c) => { const r = c.getBoundingClientRect(), m = r.left + r.width / 2; if (Math.abs(m - mid) < d) { d = Math.abs(m - mid); best = c.dataset.k } })
     if (best && best !== on) setOn(best)
   }
+  const [how, setHow] = useState(null), [card, setCard] = useState(null)
   async function pick(k) {
     if (k === 'free') { if (intro) choosePlan('free'); return onFree?.() }
+    if (!isDemo) return setHow(k)
+    return viaWa(k)
+  }
+  async function viaWa(k) {
     const r = await wantPlan(k, null, intro).catch(() => null)
     if (r === 'demo') toast(`تفعّل ${PLANS.find((p) => p.k === k).name} فالتجربة`)
     after?.()
@@ -140,6 +146,15 @@ export default function PlanIntro({ onClose }) {
         <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
         <p className="ip-foot">{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</p>
       </div>
+      {how && (
+        <Sheet onClose={() => setHow(null)} title={`كيفاش بغيتي تخلّص ${PLANS.find((p) => p.k === how).name}؟`}>
+          <div className="payhow">
+            <button className="btn wide brass" onClick={() => { setCard(how); setHow(null) }}>{Ic.cash(18)} بالكارطة البنكية · دابا</button>
+            <button className="btn wide glassbtn2" onClick={() => { const k = how; setHow(null); viaWa(k) }}>{Ic.wa(18)} بالتحويل البنكي · فالواتساب</button>
+          </div>
+        </Sheet>
+      )}
+      {card && <PayCard plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
     </div>
   )
 }
