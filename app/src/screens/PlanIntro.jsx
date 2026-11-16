@@ -126,6 +126,15 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
           </article>
         ))}
       </div>
+      {how && (
+        <Sheet onClose={() => setHow(null)} title={`كيفاش بغيتي تخلّص ${PLANS.find((p) => p.k === how).name}؟`}>
+          <div className="payhow">
+            <button className="btn wide brass" onClick={() => { setCard(how); setHow(null) }}>{Ic.cash(18)} بالكارطة البنكية · دابا</button>
+            <button className="btn wide glassbtn2" onClick={() => { const k = how; setHow(null); viaWa(k) }}>{Ic.wa(18)} بالتحويل البنكي · فالواتساب</button>
+          </div>
+        </Sheet>
+      )}
+      {card && <PayCard plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
     </div>
   )
 }
@@ -146,15 +155,6 @@ export default function PlanIntro({ onClose }) {
         <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
         <p className="ip-foot">{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</p>
       </div>
-      {how && (
-        <Sheet onClose={() => setHow(null)} title={`كيفاش بغيتي تخلّص ${PLANS.find((p) => p.k === how).name}؟`}>
-          <div className="payhow">
-            <button className="btn wide brass" onClick={() => { setCard(how); setHow(null) }}>{Ic.cash(18)} بالكارطة البنكية · دابا</button>
-            <button className="btn wide glassbtn2" onClick={() => { const k = how; setHow(null); viaWa(k) }}>{Ic.wa(18)} بالتحويل البنكي · فالواتساب</button>
-          </div>
-        </Sheet>
-      )}
-      {card && <PayCard plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
     </div>
   )
 }
