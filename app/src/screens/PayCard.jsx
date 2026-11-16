@@ -38,14 +38,17 @@ export default function PayCard({ plan, name, onClose }) {
   async function confirm() {
     if (!pay.current) return
     setSt('paying')
-    const r = await pay.current.confirm()
-    if (r?.status !== 'succeeded') { setSt('form'); toast(r?.error?.message || 'ما دازش الخلاص، عاود جرّب', 'err'); return }
-    // the webhook turns the plan on; wait for it a little
+    let r = null
+    try { r = await pay.current.confirm() } catch (e) { r = { error: e } }
+    // whatever yp.js returns, the truth is our server (the webhook marks it paid)
+    let paid = false
     for (let i = 0; i < 15; i++) {
       const s = await call({ action: 'status', id: info.id })
-      if (s.status === 'paid') break
+      if (s.status === 'paid') { paid = true; break }
+      if (i >= 2 && r?.error) break
       await new Promise((w) => setTimeout(w, 2000))
     }
+    if (!paid) { setSt('form'); toast(r?.error?.message || 'ما دازش الخلاص، عاود جرّب', 'err'); return }
     await load().catch(() => {})
     setSt('done')
   }

@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { isDemo, isPro, load, redeem, useStore } from './lib/data'
 import { setScreen, startPresence } from './lib/presence'
-import { Dock, Ic, Logo, Spin, Toaster, LangPill } from './ui'
+import { Dock, Ic, Logo, Spin, Toaster, LangPill, toast } from './ui'
 import Weddings from './screens/Weddings'
 import { Dashboard, Side, useDesk } from './screens/Desk'
 // home loads first; every other screen is fetched the first time it is opened
@@ -50,6 +50,9 @@ export default function App() {
         const tok = inviteToken()
         if (tok && !isDemo) { setPhase('redeeming'); await redeem(tok); history.replaceState(null, '', location.pathname.replace(/\/i\/.*/, '/')) }
         setPhase((await load()) ? 'ready' : 'welcome')
+        const q = new URLSearchParams(location.search)
+        if (q.has('paid')) { toast('تخلّص بنجاح 🎉 الباقة تفعّلات فالحساب ديالك'); history.replaceState(null, '', location.pathname) }
+        else if (q.has('payfail')) { toast('ما دازش الخلاص، عاود جرّب', 'err'); history.replaceState(null, '', location.pathname) }
       } catch (e) {
         setErr(e?.message === 'expired' ? 'هاد الرابط سالا. طلب رابط جديد.' : 'وقع مشكل فالدخول. عاود جرّب.')
         setPhase('welcome')
