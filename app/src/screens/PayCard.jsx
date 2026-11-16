@@ -1,6 +1,6 @@
 // Pay a plan by card with YouCan Pay: our server makes the token, yp.js shows the card form here, the webhook turns the plan on.
 import { useEffect, useRef, useState } from 'react'
-import { SUPABASE_URL, load, supabase, wantPlan } from '../lib/data'
+import { SUPABASE_URL, load, supabase } from '../lib/data'
 import { Sheet, Spin, toast } from '../ui'
 
 let ypLoading = null
@@ -58,7 +58,7 @@ export default function PayCard({ plan, name, onClose }) {
       <div className="ycp">
         {info && <p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
-        {st === 'error' && <div className="ycp-err"><p>ما قدرناش نحلّو الخلاص بالكارطة دابا.</p><button className="btn wide" onClick={() => { wantPlan(plan); onClose() }}>خلّص بالتحويل البنكي فالواتساب</button></div>}
+        {st === 'error' && <div className="ycp-err"><p>ما قدرناش نحلّو الخلاص دابا. عاود جرّب من بعد شوية.</p><button className="btn wide" onClick={onClose}>رجع</button></div>}
         {st === 'done'
           ? <div className="ycp-ok"><b>تخلّص بنجاح 🎉</b><p>{name} تفعّل فالحساب ديالك.</p><button className="btn wide" onClick={onClose}>مزيان</button></div>
           : <>

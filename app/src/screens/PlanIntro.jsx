@@ -77,10 +77,10 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
     t.querySelectorAll('[data-k]').forEach((c) => { const r = c.getBoundingClientRect(), m = r.left + r.width / 2; if (Math.abs(m - mid) < d) { d = Math.abs(m - mid); best = c.dataset.k } })
     if (best && best !== on) setOn(best)
   }
-  const [how, setHow] = useState(null), [card, setCard] = useState(null)
+  const [card, setCard] = useState(null)
   async function pick(k) {
     if (k === 'free') { if (intro) choosePlan('free'); return onFree?.() }
-    if (!isDemo) return setHow(k)
+    if (!isDemo) return setCard(k)
     return viaWa(k)
   }
   async function viaWa(k) {
@@ -121,19 +121,11 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
                 ? <span className="pc-cur">{Ic.check(14)} هادي اللي عندك دابا</span>
                 : p.k === 'free'
                   ? (onFree && <button className="btn wide pc-btn" onClick={() => pick('free')}>{freeLabel || 'جرّب المجاني'}</button>)
-                  : <button className="btn wide pc-btn" onClick={() => pick(p.k)}>{Ic.wa(17)} بغيت {p.name}</button>}
+                  : <button className="btn wide pc-btn" onClick={() => pick(p.k)}>{Ic.cash(17)} بغيت {p.name}</button>}
             </div>
           </article>
         ))}
       </div>
-      {how && (
-        <Sheet onClose={() => setHow(null)} title={`كيفاش بغيتي تخلّص ${PLANS.find((p) => p.k === how).name}؟`}>
-          <div className="payhow">
-            <button className="btn wide brass" onClick={() => { setCard(how); setHow(null) }}>{Ic.cash(18)} بالكارطة البنكية · دابا</button>
-            <button className="btn wide glassbtn2" onClick={() => { const k = how; setHow(null); viaWa(k) }}>{Ic.wa(18)} بالتحويل البنكي · فالواتساب</button>
-          </div>
-        </Sheet>
-      )}
       {card && <PayCard plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
     </div>
   )
@@ -153,7 +145,7 @@ export default function PlanIntro({ onClose }) {
           <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. تقدر تبدّل الباقة وقتما بغيتي.'}</p>
         </div>
         <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
-        <p className="ip-foot">{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</p>
+        <p className="ip-foot">{Ic.cash(13)} كتخلّص بالكارطة البنكية بأمان، والباقة كتفعّل فالحين.</p>
       </div>
     </div>
   )
