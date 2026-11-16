@@ -58,6 +58,16 @@ input:focus,select:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(15,42,3
 .how:empty{display:none}
 .free{margin-top:22px;text-align:center;font-size:13px;color:rgba(243,237,227,.6)}
 footer{margin-top:30px;text-align:center;font:500 13px "Bricolage Grotesque",system-ui;color:rgba(243,237,227,.45)}
+.bz{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.bz button{min-height:54px;border-radius:14px;border:1.5px solid #d9d0c2;background:#fff;color:var(--ink);font:800 14.5px Alexandria,system-ui;padding:8px 10px 10px;cursor:pointer;line-height:1.35;transition:transform .12s ease,border-color .12s ease}
+.bz button:active{transform:scale(.97)}.bz button.ot{grid-column:1/-1}.bz button.tr{grid-column:1/-1;background:var(--g);color:var(--iv);border-color:var(--g)}
+.bk{border:0;background:none;color:#5b6b66;font:700 13.5px Alexandria,system-ui;cursor:pointer;padding:0 0 12px}
+.bl{margin-top:10px;font-size:15px;line-height:1.7;font-weight:700;color:var(--g);background:#efe7da;border-radius:14px;padding:12px 14px}
+.sv{list-style:none;margin-top:14px;display:grid;gap:8px}
+.sv li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;line-height:1.55}
+.sv li:before{content:"✓";flex:none;width:24px;height:24px;border-radius:50%;background:var(--g);color:var(--br);font:800 13px "Bricolage Grotesque";display:flex;align-items:center;justify-content:center;margin-top:1px}
+.wa{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;height:58px;border-radius:16px;background:#1f9e55;color:#fff;font:900 17px Alexandria,system-ui;text-decoration:none;box-shadow:0 12px 26px rgba(31,158,85,.3)}
+.wa svg{width:24px;height:24px}
 [hidden]{display:none!important}
 .lang{display:flex;gap:4px;background:rgba(243,237,227,.08);border:1px solid rgba(243,237,227,.16);border-radius:999px;padding:3px;direction:ltr}
 .lang button{border:0;background:none;color:rgba(243,237,227,.75);font:700 13px Alexandria,system-ui;padding:6px 12px 8px;border-radius:999px;cursor:pointer}
@@ -78,7 +88,23 @@ html[dir=ltr] .how{text-align:left}
     <div class="f"><b>03</b><span data-i="f3">السرباية كيأكدو من التيليفون</span></div>
   </div>
 
-  <form class="card" id="form" novalidate>
+  <section class="card" id="pick">
+    <h2 data-i="qh">شنو هي الخدمة ديالك؟</h2>
+    <p data-i="qp">اختار، ونوريوك شنو نقدرو نديرو ليك</p>
+    <div class="bz" id="bz"></div>
+  </section>
+
+  <section class="card" id="biz" hidden>
+    <button type="button" class="bk" data-back data-i="back">→ رجوع</button>
+    <h2 id="bzt"></h2>
+    <p class="bl" id="bzl"></p>
+    <ul class="sv" id="bzs"></ul>
+    <a class="wa" id="wa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg><span data-i="wab">هضر معانا فالواتساب</span></a>
+    <div class="note" data-i="wan">فريق أمارية كيجاوبك هنا بالكتابة، فالدقايق</div>
+  </section>
+
+  <form class="card" id="form" novalidate hidden>
+    <button type="button" class="bk" data-back data-i="back">→ رجوع</button>
     <h2 data-i="fh">سجّل وجرّب التطبيق</h2>
     <p data-i="fp">كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا</p>
     <label for="b" data-i="lb">اسم التريتور أو القاعة</label>
@@ -110,19 +136,47 @@ html[dir=ltr] .how{text-align:left}
 </main>
 <script>
 var T={
-ar:{h1:'العرس ديالك كامل<br><em>فتيليفون واحد</em>',sub:'الحجوزات والعربون، الضياف والفاتورة، السرباية والنكافة… كلشي منظم فبلاصة وحدة. سجّل وجرّب <span dir="ltr">Amariya</span> دابا من التيليفون ديالك.',f1:'حتى تاريخ ما كيتحجز بلا عربون',f2:'كل ضيف زايد كيدخل فالفاتورة',f3:'السرباية كيأكدو من التيليفون',fh:'سجّل وجرّب التطبيق',fp:'كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا',lb:'اسم التريتور أو القاعة',lc:'المدينة',lw:'رقم الواتساب',lm:'الإيميل (Gmail)',btn:'سجّلني وحل التطبيق',note:'من بعد ما تسجّل كتدخل للتطبيق نيشان.',free:'التسجيل مجاني وبلا أي التزام',okt:'كندخلوك للتطبيق…',okp:'إلا ما تحلّش بوحدو، ورك على الزر لتحت.',go:'دخل للتطبيق ←',cp:'نسخ الرابط',copied:'تنسخ ✓',pb:'مثلاً: تريتور الفرح',pick:'اختار المدينة',out:'خارج المغرب',other:'مدينة أخرى',wait:'كنوجدو التطبيق ديالك…',
+ar:{qh:'شنو هي الخدمة ديالك؟',qp:'اختار، ونوريوك شنو نقدرو نديرو ليك',back:'→ رجوع',wab:'هضر معانا فالواتساب',wan:'فريق أمارية كيجاوبك هنا بالكتابة، فالدقايق',sh:'فريق أمارية كيتكلف بالتسويق ديالك',msg:'سلام، أنا {b}. بغيت نعرف كيفاش فريق أمارية يقدر يعاوني',h1:'العرس ديالك كامل<br><em>فتيليفون واحد</em>',sub:'الحجوزات والعربون، الضياف والفاتورة، السرباية والنكافة… كلشي منظم فبلاصة وحدة. سجّل وجرّب <span dir="ltr">Amariya</span> دابا من التيليفون ديالك.',f1:'حتى تاريخ ما كيتحجز بلا عربون',f2:'كل ضيف زايد كيدخل فالفاتورة',f3:'السرباية كيأكدو من التيليفون',fh:'سجّل وجرّب التطبيق',fp:'كتاخد أقل من دقيقة، والتطبيق ديالك كيتحل دغيا',lb:'اسم التريتور أو القاعة',lc:'المدينة',lw:'رقم الواتساب',lm:'الإيميل (Gmail)',btn:'سجّلني وحل التطبيق',note:'من بعد ما تسجّل كتدخل للتطبيق نيشان.',free:'التسجيل مجاني وبلا أي التزام',okt:'كندخلوك للتطبيق…',okp:'إلا ما تحلّش بوحدو، ورك على الزر لتحت.',go:'دخل للتطبيق ←',cp:'نسخ الرابط',copied:'تنسخ ✓',pb:'مثلاً: تريتور الفرح',pick:'اختار المدينة',out:'خارج المغرب',other:'مدينة أخرى',wait:'كنوجدو التطبيق ديالك…',
  bad_name:'كتب اسم التريتور أو القاعة',bad_city:'اختار المدينة',bad_phone:'رقم الواتساب ماشي صحيح. اختار البلاد وكتب الرقم ديالك',bad_email:'الإيميل ماشي صحيح، مثلاً exemple@gmail.com',too_many:'بزاف ديال المحاولات، عاود من بعد',exists:'هاد الرقم عندو حساب من قبل. حل التطبيق من التيليفون اللي دخلتي بيه، ولا صيفط لينا فالإنستغرام @amariya_ma',fail:'وقع مشكل، عاود من بعد شوية',
  hi:'باش يبقى عندك فالتيليفون: حل الرابط فـ Safari ← زر المشاركة ← «إضافة إلى الشاشة الرئيسية».',ha:'باش يبقى عندك فالتيليفون: حل الرابط فـ Chrome ← ⋮ ← «إضافة إلى الشاشة الرئيسية».'},
-fr:{h1:'Votre mariage, entièrement<br><em>dans un seul téléphone</em>',sub:'Réservations et acomptes, invités et facture, serveurs et neggafa… tout est organisé au même endroit. Inscrivez-vous et essayez <span dir="ltr">Amariya</span> dès maintenant sur votre téléphone.',f1:'Aucune date réservée sans acompte',f2:'Chaque invité en plus entre dans la facture',f3:'Les serveurs confirment depuis le téléphone',fh:'Inscrivez-vous et essayez l’application',fp:'Moins d’une minute, et votre application s’ouvre tout de suite',lb:'Nom du traiteur ou de la salle',lc:'Ville',lw:'Numéro WhatsApp',lm:'E-mail',btn:'M’inscrire et ouvrir l’application',note:'Après l’inscription, vous entrez directement dans l’application.',free:'Inscription gratuite et sans engagement',okt:'Ouverture de l’application…',okp:'Si elle ne s’ouvre pas toute seule, appuyez sur le bouton ci-dessous.',go:'Entrer dans l’application →',cp:'Copier le lien',copied:'Copié ✓',pb:'Ex. : Traiteur Al Farah',pick:'Choisissez la ville',out:'Hors du Maroc',other:'Autre ville',wait:'Nous préparons votre application…',
+fr:{qh:'Quelle est votre activité ?',qp:'Choisissez, on vous montre ce qu’on peut faire pour vous',back:'← Retour',wab:'Parler avec nous sur WhatsApp',wan:'L’équipe Amariya vous répond ici par écrit, en quelques minutes',sh:'L’équipe Amariya s’occupe de votre marketing',msg:'Bonjour, je suis {b}. Je veux savoir comment l’équipe Amariya peut m’aider',h1:'Votre mariage, entièrement<br><em>dans un seul téléphone</em>',sub:'Réservations et acomptes, invités et facture, serveurs et neggafa… tout est organisé au même endroit. Inscrivez-vous et essayez <span dir="ltr">Amariya</span> dès maintenant sur votre téléphone.',f1:'Aucune date réservée sans acompte',f2:'Chaque invité en plus entre dans la facture',f3:'Les serveurs confirment depuis le téléphone',fh:'Inscrivez-vous et essayez l’application',fp:'Moins d’une minute, et votre application s’ouvre tout de suite',lb:'Nom du traiteur ou de la salle',lc:'Ville',lw:'Numéro WhatsApp',lm:'E-mail',btn:'M’inscrire et ouvrir l’application',note:'Après l’inscription, vous entrez directement dans l’application.',free:'Inscription gratuite et sans engagement',okt:'Ouverture de l’application…',okp:'Si elle ne s’ouvre pas toute seule, appuyez sur le bouton ci-dessous.',go:'Entrer dans l’application →',cp:'Copier le lien',copied:'Copié ✓',pb:'Ex. : Traiteur Al Farah',pick:'Choisissez la ville',out:'Hors du Maroc',other:'Autre ville',wait:'Nous préparons votre application…',
  bad_name:'Écrivez le nom du traiteur ou de la salle',bad_city:'Choisissez la ville',bad_phone:'Numéro WhatsApp invalide. Choisissez le pays et écrivez votre numéro',bad_email:'E-mail invalide, ex. : exemple@gmail.com',too_many:'Trop de tentatives, réessayez plus tard',exists:'Ce numéro a déjà un compte. Ouvrez l’application depuis le téléphone utilisé à l’inscription, ou écrivez-nous sur Instagram @amariya_ma',fail:'Un problème est survenu, réessayez dans un instant',
  hi:'Pour la garder sur votre téléphone : ouvrez le lien dans Safari → Partager → « Sur l’écran d’accueil ».',ha:'Pour la garder sur votre téléphone : ouvrez le lien dans Chrome → ⋮ → « Ajouter à l’écran d’accueil ».'},
-en:{h1:'Your whole wedding business<br><em>in one phone</em>',sub:'Bookings and deposits, guests and invoices, waiters and neggafa… all organised in one place. Sign up and try <span dir="ltr">Amariya</span> now on your phone.',f1:'No date is booked without a deposit',f2:'Every extra guest goes into the invoice',f3:'Waiters confirm from their phone',fh:'Sign up and try the app',fp:'It takes less than a minute, and your app opens right away',lb:'Caterer or venue name',lc:'City',lw:'WhatsApp number',lm:'Email',btn:'Sign me up and open the app',note:'After signing up you go straight into the app.',free:'Free sign-up, no commitment',okt:'Opening your app…',okp:'If it doesn’t open by itself, tap the button below.',go:'Open the app →',cp:'Copy link',copied:'Copied ✓',pb:'e.g. Traiteur Al Farah',pick:'Choose the city',out:'Outside Morocco',other:'Other city',wait:'Preparing your app…',
+en:{qh:'What’s your business?',qp:'Pick one and we’ll show you what we can do for you',back:'← Back',wab:'Talk to us on WhatsApp',wan:'The Amariya team replies here in writing, within minutes',sh:'The Amariya team handles your marketing',msg:'Hi, I’m {b}. I want to know how the Amariya team can help me',h1:'Your whole wedding business<br><em>in one phone</em>',sub:'Bookings and deposits, guests and invoices, waiters and neggafa… all organised in one place. Sign up and try <span dir="ltr">Amariya</span> now on your phone.',f1:'No date is booked without a deposit',f2:'Every extra guest goes into the invoice',f3:'Waiters confirm from their phone',fh:'Sign up and try the app',fp:'It takes less than a minute, and your app opens right away',lb:'Caterer or venue name',lc:'City',lw:'WhatsApp number',lm:'Email',btn:'Sign me up and open the app',note:'After signing up you go straight into the app.',free:'Free sign-up, no commitment',okt:'Opening your app…',okp:'If it doesn’t open by itself, tap the button below.',go:'Open the app →',cp:'Copy link',copied:'Copied ✓',pb:'e.g. Traiteur Al Farah',pick:'Choose the city',out:'Outside Morocco',other:'Other city',wait:'Preparing your app…',
  bad_name:'Write the caterer or venue name',bad_city:'Choose the city',bad_phone:'Invalid WhatsApp number. Pick your country and type your number',bad_email:'Invalid email, e.g. example@gmail.com',too_many:'Too many attempts, try again later',exists:'This number already has an account. Open the app from the phone you signed up with, or message us on Instagram @amariya_ma',fail:'Something went wrong, try again in a moment',
  hi:'To keep it on your phone: open the link in Safari → Share → “Add to Home Screen”.',ha:'To keep it on your phone: open the link in Chrome → ⋮ → “Add to Home screen”.'}};
 var CITIES=[["الدار البيضاء","Casablanca"],["الرباط","Rabat"],["مراكش","Marrakech"],["فاس","Fès"],["طنجة","Tanger"],["أكادير","Agadir"],["مكناس","Meknès"],["وجدة","Oujda"],["القنيطرة","Kénitra"],["تطوان","Tétouan"],["سطات","Settat"],["الجديدة","El Jadida"],["آسفي","Safi"],["بني ملال","Béni Mellal"],["خريبكة","Khouribga"],["المحمدية","Mohammedia"],["تمارة","Témara"],["سلا","Salé"],["برشيد","Berrechid"],["الناظور","Nador"],["العيون","Laâyoune"],["تازة","Taza"],["الخميسات","Khémisset"],["ورزازات","Ouarzazate"],["الصويرة","Essaouira"],["الحسيمة","Al Hoceïma"],["العرائش","Larache"],["خنيفرة","Khénifra"],["تارودانت","Taroudant"]];
 // country codes: [dial, ISO, name]
 var CC=[["212","MA"],["33","FR"],["34","ES"],["39","IT"],["32","BE"],["31","NL"],["49","DE"],["41","CH"],["352","LU"],["44","UK"],["353","IE"],["351","PT"],["1","US/CA"],["971","AE"],["966","SA"],["974","QA"],["965","KW"],["973","BH"],["968","OM"],["216","TN"],["213","DZ"],["20","EG"],["90","TR"]];
 var TZ={'Europe/Paris':'33','Europe/Madrid':'34','Europe/Rome':'39','Europe/Brussels':'32','Europe/Amsterdam':'31','Europe/Berlin':'49','Europe/Zurich':'41','Europe/Luxembourg':'352','Europe/London':'44','Europe/Dublin':'353','Europe/Lisbon':'351','Asia/Dubai':'971','Asia/Riyadh':'966','Asia/Qatar':'974','Asia/Kuwait':'965','Asia/Bahrain':'973','Asia/Muscat':'968','Africa/Tunis':'216','Africa/Algiers':'213','Africa/Cairo':'20','Europe/Istanbul':'90','America/New_York':'1','America/Chicago':'1','America/Los_Angeles':'1','America/Toronto':'1','America/Montreal':'1'};
+var BZ=[
+['tr','تريتور','Traiteur','Caterer'],
+['hall','قاعة الأفراح','Salle des fêtes','Wedding venue','القاعة ديالك تبان فالريلز والإشهار، والعائلات اللي كيسولو على التواريخ كيجاوبهم الواتساب بوحدو.','Votre salle mise en valeur en reels et en pub, et WhatsApp répond tout seul aux familles qui demandent les dates.','Your venue shown in reels and ads, and WhatsApp answers families asking about dates on its own.'],
+['negg','نكافة','Neggafa','Neggafa','التكاشط والعمارية ديالك يتشافو فالمدينة ديالك، والعرايس يحجزو معاك نيشان.','Vos tenues et votre amariya vues dans toute votre ville, et les mariées réservent directement avec vous.','Your outfits and amariya seen across your city, and brides book straight with you.'],
+['photo','مصور / فيديو','Photo / vidéo','Photo / video','الخدمة ديالك ولات بورتفوليو كيخدم عليك، وكل طلب كيتجاوب فالدقيقة.','Votre travail devient un portfolio qui vend pour vous, et chaque demande reçoit une réponse en une minute.','Your work becomes a portfolio that sells for you, and every request gets an answer in a minute.'],
+['music','أوركسترا / DJ','Orchestre / DJ','Band / DJ','الفيديوهات ديال السهرات ديالك كيوصلو للعائلات اللي كيوجدو للعرس.','Les vidéos de vos soirées arrivent aux familles qui préparent leur mariage.','Videos of your nights reach families planning their wedding.'],
+['sweet','حلويات العرس','Pâtisserie','Wedding sweets','الصواني والحلويات ديالك يبانو بحال الماركات الكبار، والطلبات يتجاوبو بوحدهم.','Vos plateaux et gâteaux présentés comme une grande marque, et les commandes reçoivent une réponse toute seule.','Your trays and sweets presented like a big brand, and orders get answered on their own.'],
+['deco','ديكور وتنظيم','Déco & organisation','Decor & planning','كل ديكور درتيه كيولي ريل كيجيب ليك عرس جديد.','Chaque déco que vous faites devient un reel qui vous ramène un nouveau mariage.','Every setup you do becomes a reel that brings you a new wedding.'],
+['tent','الخيام والكراسي','Tentes & chaises','Tents & chairs','العائلات اللي كيديرو العرس فالدار كيلقاوك قبل ما يعيطو لغيرك.','Les familles qui font le mariage à la maison vous trouvent avant d’appeler quelqu’un d’autre.','Families having the wedding at home find you before they call anyone else.'],
+['car','طوموبيلات العرس','Voitures de mariage','Wedding cars','الطوموبيلات ديالك يبانو مزيان، والحجز كيتأكد فالواتساب.','Vos voitures bien mises en valeur, et la réservation se confirme sur WhatsApp.','Your cars properly showcased, and bookings get confirmed on WhatsApp.'],
+['caftan','القفاطن والخياطة','Caftans & couture','Caftans & tailoring','الموديلات ديالك كيوصلو للعرايس اللي فمدينتك.','Vos modèles arrivent aux futures mariées de votre ville.','Your designs reach brides-to-be in your city.'],
+['henna','نقاشة','Henné (naqasha)','Henna artist','النقشات ديالك يتشافو، والمواعيد يتحجزو بلا ما تضيعي الوقت.','Vos motifs sont vus, et les rendez-vous se réservent sans perdre de temps.','Your designs get seen, and appointments get booked without wasting time.'],
+['other','خدمة أخرى','Autre activité','Other business','كيفما كانت الخدمة ديالك فالأعراس والحفلات، كنجيبو ليك الكليان وكنسيرو ليك التسويق.','Quelle que soit votre activité dans les mariages et les fêtes, on vous amène des clients et on gère votre marketing.','Whatever your wedding or event business, we bring you clients and run your marketing.']];
+var SV={ar:['إنستغرام مسيّر، و4 ريلز فالشهر من الفيديوهات ديالك','واتساب كيجاوب الكليان ديالك بوحدو، ليل ونهار','لوغو وهوية كاملة بحال الماركات الكبار','سيت ويب باسمك، وگوگل ماپس عامر بالتقييمات','إشهار كيوصل للعائلات اللي فمدينتك','شخص واحد من الفريق كيتبع معاك كلشي'],
+fr:['Instagram géré, et 4 reels par mois avec vos vidéos','Un WhatsApp qui répond tout seul à vos clients, jour et nuit','Logo et identité complète, comme une grande marque','Site web à votre nom, et Google Maps rempli d’avis','Publicité qui touche les familles de votre ville','Une personne de l’équipe qui suit tout avec vous'],
+en:['Instagram managed for you, plus 4 reels a month from your videos','A WhatsApp that answers your clients on its own, day and night','Logo and full identity, like a big brand','A website in your name, and Google Maps full of reviews','Ads that reach families in your city','One person from the team who follows everything with you']};
+var WA='212621287405',BIZ=null,bzEl=document.getElementById('bz');
+function idx(){return L==='fr'?2:L==='en'?3:1}
+function chips(){bzEl.innerHTML='';BZ.forEach(function(b){var x=document.createElement('button');x.type='button';x.textContent=b[idx()];if(b[0]==='tr'||b[0]==='other')x.className=b[0]==='tr'?'tr':'ot';x.onclick=function(){pickBiz(b[0])};bzEl.appendChild(x)})}
+function bizPanel(){var b=BZ.filter(function(x){return x[0]===BIZ})[0];if(!b)return;var i=idx();
+ document.getElementById('bzt').textContent=T[L].sh;
+ document.getElementById('bzl').textContent=b[i+3];
+ document.getElementById('bzs').innerHTML=SV[L].map(function(t){return '<li>'+t+'</li>'}).join('');
+ document.getElementById('wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent(T[L].msg.replace('{b}',b[i]))}
+function pickBiz(k){BIZ=k;document.getElementById('pick').hidden=true;
+ if(k==='tr'){form.hidden=false;form.scrollIntoView({behavior:'smooth',block:'start'})}
+ else{bizPanel();var p=document.getElementById('biz');p.hidden=false;p.scrollIntoView({behavior:'smooth',block:'start'})}}
+document.querySelectorAll('[data-back]').forEach(function(b){b.onclick=function(){BIZ=null;form.hidden=true;document.getElementById('biz').hidden=true;document.getElementById('pick').hidden=false}});
 var L='ar';try{L=localStorage.getItem('am_lang')||''}catch(_){}
 if(!T[L]){var nl=(navigator.language||'').slice(0,2);L=nl==='fr'?'fr':nl==='en'?'en':'ar'}
 var sel=document.getElementById('c'),ccs=document.getElementById('cc');
@@ -138,7 +192,7 @@ function setLang(l){L=l;try{localStorage.setItem('am_lang',l)}catch(_){}
  document.querySelectorAll('[data-i]').forEach(function(e){var k=e.getAttribute('data-i');if(T[l][k]!=null)e.innerHTML=T[l][k]});
  document.getElementById('b').placeholder=T[l].pb;
  document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.l===l))});
- cities();}
+ cities();chips();bizPanel();}
 document.querySelectorAll('.lang button').forEach(function(b){b.onclick=function(){setLang(b.dataset.l)}});
 ccs.onchange=function(){document.getElementById('w').placeholder=ccs.value==='212'?'6 12 34 56 78':'';if(ccs.value!=='212'&&!sel.value)sel.value='خارج المغرب'};
 setLang(L);ccs.onchange();
@@ -158,7 +212,7 @@ function showApp(tok,title){
   document.getElementById('cp').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent=T[L].copied},function(){prompt('',url)})};
   document.getElementById('how').textContent=IOS?T[L].hi:T[L].ha;
   if(title)document.getElementById('okt').textContent=title;
-  form.hidden=true;document.getElementById('ok').hidden=false;
+  form.hidden=true;document.getElementById('pick').hidden=true;document.getElementById('biz').hidden=true;document.getElementById('ok').hidden=false;
   document.getElementById('ok').scrollIntoView({behavior:'smooth',block:'center'});
   // straight into the app: no waiting page
   if(INAPP){location.href=go.href;setTimeout(function(){if(document.visibilityState==='visible')location.href=url},1500)}
