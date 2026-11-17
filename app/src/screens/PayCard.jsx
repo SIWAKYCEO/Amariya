@@ -51,7 +51,12 @@ export default function PayCard({ plan, name, onClose }) {
       if (i >= 2 && r?.error) break
       await new Promise((w) => setTimeout(w, 2000))
     }
-    if (!paid) { setWhy(String(r?.error?.message || r?.message || '').slice(0, 140)); setSt('fail'); return }
+    if (!paid) {
+      const reason = String(r?.error?.message || r?.error?.code || r?.message || '').slice(0, 140)
+      setWhy(reason); setSt('fail')
+      call({ action: 'failed', id: info.id, reason }).catch(() => {})
+      return
+    }
     await load().catch(() => {})
     setSt('done')
   }

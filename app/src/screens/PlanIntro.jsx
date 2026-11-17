@@ -2,7 +2,7 @@ import { isTraiteur } from '../lib/trades'
 import { useEffect, useRef, useState } from 'react'
 import { PRICES, ULTRA_SETUP, cardPay, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
 import { Ic, LangPill, Logo, Sheet, toast } from '../ui'
-import PayCard from './PayCard'
+import PayChoice from './PayChoice'
 
 // shown once per traiteur: new ones choose how to start, the ones already inside choose after trying it
 const KEY = (id) => 'amariya-intro-' + (id || 'x')
@@ -127,7 +127,7 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
           </article>
         ))}
       </div>
-      {card && <PayCard plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
+      {card && <PayChoice plan={card} name={PLANS.find((p) => p.k === card).name} onClose={() => { setCard(null); after?.() }} />}
     </div>
   )
 }

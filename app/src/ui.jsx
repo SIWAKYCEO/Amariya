@@ -1,6 +1,6 @@
 import { PRICES, cardPay, wantPlan } from './lib/data'
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
-const PayCard = lazy(() => import('./screens/PayCard'))
+const PayChoice = lazy(() => import('./screens/PayChoice'))
 import { money } from './lib/util'
 import { LANG, LANGS, CUR, setPrefs } from './lib/i18n'
 
@@ -248,7 +248,7 @@ export function Locked({ title, why, go, children, compact }) {
         <button className="btn brass" onClick={() => (cardPay() ? setPay(true) : wantPlan('pro', title))}>{cardPay() ? Ic.cash(16) : Ic.wa(16)} فتح بـ Pro · <span className="num" dir="ltr">{PRICES.pro}</span> درهم</button>
         <button className="linkbtn lk-more" onClick={() => go('plans')}>شوف شنو كاين فـ Pro</button>
       </div>
-      {pay && <Suspense fallback={null}><PayCard plan="pro" name="Pro" onClose={() => setPay(false)} /></Suspense>}
+      {pay && <Suspense fallback={null}><PayChoice plan="pro" name="Pro" onClose={() => setPay(false)} /></Suspense>}
     </div>
   )
 }
