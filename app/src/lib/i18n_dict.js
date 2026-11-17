@@ -2915,4 +2915,6 @@ Object.assign(EX, {
   "الفريق ديالك مأكّد لكل عرس": ["Votre équipe confirmée pour chaque mariage", "Your team confirmed for every wedding"],
   "الخدمات": ["prestataires", "providers"],
   "النكافات": ["Neggafas", "Neggafas"],
+  "مساعدة فالواتساب": ["Aide sur WhatsApp", "Help on WhatsApp"],
+  "فريق Amariya معاك فاش ما احتجتي": ["L’équipe Amariya avec vous dès que besoin", "The Amariya team with you whenever you need"],
 })

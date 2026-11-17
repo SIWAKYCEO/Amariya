@@ -124,8 +124,8 @@ export default function App() {
       {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : desk ? <Dashboard go={go} /> : <Weddings go={go} />)}
       </Suspense>
   )
-  // PC: fixed side menu + wide main area; the phone layout below is unchanged
-  if (desk && isPro(s.traiteur)) return (
+  // PC (every plan): fixed side menu + wide main area; the phone layout below is unchanged
+  if (desk) return (
     <div className="app desk">
       <Side v={route.v} go={go} />
       <main className="dmain">{screens}</main>
@@ -134,9 +134,7 @@ export default function App() {
     </div>
   )
   return (
-    <div className={'app withdock' + (desk ? ' deskfree' : '')}>
-      {desk && <div className="desklang"><LangPill /></div>}
-      {desk && <button className="deskbar" onClick={() => go('plans')}>{Ic.lock(15)} النسخة الكاملة ديال الكمبيوتر كاينة فـ Pro · شوف الباقات</button>}
+    <div className="app withdock">
       {screens}
       <Dock tab={dockTab} go={go} />
       {intro && <PlanIntro onClose={() => setIntro(false)} />}
