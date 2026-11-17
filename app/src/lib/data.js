@@ -11,8 +11,9 @@ export const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
 export const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
 
 export const isDemo = import.meta.env.VITE_DEMO === '1' || new URLSearchParams(location.search).has('demo')
-// card payment (YouCan Pay, live since 17/11/2026) for every real account; the demo keeps the WhatsApp way
-export const cardPay = (t = state.traiteur) => !isDemo && !!t
+// card payment (YouCan Pay): for everyone only once the server is really live; until then internal/TEST accounts, the others go to our WhatsApp
+export const CARD_LIVE = false
+export const cardPay = (t = state.traiteur) => !isDemo && !!t && (CARD_LIVE || t.internal === true || /^TEST/i.test(t.name || ''))
 export const supabase = isDemo ? null : createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'amariya-auth' },
 })
