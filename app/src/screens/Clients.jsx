@@ -52,7 +52,7 @@ export default function Clients({ go }) {
           return (
             <div className="cli" key={c.key} role="button" tabIndex={0} onClick={() => setOpen(c)}>
               <span className="calbox"><small>{DAYS[d.getDay()]}</small><b>{d.getDate()}</b></span>
-              <span className="mid"><b>{c.family}</b><span className="meta">{c.weddings.length > 1 ? `${c.weddings.length} عراسات · ` : ''}{[w.hall, w.guests ? `${w.guests} ضيف` : ''].filter(Boolean).join(' · ')}</span><span className="cst">{status(c)}</span></span>
+              <span className="mid"><b>{c.family}</b><span className="meta">{c.weddings.length > 1 ? `${c.weddings.length} عراسات · ` : ''}{[w.hall, +w.guests > 0 ? `${w.guests} ضيف` : w.package_name].filter(Boolean).join(' · ')}</span><span className="cst">{status(c)}</span></span>
               {c.phone && <button className="wab" onClick={(e) => { e.stopPropagation(); openExternal(waLink(c.phone, `السلام عليكم ${c.family}`)) }} aria-label="واتساب">{Ic.wa(20)}</button>}
             </div>
           )
@@ -72,7 +72,7 @@ export default function Clients({ go }) {
           <div className="list">
             {open.weddings.map((w) => (
               <button key={w.id} className="crow" onClick={() => { setOpen(null); go('wedding', { id: w.id }) }}>
-                <span className="mid"><b>{dayLabel(w.day)}</b><span className="meta">{w.hall} · <span dir="ltr">{w.guests}</span> ضيف</span></span>
+                <span className="mid"><b>{dayLabel(w.day)}</b><span className="meta">{[w.hall, +w.guests > 0 ? `${w.guests} ضيف` : w.package_name].filter(Boolean).join(' · ')}</span></span>
                 <DH v={totalOf(w)} />
               </button>
             ))}

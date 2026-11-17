@@ -1,32 +1,36 @@
 import { useState } from 'react'
-import { add, extrasSum, ruleOf, update, useStore } from '../lib/data'
+import { add, extrasSum, ruleOf, update, useStore, newIsFlat } from '../lib/data'
+import { quickExtras, usesGuests, pkgWord } from '../lib/trades'
 import { addDays, dayKey, dayLabel, normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, Stepper, TopBar, fail, toast } from '../ui'
 
-const QUICK = ['نكافة', 'العمارية', 'ديكور', 'التصوير', 'الحلويات', 'الدقايقية']
 
 export default function NewWedding({ back, done, edit, prefill }) {
   const s = useStore()
   const pk0 = s.packages[0]
   const [step, setStep] = useState(0)
   const [busy, setBusy] = useState(false)
+  const guestsOn = usesGuests()
   const [f, setF] = useState(() => edit
     ? { ...edit, phone: prettyPhone(edit.phone), extras: edit.extras || [] }
-    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: +ruleOf('guests', s.traiteur) || 200, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', ...prefill })
+    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: guestsOn ? +ruleOf('guests', s.traiteur) || 200 : 0, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', flat: newIsFlat(), ...prefill })
+  const flat = !!f.flat
+  const QUICK = quickExtras()
   const [arboun, setArboun] = useState('')
   const [more, setMore] = useState(!!edit)
   const set = (p) => setF((x) => ({ ...x, ...p }))
   const clash = s.weddings.filter((w) => w.day === f.day && w.status !== 'cancelled' && w.id !== edit?.id)
-  const total = Math.round((+f.guests || 0) * (+f.price || 0) + extrasSum(f))
+  const base = flat ? +f.price || 0 : (+f.guests || 0) * (+f.price || 0)
+  const total = Math.round(base + extrasSum(f))
 
   const ok0 = f.family.trim().length > 1 && f.day
-  const ok1 = +f.guests > 0 && +f.price > 0
+  const ok1 = (flat || +f.guests > 0) && +f.price > 0
 
   async function save() {
     setBusy(true)
     const row = {
       family: f.family.trim(), phone: normPhone(f.phone), day: f.day, time: f.time, hall: f.hall.trim(), city: f.city.trim(),
-      guests: +f.guests, package_id: f.package_id, package_name: f.package_name, price: +f.price,
+      guests: +f.guests || 0, flat, package_id: f.package_id, package_name: f.package_name, price: +f.price,
       extras: f.extras.filter((e) => e.label && +e.amount > 0).map((e) => ({ label: e.label, amount: +e.amount })), notes: f.notes,
     }
     try {
@@ -39,7 +43,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
     } catch (e) { fail(e); setBusy(false) }
   }
 
-  const steps = ['شكون؟', 'الضياف', edit ? 'راجع' : 'الدوفي']
+  const steps = ['شكون؟', guestsOn ? 'الضياف' : pkgWord(), edit ? 'راجع' : 'الدوفي']
   return (
     <div className="screen form" data-editing>
       <TopBar title={edit ? 'بدّل العرس' : 'عرس جديد'} back={step ? () => setStep(step - 1) : back} />
@@ -49,7 +53,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
         <div className="pane">
           <Field label="سمية العائلة"><input autoFocus value={f.family} onChange={(e) => set({ family: e.target.value })} placeholder="مثلا: عائلة بنعلي" /></Field>
           <Field label="النهار"><input type="date" value={f.day} onChange={(e) => set({ day: e.target.value })} /></Field>
-          <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>
+          {guestsOn && <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>}
             {clash.length > 0 && <p className="clash">{Ic.cal(15)} عندك {clash.length === 1 ? 'عرس' : clash.length + ' عراسات'} هاد النهار: {clash.map((w) => w.family).join('، ')}</p>}
           {!more && <button className="linkbtn" onClick={() => setMore(true)}>+ التيليفون، الساعة، القاعة (تقدر تزيدهم من بعد)</button>}
           {more && <>
@@ -65,19 +69,19 @@ export default function NewWedding({ back, done, edit, prefill }) {
 
       {step === 1 && (
         <div className="pane">
-          <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>
-          <span className="lab">المينو</span>
+          {guestsOn && <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>}
+          <span className="lab">{pkgWord()}</span>
           <div className="pkgs">
             {s.packages.map((p) => (
               <button key={p.id} className={'pkg' + (f.package_id === p.id ? ' on' : '')} onClick={() => set({ package_id: p.id, package_name: p.name, price: p.price })}>
                 <span className="pn">{p.name}</span>
-                <span className="pp"><DH v={p.price} /><small> / للضيف</small></span>
+                <span className="pp"><DH v={p.price} />{!flat && <small> / للضيف</small>}</span>
                 <span className="pi">{(p.items || []).slice(0, 4).join(' · ')}</span>
                 {f.package_id === p.id && <span className="tick">{Ic.check(13)}</span>}
               </button>
             ))}
           </div>
-          <Field label="الثمن ديال الضيف (تقدر تبدلو)"><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => set({ price: e.target.value.replace(/[^\d.]/g, '') })} /></Field>
+          <Field label={flat ? 'الثمن (تقدر تبدلو)' : 'الثمن ديال الضيف (تقدر تبدلو)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => set({ price: e.target.value.replace(/[^\d.]/g, '') })} /></Field>
           <span className="lab">زيادات</span>
           <div className="quick">
             {QUICK.filter((q) => !f.extras.some((e) => e.label === q)).map((q) => <button key={q} className="qchip" onClick={() => set({ extras: [...f.extras, { label: q, amount: '' }] })}>+ {q}</button>)}
@@ -97,7 +101,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
         <div className="pane">
           <div className="devis">
             <div className="dv-h"><b>{f.family}</b><span>{dayLabel(f.day)} · <span dir="ltr">{f.time}</span>{f.hall ? ' · ' + f.hall : ''}</span></div>
-            <div className="dv-r"><span>{f.package_name || 'المينو'} · <span dir="ltr">{f.guests} × {f.price}</span></span><DH v={(+f.guests || 0) * (+f.price || 0)} /></div>
+            <div className="dv-r"><span>{f.package_name || pkgWord()}{!flat && <> · <span dir="ltr">{f.guests} × {f.price}</span></>}</span><DH v={base} /></div>
             {f.extras.filter((e) => e.label && +e.amount > 0).map((e, i) => <div className="dv-r" key={i}><span>{e.label}</span><DH v={+e.amount} /></div>)}
             <div className="dv-t"><span>المجموع</span><DH v={total} /></div>
           </div>

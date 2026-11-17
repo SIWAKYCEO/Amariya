@@ -1,3 +1,4 @@
+import { usesFood } from '../lib/trades'
 import { useState } from 'react'
 import { MISC_LABEL, PRICE_DEFAULTS, PRICE_UNITS, QTY_DEFAULTS, profitOf, qtyPer100, saveTraiteur, useStore } from '../lib/data'
 import { money } from '../lib/util'
@@ -23,19 +24,19 @@ export function ProfitCard({ w }) {
       <div className="pf-big">
         <small>{lost ? 'خسارة' : p.past ? 'الربح الصافي' : 'الربح الصافي (تقريبا)'}</small>
         <div className="pf-num"><Count v={p.net} /></div>
-        <span className="pf-sub">على كل ضيف: <DH v={p.perGuest} /> · <span dir="ltr">{p.pct}%</span> من الدخل</span>
+        <span className="pf-sub">{+w.guests > 0 && !w.flat && <>على كل ضيف: <DH v={p.perGuest} /> · </>}<span dir="ltr">{p.pct}%</span> من الدخل</span>
       </div>
 
       <div className="pf-bar" aria-hidden="true">{parts.map(([k, v]) => <i key={k} className={k} style={{ width: (v / sum) * 100 + '%' }} />)}</div>
 
       <ul className="pf-rows">
-        <li><span className="k in" /><span className="t"><b>الدخل ديال العرس</b><small>الضياف × الثمن + الزيادات</small></span><span className="v plus"><DH v={p.income} /></span></li>
-        <li>
+        <li><span className="k in" /><span className="t"><b>الدخل ديال العرس</b><small>{w.flat ? 'الثمن + الزيادات' : 'الضياف × الثمن + الزيادات'}</small></span><span className="v plus"><DH v={p.income} /></span></li>
+        {usesFood() && <li>
           <span className="k food" />
           <span className="t"><b>الماكلة والسلعة {p.estimated && <em className="est">تقدير</em>}</b>
             <small>{p.estimated ? 'محسوبة من لائحة الشرا والأثمنة ديالك' : 'اللي سجّلتي بصّح لهاد العرس'}</small></span>
           <span className="v">− <DH v={p.food} /></span>
-        </li>
+        </li>}
         <li>
           <span className="k staff" />
           <span className="t"><b>الخدامة</b><small>{p.staffCount ? <><span dir="ltr">{p.staffCount}</span> خدام × الخلصة ديالهم</> : 'باقي ما زدتي الخدامة لهاد العرس'}</small></span>
@@ -46,26 +47,26 @@ export function ProfitCard({ w }) {
         )}
       </ul>
 
-      {lost && <p className="pf-warn">هاد العرس خاسر. شوف الثمن ديال الضيف ولا المصاريف قبل ما تأكّد.</p>}
-      {!lost && p.estimated && <p className="hint">هادا غير تقدير. ملّي تشري السلعة، سجّل شحال خلّصتي والربح كيولّي حقيقي.</p>}
+      {lost && <p className="pf-warn">{w.flat ? 'هاد العرس خاسر. شوف الثمن ولا المصاريف قبل ما تأكّد.' : 'هاد العرس خاسر. شوف الثمن ديال الضيف ولا المصاريف قبل ما تأكّد.'}</p>}
+      {!lost && p.estimated && usesFood() && <p className="hint">هادا غير تقدير. ملّي تشري السلعة، سجّل شحال خلّصتي والربح كيولّي حقيقي.</p>}
 
       <button className="linkrow" onClick={() => setSheet('how')}><span className="qm">؟</span> كيفاش كنحسبو هاد الربح؟</button>
 
       <div className="btnrow pf-btns">
         <button className="btn green" onClick={() => setSheet('exp')}>سجّل شنو صرفتي</button>
-        <button className="btn ghost" onClick={() => setSheet('prices')}>{Ic.pen(16)} الأثمنة ديالك</button>
+        {usesFood() && <button className="btn ghost" onClick={() => setSheet('prices')}>{Ic.pen(16)} الأثمنة ديالك</button>}
       </div>
 
       {sheet === 'how' && (
         <Sheet title="كيفاش كنحسبو الربح؟" onClose={() => setSheet(null)}>
           <ol className="how">
-            <li><b>الدخل:</b> عدد الضياف × الثمن ديال الضيف، وزيد عليه الزيادات بحال النكافة والديكور.</li>
-            <li><b>الماكلة:</b> التطبيق كيحسب شحال خاصك تشري من اللحم والدجاج والحلويات… على حساب الضياف، وكيضربها فالأثمنة ديالك. وزيد <span dir="ltr">{money(PRICE_DEFAULTS.misc)}</span> درهم تقريبا على كل ضيف ديال {MISC_LABEL}.</li>
-            <li><b>ملّي تسجّل الشرا بصّح</b> (اللحم، الدجاج، الخضرة…) لهاد العرس، التطبيق كيحيد التقدير وكيحط الرقم الحقيقي.</li>
+            {usesFood() ? <li><b>الدخل:</b> عدد الضياف × الثمن ديال الضيف، وزيد عليه الزيادات بحال النكافة والديكور.</li> : <li><b>الدخل:</b> الثمن ديال العرس، وزيد عليه الزيادات.</li>}
+            {usesFood() && <><li><b>الماكلة:</b> التطبيق كيحسب شحال خاصك تشري من اللحم والدجاج والحلويات… على حساب الضياف، وكيضربها فالأثمنة ديالك. وزيد <span dir="ltr">{money(PRICE_DEFAULTS.misc)}</span> درهم تقريبا على كل ضيف ديال {MISC_LABEL}.</li>
+            <li><b>ملّي تسجّل الشرا بصّح</b> (اللحم، الدجاج، الخضرة…) لهاد العرس، التطبيق كيحيد التقدير وكيحط الرقم الحقيقي.</li></>}
             <li><b>الخدامة:</b> كل واحد زدتيه لهاد العرس بالخلصة ديالو.</li>
             <li><b>مصاريف أخرى:</b> المازوط، الكرا، وأي حاجة سجّلتيها لهاد العرس.</li>
           </ol>
-          <div className="howeq"><span>الدخل</span><b>−</b><span>الماكلة</span><b>−</b><span>الخدامة</span><b>−</b><span>الأخرى</span><b>=</b><span className="r">الربح ديالك</span></div>
+          <div className="howeq"><span>الدخل</span><b>−</b>{usesFood() && <><span>الماكلة</span><b>−</b></>}<span>الخدامة</span><b>−</b><span>الأخرى</span><b>=</b><span className="r">الربح ديالك</span></div>
           <button className="btn brass wide" onClick={() => setSheet(null)}>فهمت</button>
         </Sheet>
       )}

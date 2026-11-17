@@ -1,7 +1,8 @@
 // PC layout only (screens 1024px and wider): side menu + dashboard home.
 // The phone layout never renders anything from this file.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PLAN_NAME, paidOf, planOf, problemsOf, restOf, teamOf, totalOf, useStore } from '../lib/data'
+import { PLAN_NAME, paidOf, planOf, problemsOf, restOf, teamBar, teamOf, totalOf, useStore } from '../lib/data'
+import { isTraiteur, pkgWord, stockOf, usesGuests } from '../lib/trades'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Empty, Ic, LangPill, Logo } from '../ui'
 import { Inbox, QuickReplies } from './Inbox'
@@ -32,7 +33,7 @@ export function Side({ v, go }) {
             {ic(20)}<span>{l}</span>{n > 0 && <b className={hot ? 'hot' : ''} dir="ltr">{n}</b>}
           </button>
         ))}
-        <button className={'dnav' + (v === 'stock' ? ' on' : '')} onClick={() => go('stock')}>{Ic.box(20)}<span>الماتريال</span></button>
+        {stockOf() && <button className={'dnav' + (v === 'stock' ? ' on' : '')} onClick={() => go('stock')}>{Ic.box(20)}<span>الماتريال</span></button>}
         <h6>الحساب</h6>
         <button className={'dnav' + (v === 'plans' ? ' on' : '')} onClick={() => go('plans')}>{Ic.lock(20)}<span>الباقات</span><b className="dplan">{PLAN_NAME[planOf(tr)]}</b></button>
         <button className="dnav" onClick={() => setHelp(true)}>{Ic.wa(20)}<span>تواصل معانا</span></button>
@@ -126,16 +127,16 @@ export function Dashboard({ go }) {
           </div>
           {rows.length === 0 ? <Empty title={n ? 'ما لقينا والو' : 'ما كاين حتى عرس هنا'} sub={n ? '' : 'زيد عرس جديد وغادي يبان هنا'} /> : (
             <div className="dtbl">
-              <div className="tr th"><span>النهار</span><span>العائلة</span><span>الضياف</span><span>السرباية</span><span>الخلاص</span><span className="l">الباقي</span></div>
+              <div className="tr th"><span>النهار</span><span>العائلة</span><span>{usesGuests() ? 'الضياف' : pkgWord()}</span><span>{isTraiteur() ? 'السرباية' : 'الفريق'}</span><span>الخلاص</span><span className="l">الباقي</span></div>
               {rows.map((w) => {
-                const d = fromKey(w.day), t = teamOf(w, s), paid = paidOf(w, s.payments), rest = restOf(w, s.payments), probs = problemsOf(w, s)
-                const pct = Math.min(100, (t.serveursOk / (t.need || 1)) * 100)
+                const d = fromKey(w.day), t = teamBar(w, s), paid = paidOf(w, s.payments), rest = restOf(w, s.payments), probs = problemsOf(w, s)
+                const pct = t.need ? Math.min(100, (t.ok / t.need) * 100) : 0
                 return (
                   <button key={w.id} className="tr" onClick={() => go('wedding', { id: w.id })}>
                     <span><span className={'cbx' + (probs.length ? ' hot' : '')}><small>{DAYS[d.getDay()]}</small><b dir="ltr">{d.getDate()}</b><small>{MONTHS[d.getMonth()]}</small></span></span>
                     <span className="fm"><i style={{ backgroundImage: `url(${photoFor(w.id)})` }} /><span><b>{w.family}</b><small>{[w.hall, w.city].filter(Boolean).join(' · ')} · <span dir="ltr">{w.time}</span></small></span></span>
-                    <span className="num">{w.guests}</span>
-                    <span className={'mtr' + (t.serveursOk < t.need ? ' hot' : '')}><i><em style={{ width: pct + '%' }} /></i><b dir="ltr">{t.serveursOk}/{t.need}</b></span>
+                    {usesGuests() ? <span className="num">{w.guests || '—'}</span> : <span className="pkn">{w.package_name || '—'}</span>}
+                    <span className={'mtr' + (t.short ? ' hot' : '')}><i><em style={{ width: pct + '%' }} /></i><b dir="ltr">{t.ok}/{t.need}</b></span>
                     <span>{w.status === 'devis' ? <em className="pl br">دوفي</em> : rest <= 0 ? <em className="pl ok">✓ خالص كامل</em> : paid <= 0 ? <em className="pl hot">بلا عربون</em> : <em className="pl ok">✓ العربون</em>}</span>
                     <span className="l"><DH v={rest} /></span>
                   </button>

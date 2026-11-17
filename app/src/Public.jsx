@@ -4,7 +4,11 @@ import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_KEY, SUPABASE_URL } from './lib/data'
 import { DAYS, MONTHS, PHOTOS, addDays, cropStyle, dayKey, dayLabel, fromKey, money, waLink } from './lib/util'
 import { Ic, Logo } from './ui'
-import { applyPrefsOf } from './lib/i18n'
+import { applyPrefsOf, startTranslator } from './lib/i18n'
+import { L, TRADES, setTrade, tradeName, usesFood, usesGuests, vocabOn } from './lib/trades'
+// the page speaks the language of the business it shows (words, per guest or one price)
+const useTradeFor = (t) => { if (!t) return; setTrade(t); if (vocabOn()) startTranslator() }
+const pic = (i) => (usesFood() ? cropStyle(PICS[i % PICS.length]) : { backgroundImage: `url(${[PHOTOS.hall, PHOTOS.amariya, PHOTOS.hall2][i % 3]})`, backgroundSize: 'cover', backgroundPosition: 'center' })
 
 const db = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'amariya-public' } })
 const PICS = ['pastilla', 'tajine', 'sweet']
@@ -61,6 +65,7 @@ export function PublicDevis({ token }) {
 
   useEffect(() => {
     db.rpc('amr_pub_devis', { p_token: token }).then(({ data }) => {
+      if (data) useTradeFor(data.traiteur)
       setD(data || null)
       if (data) {
         applyPrefsOf(data.traiteur)
@@ -116,7 +121,7 @@ export function PublicDevis({ token }) {
           {(w.items || []).length > 0 && <div className="dv-items">{w.items.map((x) => <span key={x}>{x}</span>)}</div>}
         </div>
         <div className="dv-lines">
-          <div><span><span dir="ltr">{w.guests}</span> ضيف × <span dir="ltr">{money(w.price)}</span> DH</span><b dir="ltr">{money(w.guests * w.price)} DH</b></div>
+          {w.flat ? <div><span>{w.package || 'الثمن'}</span><b dir="ltr">{money(w.price)} DH</b></div> : <div><span><span dir="ltr">{w.guests}</span> ضيف × <span dir="ltr">{money(w.price)}</span> DH</span><b dir="ltr">{money(w.guests * w.price)} DH</b></div>}
           {ex.map((e, i) => <div key={i}><span>{e.label}</span><b dir="ltr">{money(e.amount)} DH</b></div>)}
         </div>
         <div className="dv-total"><span>المجموع</span><b dir="ltr">{money(d.total)} <small>DH</small></b></div>
@@ -193,7 +198,7 @@ export function PublicShop({ slug }) {
   const [st, setSt] = useState('idle')
   const [mo, setMo] = useState(0)
   const formRef = useRef(null)
-  useEffect(() => { db.rpc('amr_pub_vetrina', { p_slug: slug }).then(({ data }) => { setD(data || null); applyPrefsOf(data) }, () => setD(null)) }, [slug])
+  useEffect(() => { db.rpc('amr_pub_vetrina', { p_slug: slug }).then(({ data }) => { useTradeFor(data); setD(data || null); applyPrefsOf(data) }, () => setD(null)) }, [slug])
   useEffect(() => { if (d?.name) document.title = `${d.name} · Amariya` }, [d])
   const busy = useMemo(() => new Set(d?.busy || []), [d])
   if (d === undefined) return <Loading />
@@ -214,21 +219,21 @@ export function PublicShop({ slug }) {
 
   return (
     <Shell head={<>
-      <span className="pub-k">تريتور · {d.city}</span>
+      <span className="pub-k">{tradeName()} · {d.city}</span>
       <h1>{d.name}</h1>
       {d.bio && <p>{d.bio}</p>}
       <div className="pub-cta">
         <button className="pbtn brass" onClick={() => goForm({})}>طلب دوفي</button>
         {d.phone && <button className="pbtn glass" onClick={() => open(waLink(d.phone, 'السلام عليكم، شفت الصفحة ديالكم فـ Amariya وبغيت نسول على عرس 🌿'))}>{Ic.wa(18)} واتساب</button>}
       </div>
-      {min > 0 && <span className="pub-from">ابتداءً من <b dir="ltr">{money(min)} DH</b> للضيف</span>}
+      {min > 0 && <span className="pub-from">ابتداءً من <b dir="ltr">{money(min)} DH</b>{d.per_guest !== false && ' للضيف'}</span>}
     </>}>
       {d.menus.length > 0 && <>
         <h2 className="psec">المينوهات</h2>
         <div className="pmenus">
           {d.menus.map((x, i) => (
             <article key={x.id} className="pmenu">
-              <span className="img" style={cropStyle(PICS[i % PICS.length])}><span className="price"><small>ابتداءً من</small><b dir="ltr">{money(x.price)} <small>DH</small></b></span></span>
+              <span className="img" style={pic(i)}><span className="price"><small>ابتداءً من</small><b dir="ltr">{money(x.price)} <small>DH</small></b></span></span>
               <div className="bd"><b>{x.name}</b><ul>{(x.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
                 <button className="pbtn line" onClick={() => goForm({ pkg: x.id })}>بغيت هاد المينو</button></div>
             </article>
@@ -260,7 +265,7 @@ export function PublicShop({ slug }) {
           </div>
           <div className="ptwo">
             <label><small>النهار</small><input type="date" dir="ltr" min={dayKey(new Date())} max={dayKey(addDays(new Date(), 540))} value={f.day} onChange={(e) => setF({ ...f, day: e.target.value })} /></label>
-            <label><small>شحال من ضيف</small><input inputMode="numeric" dir="ltr" value={f.guests} onChange={(e) => setF({ ...f, guests: e.target.value.replace(/\D/g, '').slice(0, 4) })} placeholder="200" /></label>
+            {usesGuests() && <label><small>شحال من ضيف</small><input inputMode="numeric" dir="ltr" value={f.guests} onChange={(e) => setF({ ...f, guests: e.target.value.replace(/\D/g, '').slice(0, 4) })} placeholder="200" /></label>}
           </div>
           {f.day && busy.has(f.day) && <p className="note">هاد النهار محجوز. تقدر تختار نهار آخر.</p>}
           {d.menus.length > 0 && <div className="pchips">{d.menus.map((x) => <button type="button" key={x.id} className={f.pkg === x.id ? 'on' : ''} onClick={() => setF({ ...f, pkg: f.pkg === x.id ? '' : x.id })}>{x.name} · <span dir="ltr">{money(x.price)}</span></button>)}</div>}
@@ -292,12 +297,12 @@ export function PublicDirectory() {
       {list.length === 0 && <p className="pub-empty">ما كاين حتى تريتور هنا دابا.</p>}
       <div className="dir-l">{list.map((x, i) => (
         <a key={x.slug} className={'dir-i' + (x.featured ? ' ft' : '')} href={`/t/${x.slug}`}>
-          <span className="dir-img" style={cropStyle(PICS[i % PICS.length])} />
+          <span className="dir-img" style={x.trade && x.trade !== 'tr' ? { backgroundImage: `url(${[PHOTOS.hall, PHOTOS.amariya, PHOTOS.hall2][i % 3]})`, backgroundSize: 'cover', backgroundPosition: 'center' } : cropStyle(PICS[i % PICS.length])} />
           <span className="dir-b">
             {x.featured && <span className="dir-ft">مميّز</span>}
             <b>{x.name}</b>
-            <small>{x.city}{x.bio ? ' · ' + x.bio : ''}</small>
-            {+x.from > 0 && <span className="dir-p">من <b className="num" dir="ltr">{money(x.from)}</b> درهم للضيف</span>}
+            <small>{x.trade && x.trade !== 'tr' && TRADES[x.trade] ? L(TRADES[x.trade].name) + ' · ' : ''}{x.city}{x.bio ? ' · ' + x.bio : ''}</small>
+            {+x.from > 0 && <span className="dir-p">من <b className="num" dir="ltr">{money(x.from)}</b> درهم{x.per_guest !== false && ' للضيف'}</span>}
           </span>
         </a>
       ))}</div>

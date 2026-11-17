@@ -56,7 +56,7 @@ export async function receiptImage({ w, p, pays, total, traiteur }) {
   const paid = upto.reduce((a, x) => a + +x.amount, 0)
   const rest = Math.max(0, total - paid)
   const history = upto.length > 1 ? upto : []
-  const rows = [['العائلة', w.family], ['نهار العرس', dayLabel(w.day)], ['الضيوف', null, `${w.guests}`], ...(w.hall ? [['القاعة', w.hall]] : [])]
+  const rows = [['العائلة', w.family], ['نهار العرس', dayLabel(w.day)], ...(+w.guests > 0 ? [['الضيوف', null, `${w.guests}`]] : []), ...(w.hall ? [['القاعة', w.hall]] : [])]
 
   const lg = await logo('rgba(243,237,227,.9)').catch(() => null)
   const probe = document.createElement('canvas').getContext('2d')

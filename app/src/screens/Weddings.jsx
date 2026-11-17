@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react'
-import { isSample, seedSample, paidOf, problemsOf, readinessOf, teamOf, totalOf, useStore } from '../lib/data'
+import { isSample, seedSample, paidOf, problemsOf, readinessOf, teamBar, teamOf, totalOf, useStore } from '../lib/data'
 import { DAYS, PHOTOS, addDays, dayKey, daysFromToday, fromKey, greeting, photoFor, todayKey, MONTHS } from '../lib/util'
 import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar } from './Account'
 
-const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا' }
+const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا', team: 'الفريق باقي ما تأكّد' }
 
 export function WeddingChips({ w, s }) {
-  const t = teamOf(w, s)
+  const t = teamBar(w, s)
   const probs = problemsOf(w, s)
-  const short = t.serveursOk < t.need
   return (
     <div className="chips">
-      <span className="chip">{Ic.guests(13)} <b dir="ltr">{w.guests}</b> ضيف</span>
-      {w.status !== 'done' && <span className={'chip' + (short ? ' hot' : ' ok')}>{Ic.team(13)} السرباية <b dir="ltr">{t.serveursOk}/{t.need}</b></span>}
+      {+w.guests > 0 ? <span className="chip">{Ic.guests(13)} <b dir="ltr">{w.guests}</b> ضيف</span> : w.package_name ? <span className="chip">{Ic.box(13)} {w.package_name}</span> : null}
+      {w.status !== 'done' && t.need > 0 && <span className={'chip' + (t.short ? ' hot' : ' ok')}>{Ic.team(13)} {t.label} <b dir="ltr">{t.ok}/{t.need}</b></span>}
       {probs.includes('noArboun') ? <span className="chip hot">بلا عربون</span> : <span className="chip ok">{Ic.check(12)} العربون</span>}
     </div>
   )
@@ -58,7 +57,7 @@ function Row({ w, s, go }) {
       <span className="dbox"><small>{DAYS[d.getDay()]}</small><b>{d.getDate()}</b><small>{MONTHS[d.getMonth()]}</small></span>
       <span className="mid">
         <b>{w.family}</b>
-        <span className="meta">{w.hall} · <span dir="ltr">{w.time}</span> · <span dir="ltr">{w.guests}</span> ضيف</span>
+        <span className="meta">{[w.hall, <span key="t" dir="ltr">{w.time}</span>, +w.guests > 0 ? <span key="g"><span dir="ltr">{w.guests}</span> ضيف</span> : w.package_name].filter(Boolean).reduce((a, x, i) => i ? [...a, ' · ', x] : [x], [])}</span>
         {probs.length > 0 ? <span className="warn">{PROBLEM[probs[0]]}</span> : w.status === 'devis' ? <span className="soft">دوفي، باقي ما تأكدش</span> : <span className="good">{Ic.check(12)} كلشي واجد</span>}
       </span>
       <span className="amt"><DH v={totalOf(w)} unit={false} /><small>DH</small></span>

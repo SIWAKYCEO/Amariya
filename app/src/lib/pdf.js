@@ -98,7 +98,7 @@ function page1(ctx, d, kind) {
 
   // event details, two columns
   y = section(ctx, 'معلومات العرس', y)
-  const info = [['العائلة', w.family], ['التيليفون', w.phone ? prettyPhone(w.phone) : '—', true], ['نهار العرس', dayLabel(w.day)], ['الوقت', w.time || '—', true], ['القاعة', [w.hall, w.city].filter(Boolean).join('، ') || '—'], ['عدد الضياف', String(w.guests), true]]
+  const info = [['العائلة', w.family], ['التيليفون', w.phone ? prettyPhone(w.phone) : '—', true], ['نهار العرس', dayLabel(w.day)], ['الوقت', w.time || '—', true], ['القاعة', [w.hall, w.city].filter(Boolean).join('، ') || '—'], ...(+w.guests > 0 ? [['عدد الضياف', String(w.guests), true]] : [])]
   const colW = (R - L - 40) / 2
   info.forEach(([k, v, ltr], i) => {
     const cx = i % 2 === 0 ? R : R - colW - 40, yy = y + Math.floor(i / 2) * 92
@@ -116,7 +116,7 @@ function page1(ctx, d, kind) {
 
   // price table
   y += 20
-  const rows = [[`${w.guests} ضيف × ${money(w.price)} درهم`, (+w.guests || 0) * (+w.price || 0)], ...(w.extras || []).map((e) => [e.label, +e.amount || 0])]
+  const rows = [w.flat ? [w.package_name || pkg?.name || 'الثمن', +w.price || 0] : [`${w.guests} ضيف × ${money(w.price)} درهم`, (+w.guests || 0) * (+w.price || 0)], ...(w.extras || []).map((e) => [e.label, +e.amount || 0])]
   rows.forEach(([k, v]) => {
     rr(ctx, L, y, R - L, 76, 18, 'rgba(15,42,36,.04)')
     fit(ctx, k, R - 28, y + 49, (s) => AR(500, s), 27, C.ink, R - L - 320)
@@ -157,10 +157,10 @@ function page2(ctx, d) {
   y = section(ctx, 'الشروط', y)
   const clauses = [
     `الداتة ديال العرس (${dayLabel(w.day)}) كتتحجز غير ملّي يتخلّص العربون: ${money(arboun)} درهم.`,
-    `العدد النهائي ديال الضياف كيتعطى ${ruleOf('finalCountDays', tr)} أيام قبل العرس. كل ضيف زايد كيتحسب بنفس الثمن ديال الضيف.`,
+    !w.flat && +w.guests > 0 && `العدد النهائي ديال الضياف كيتعطى ${ruleOf('finalCountDays', tr)} أيام قبل العرس. كل ضيف زايد كيتحسب بنفس الثمن ديال الضيف.`,
     d.paid > 0 ? `باقي ${money(d.rest)} درهم ديال الخلاص، كيتخلّص كامل قبل ما تبدا الخدمة نهار العرس.` : `الباقي (${money(Math.max(0, total - arboun))} درهم من بعد العربون) كيتخلّص كامل قبل ما تبدا الخدمة نهار العرس.`,
     ...(ruleOf('clauses', tr) || []).filter((c) => String(c).trim()),
-  ]
+  ].filter(Boolean)
   clauses.forEach((c, i) => {
     rr(ctx, R - 46, y - 30, 46, 46, 14, C.green)
     text(ctx, String(i + 1), R - 23, y + 2, NUM(700, 24), C.brass, 'center', 'ltr')

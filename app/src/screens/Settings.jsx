@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { InstallButton } from '../install'
-import { RULE_DEFAULTS, add, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
+import { RULE_DEFAULTS, ruleDefault, add, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
 import { ContactSheet } from './Account'
 import { CUR, CURRENCIES, LANG, LANGS, setPrefs } from '../lib/i18n'
+import { L, TRADES, TRADE_KEYS, isTraiteur, perGuest, pkgWord, pkgsWord, stockHint, stockOf, tradeName, trades, usesFood, usesGuests } from '../lib/trades'
 
 export default function Settings({ back, go }) {
   const savePrefs = async (lang, currency) => {
@@ -27,7 +28,7 @@ export default function Settings({ back, go }) {
 
   return (
     <div className="screen form">
-      <Band photo={PHOTOS.food} pos="center 75%" title="الإعدادات" back={back}>
+      <Band photo={usesFood() ? PHOTOS.food : PHOTOS.hall} pos={usesFood() ? 'center 75%' : 'center'} title="الإعدادات" back={back}>
         <div className="prof">
           <span className="lgx">{first}</span>
           <span style={{ flex: 1, minWidth: 0 }}><b>{t.name || 'التريتور ديالك'}</b><small>{t.city}{t.city && t.phone && ' · '}{t.phone && <span dir="ltr">{prettyPhone(t.phone)}</span>}{!t.city && !t.phone && 'زيد المدينة والتيليفون'}</small></span>
@@ -47,25 +48,30 @@ export default function Settings({ back, go }) {
         </button>
         {help && <ContactSheet onClose={() => setHelp(false)} />}
 
-        <h4 className="sec2">المينوهات والأثمنة <button className="mini" onClick={() => setPk({})}>{Ic.plus(16)} زيد مينو</button></h4>
+        <h4 className="sec2">الخدمة ديالك</h4>
+        <div className="glist">
+          <button className="gli" onClick={() => setSh('trade')}><span className="ic">{Ic.team(17)}</span><span className="gtx"><b>{trades().map((k) => tradeName(k)).join(' + ')}</b><small>{perGuest() ? 'الثمن ديال الضيف' : 'ثمن واحد للعرس'} · التطبيق كيتبدّل على حساب الخدمة</small></span><span className="x">بدّل</span></button>
+        </div>
+
+        <h4 className="sec2">{pkgsWord()} والأثمنة <button className="mini" onClick={() => setPk({})}>{Ic.plus(16)} زيد</button></h4>
         <div className="hscroll">
           {s.packages.map((p, i) => (
             <button key={p.id} className="mncard" onClick={() => setPk(p)}>
-              <span className="img" style={cropStyle(pics[i % pics.length])}><span className="num" dir="ltr">{p.price}<small> DH</small></span></span>
+              <span className="img" style={usesFood() ? cropStyle(pics[i % pics.length]) : { backgroundImage: `url(${[PHOTOS.hall, PHOTOS.amariya, PHOTOS.hall2][i % 3]})`, backgroundSize: 'cover', backgroundPosition: 'center' }}><span className="num" dir="ltr">{p.price}<small> DH</small></span></span>
               <span className="bd"><b>{p.name}</b><small>{(p.items || []).join(' · ')}</small></span>
             </button>
           ))}
-          <button className="mncard add" onClick={() => setPk({})}>{Ic.plus(24)}مينو جديد</button>
+          <button className="mncard add" onClick={() => setPk({})}>{Ic.plus(24)}{isTraiteur() ? 'مينو جديد' : 'زيد وحدة جديدة'}</button>
         </div>
-        <p className="muted" style={{ margin: '-4px 4px 0' }}>الثمن ديال الضيف. كيتحسب بيه الدوفي بوحدو.</p>
+        <p className="muted" style={{ margin: '-4px 4px 0' }}>{perGuest() ? 'الثمن ديال الضيف. كيتحسب بيه الدوفي بوحدو.' : 'الثمن ديال العرس كامل. كيتحسب بيه الدوفي بوحدو.'}</p>
 
         <h4 className="sec2">الصفحة ديالك والخلاص</h4>
         <div className="glist">
           <button className="gli" onClick={() => setSh('page')}><span className="ic">{Ic.share(17)}</span><span className="gtx"><b>الصفحة ديالك</b><small dir="ltr">{link ? link.replace('https://', '') : '—'}</small></span><span className="x">{t.public_on === false ? 'مسدودة' : 'خدامة'}</span></button>
           <button className="gli" onClick={() => setSh('pay')}><span className="ic">{Ic.cash(17)}</span><span className="gtx"><b>كيفاش كيخلّصوك العربون</b><small>{payLine || 'زيد الـ RIB ولا CashPlus'}</small></span><span className="x"><span dir="ltr">{t.arboun_pct || 30}%</span></span></button>
           <button className="gli" onClick={() => (isPro(t) ? setSh('logo') : go('plans'))}><span className="ic">{t.logo ? <img src={t.logo} alt="" className="lgmini" /> : Ic.pen(17)}</span><span className="gtx"><b>اللوغو ديالك</b><small>كيبان فالدوفي والعقد PDF</small></span><span className="x">{isPro(t) ? (t.logo ? 'بدّل' : 'زيد') : <>{Ic.lock(13)} Pro</>}</span></button>
-          <button className="gli" onClick={() => go('stock')}><span className="ic">{Ic.box(17)}</span><span className="gtx"><b>الماتريال ديالك</b><small>الطباسل، الكيسان، الطناجر…</small></span>{!isPro(t) && <span className="x">{Ic.lock(13)} Pro</span>}</button>
-          <button className="gli" onClick={() => setSh('rules')}><span className="ic">{Ic.pen(17)}</span><span className="gtx"><b>القواعد ديال الخدمة ديالك</b><small>السرباية، الدوفي، شروط العقد، العرس الجديد</small></span><span className="x">بدّل</span></button>
+          {stockOf() && <button className="gli" onClick={() => go('stock')}><span className="ic">{Ic.box(17)}</span><span className="gtx"><b>الماتريال ديالك</b><small>{isTraiteur() ? 'الطباسل، الكيسان، الطناجر…' : stockHint()}</small></span>{!isPro(t) && <span className="x">{Ic.lock(13)} Pro</span>}</button>}
+          <button className="gli" onClick={() => setSh('rules')}><span className="ic">{Ic.pen(17)}</span><span className="gtx"><b>القواعد ديال الخدمة ديالك</b><small>{isTraiteur() ? 'السرباية، الدوفي، شروط العقد، العرس الجديد' : 'الدوفي، شروط العقد، العرس الجديد'}</small></span><span className="x">بدّل</span></button>
           <button className="gli" onClick={() => setSh('qr')}><span className="ic">{Ic.wa(17)}</span><span className="gtx"><b>ردود جاهزين</b><small>الثمن، النهار، العربون، الصفحة</small></span></button>
         </div>
         <p className="muted" style={{ margin: '8px 4px 0' }}>الكليان كيشوفو المينوهات والنهارات الخاوين وكيطلبو الدوفي، وكيخلّصو العربون من الرابط ديال الدوفي.</p>
@@ -75,6 +81,7 @@ export default function Settings({ back, go }) {
           <div className="glist">
             <a className="gli" href="?demo=1&pro=1"><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>التجربة · كلشي مفتوح</b><small>أرقام وعراسات ماشي حقيقيين، Pro و Premium مفتوحين</small></span></a>
             <a className="gli" href="?demo=1&free=1"><span className="ic">{Ic.lock(17)}</span><span className="gtx"><b>التجربة · بحال تريتور جديد</b><small>المجاني بالقفل، باش تشوف شنو كيشوف الكليان</small></span></a>
+            <DemoTrades />
           </div>
           <p className="muted" style={{ margin: '8px 4px 0' }}>هاد الحساب ما كيبانش فالداشبورد وما كيصيفط حتى نوتيفيكاسيون.</p>
         </>}
@@ -83,6 +90,7 @@ export default function Settings({ back, go }) {
           <div className="glist">
             <a className="gli" href="?demo=1&pro=1"><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>كلشي مفتوح</b><small>Pro و Premium</small></span></a>
             <a className="gli" href="?demo=1&free=1"><span className="ic">{Ic.lock(17)}</span><span className="gtx"><b>بحال تريتور جديد</b><small>المجاني بالقفل</small></span></a>
+            <DemoTrades />
             <a className="gli" href="./"><span className="ic">{Ic.back(17)}</span><span className="gtx"><b>رجع للحساب ديالي</b><small>الأرقام الحقيقيين</small></span></a>
           </div>
         </>}
@@ -118,6 +126,7 @@ export default function Settings({ back, go }) {
       {sh === 'page' && <PageSheet t={t} close={() => setSh(null)} />}
       {sh === 'pay' && <PaySheet t={t} close={() => setSh(null)} />}
       {sh === 'rules' && <RulesSheet t={t} close={() => setSh(null)} />}
+      {sh === 'trade' && <TradeSheet t={t} close={() => setSh(null)} />}
       {sh === 'qr' && <QuickReplies onClose={() => setSh(null)} />}
       {sh === 'logo' && <LogoSheet t={t} close={() => setSh(null)} />}
     </div>
@@ -133,8 +142,8 @@ function PackageSheet({ p, close }) {
   return (
     <Sheet title={p.id ? p.name : 'مينو جديد'} onClose={close}>
       <Field label="السمية"><input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="مثلا: الملكي" /></Field>
-      <Field label="الثمن ديال الضيف (DH)"><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, '') })} /></Field>
-      <Field label="الماكلة (كل وحدة فسطر)"><textarea rows={6} value={f.items} onChange={(e) => setF({ ...f, items: e.target.value })} placeholder={'البسطيلة\nالمشوي\nالفواكه'} /></Field>
+      <Field label={perGuest() ? 'الثمن ديال الضيف (DH)' : 'الثمن (DH)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, '') })} /></Field>
+      <Field label={usesFood() ? 'الماكلة (كل وحدة فسطر)' : 'شنو فيها (كل حاجة فسطر)'}><textarea rows={6} value={f.items} onChange={(e) => setF({ ...f, items: e.target.value })} placeholder={usesFood() ? 'البسطيلة\nالمشوي\nالفواكه' : '…'} /></Field>
       <button className="btn brass wide" disabled={!f.name.trim() || !+f.price} onClick={save}>سجّل</button>
       {p.id && <button className="btn ghost wide danger" onClick={() => remove('packages', p.id).then(close).catch(fail)}>{Ic.trash()} مسحو</button>}
     </Sheet>
@@ -234,6 +243,7 @@ function RulesSheet({ t, close }) {
   return (
     <Sheet title="القواعد ديال الخدمة ديالك" onClose={close}>
       <p className="muted">التطبيق كيخدم بهاد الأرقام. بدّلهم بحال ما كتخدم نتا.</p>
+      {isTraiteur() && <>
       <h4 className="lab">السرباية</h4>
       <div className="two">
         <Field label="ضياف لكل سرباي"><input inputMode="numeric" dir="ltr" value={f.perServeur} onChange={num('perServeur')} /></Field>
@@ -243,19 +253,20 @@ function RulesSheet({ t, close }) {
       <label className="rchk"><input type="checkbox" checked disabled /> العربون والسرباية</label>
       <label className="rchk"><input type="checkbox" checked={f.needNeggafa} onChange={(e) => setF({ ...f, needNeggafa: e.target.checked })} /> النكافة</label>
       <label className="rchk"><input type="checkbox" checked={f.needCuisine} onChange={(e) => setF({ ...f, needCuisine: e.target.checked })} /> الكوزينة / الشاف</label>
+      </>}
       <h4 className="lab">العرس الجديد كيبدا بـ</h4>
       <div className="two">
         <Field label="الوقت"><input type="time" dir="ltr" value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} /></Field>
-        <Field label="عدد الضياف"><input inputMode="numeric" dir="ltr" value={f.guests} onChange={num('guests')} /></Field>
+        {usesGuests() && <Field label="عدد الضياف"><input inputMode="numeric" dir="ltr" value={f.guests} onChange={num('guests')} /></Field>}
       </div>
       <h4 className="lab">الدوفي والعقد</h4>
       <div className="two">
         <Field label="الدوفي صالح (أيام)"><input inputMode="numeric" dir="ltr" value={f.devisDays} onChange={num('devisDays')} /></Field>
-        <Field label="العدد النهائي قبل (أيام)"><input inputMode="numeric" dir="ltr" value={f.finalCountDays} onChange={num('finalCountDays')} /></Field>
+        {usesGuests() && <Field label="العدد النهائي قبل (أيام)"><input inputMode="numeric" dir="ltr" value={f.finalCountDays} onChange={num('finalCountDays')} /></Field>}
       </div>
       <Field label="الشروط ديالك فالعقد (كل شرط فسطر)" hint="العربون والباقي كيتزادو بوحدهم بالأرقام ديال كل عرس"><textarea rows={6} value={f.clauses} onChange={(e) => setF({ ...f, clauses: e.target.value })} /></Field>
       <button className="btn brass wide" onClick={save}>سجّل</button>
-      <button className="linkbtn" onClick={() => setF({ ...f, ...Object.fromEntries(Object.entries(RULE_DEFAULTS).map(([k, v]) => [k, Array.isArray(v) ? v.join('\n') : typeof v === 'boolean' ? v : String(v)])) })}>رجّع الأرقام الأولين</button>
+      <button className="linkbtn" onClick={() => setF({ ...f, ...Object.fromEntries(Object.keys(RULE_DEFAULTS).map((k) => [k, ruleDefault(k)]).map(([k, v]) => [k, Array.isArray(v) ? v.join('\n') : typeof v === 'boolean' ? v : String(v)])) })}>رجّع الأرقام الأولين</button>
     </Sheet>
   )
 }
@@ -281,4 +292,47 @@ function LogoSheet({ t, close }) {
       {src && <button className="linkbtn danger" onClick={() => setSrc('')}>حيد اللوغو</button>}
     </Sheet>
   )
+}
+
+// what the business does: one or more trades (the first decides the words) and how the price is counted
+function TradeSheet({ t, close }) {
+  const [sel, setSel] = useState(trades())
+  const [pg, setPg] = useState(perGuest())
+  const [touched, setTouched] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const flip = (k) => {
+    const next = sel.includes(k) ? (sel.length > 1 ? sel.filter((y) => y !== k) : sel) : [...sel, k]
+    setSel(next)
+    if (!touched) setPg(!!TRADES[next[0]].perGuest)
+  }
+  const pick = (v) => { setTouched(true); setPg(v) }
+  async function save() {
+    setBusy(true)
+    try {
+      await saveTraiteur({ trade: sel[0], trades: sel, rules: { ...(t.rules || {}), perGuest: pg } })
+      toast('تسجّل')
+      setTimeout(() => location.reload(), 400)
+    } catch (e) { fail(e); setBusy(false) }
+  }
+  return (
+    <Sheet title="شنو كتخدم؟" onClose={close}>
+      <p className="muted">اختار الخدمة ديالك (تقدر تختار جوج ولا كثر). الأولى اللي كتختار هي اللي كيتبدّل عليها التطبيق.</p>
+      <div className="quick tradechips">
+        {TRADE_KEYS.map((k) => <button key={k} className={'qchip' + (sel.includes(k) ? ' on' : '')} onClick={() => flip(k)}>{sel.indexOf(k) === 0 && sel.length > 1 ? '★ ' : ''}{L(TRADES[k].name)}</button>)}
+      </div>
+      <h4 className="lab">الثمن كيتحسب</h4>
+      <div className="quick">
+        <button className={'qchip' + (!pg ? ' on' : '')} onClick={() => pick(false)}>ثمن واحد للعرس</button>
+        <button className={'qchip' + (pg ? ' on' : '')} onClick={() => pick(true)}>الثمن ديال الضيف</button>
+      </div>
+      <p className="muted">العراسات اللي تسجّلو قبل كيبقاو بالحساب ديالهم.</p>
+      <button className="btn brass wide" disabled={busy} onClick={save}>سجّل</button>
+    </Sheet>
+  )
+}
+// demo of each trade (internal accounts and the demo)
+function DemoTrades() {
+  return TRADE_KEYS.filter((k) => k !== 'tr').map((k) => (
+    <a key={k} className="gli" href={`?demo=1&pro=1&type=${k}`}><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>التجربة · {L(TRADES[k].name)}</b><small>كيفاش كيبان التطبيق لهاد الخدمة</small></span></a>
+  ))
 }

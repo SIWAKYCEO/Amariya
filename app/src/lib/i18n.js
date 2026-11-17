@@ -4,6 +4,7 @@
 // every text the app shows is looked up in the dictionary (exact text, then patterns,
 // then word by word for dates), and amounts in DH get the traiteur's currency symbol.
 import { EX } from './i18n_dict'
+import { applyVocab, vocabOn } from './trades'
 
 export const LANGS = [['ar', 'الدارجة'], ['fr', 'Français'], ['en', 'English']]
 export const CURRENCIES = [
@@ -26,7 +27,7 @@ const put = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.remo
 
 export let LANG = 'ar'
 export let CUR = 'MAD'
-export const isDefault = () => LANG === 'ar' && CUR === 'MAD'
+export const isDefault = () => LANG === 'ar' && CUR === 'MAD' && !vocabOn()
 export const curSym = () => SYM[CUR] || 'DH'
 
 // ?lang=fr&cur=EUR from the sign-up page wins, then what this phone saved
@@ -173,6 +174,7 @@ export function tr(text, { keepCur = false } = {}) {
   if (isDefault() || text == null) return text
   let s = String(text)
   if (LANG !== 'ar') s = s.split('\n').map(one).join('\n')
+  s = applyVocab(s)
   return keepCur ? s : money(s)
 }
 

@@ -1,3 +1,4 @@
+import { usesFood } from '../lib/trades'
 import { useState } from 'react'
 import { add, isPro, paidOf, profitOf, remove, restOf, totalOf, useStore } from '../lib/data'
 import { MONTHS, PHOTOS, cropStyle, dayKey, dayLabel, expenseCrop, money, photoFor } from '../lib/util'
@@ -91,7 +92,8 @@ export default function Money({ go }) {
   )
 }
 
-const QUICK = [['اللحم', 'meat'], ['الدجاج', 'chick'], ['الخضرة والفواكه', 'veg'], ['الحلويات', 'sweet'], ['العطرية', 'spice'], ['الحوت', null], ['كرا الماتريال', null], ['المازوط', null]]
+const QUICK_FOOD = [['اللحم', 'meat'], ['الدجاج', 'chick'], ['الخضرة والفواكه', 'veg'], ['الحلويات', 'sweet'], ['العطرية', 'spice'], ['الحوت', null], ['كرا الماتريال', null], ['المازوط', null]]
+const QUICK_OTHER = [['المازوط', null], ['الكرا', null], ['الصيانة', null], ['الشرا', null], ['التنقل', null], ['الإشهار', null]]
 export function ExpenseSheet({ close, weddingId = '' }) {
   const s = useStore()
   const [f, setF] = useState({ label: '', amount: '', wedding_id: weddingId })
@@ -109,7 +111,7 @@ export function ExpenseSheet({ close, weddingId = '' }) {
         <span className={'num' + (+f.amount ? '' : ' zero')} dir="ltr">{money(+f.amount || 0)}<small> DH</small></span>
       </div>
       <div className="cats">
-        {QUICK.map(([q, k]) => <button key={q} className={'cat' + (f.label === q ? ' on' : '')} onClick={() => { setOther(false); setF({ ...f, label: q }) }}><Thumb size={74} radius={22} style={cropStyle(k)} icon={Ic.cart(26)} />{q.replace(' والفواكه', '').replace('كرا ', '')}</button>)}
+        {(usesFood() ? QUICK_FOOD : QUICK_OTHER).map(([q, k]) => <button key={q} className={'cat' + (f.label === q ? ' on' : '')} onClick={() => { setOther(false); setF({ ...f, label: q }) }}><Thumb size={74} radius={22} style={cropStyle(k)} icon={Ic.cart(26)} />{q.replace(' والفواكه', '').replace('كرا ', '')}</button>)}
         <button className={'cat' + (other ? ' on' : '')} onClick={() => { setOther(true); setF({ ...f, label: '' }) }}><Thumb size={74} radius={22} icon={Ic.pen(24)} />شي حاجة أخرى</button>
       </div>
       {other && <input className="lbl-in" autoFocus value={f.label} onChange={(e) => setF({ ...f, label: e.target.value })} placeholder="شنو؟" />}

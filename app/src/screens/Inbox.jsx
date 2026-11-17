@@ -1,3 +1,4 @@
+import { perGuest, theTrade, usesGuests } from '../lib/trades'
 // What the traiteur has to do now: new devis requests, deposit proofs to confirm, balance reminders.
 // Plus the ready-made replies and the shared WhatsApp texts.
 import { useEffect, useState } from 'react'
@@ -12,7 +13,7 @@ export const remindText = (w, rest, tr) => [
   `السلام عليكم ${w.family} 🌿`,
   `كنفكّروكم بلي العرس نهار ${dayLabel(w.day)} وباقي ${money(rest)} DH.`,
   devisLink(w) && `تقدرو تخلّصو وتصيفطو الوصل من هنا: ${devisLink(w)}`,
-  `الله يكمّل بالخير، ${tr?.name || 'التريتور'}`,
+  `الله يكمّل بالخير، ${tr?.name || theTrade()}`,
 ].filter(Boolean).join('\n')
 
 const ago = (iso) => {
@@ -117,15 +118,15 @@ export function replies(s) {
   const out = []
   out.push(['الثمن', [
     'السلام عليكم ومرحبا 🌿',
-    `هادو المينوهات ديال ${t.name || 'التريتور'}:`,
-    ...menus.map((p) => `• ${p.name}: ${money(p.price)} DH للضيف${(p.items || []).length ? ` (${p.items.slice(0, 4).join('، ')})` : ''}`),
+    `هادو المينوهات ديال ${t.name || theTrade()}:`,
+    ...menus.map((p) => `• ${p.name}: ${money(p.price)} DH${perGuest() ? ' للضيف' : ''}${(p.items || []).length ? ` (${p.items.slice(0, 4).join('، ')})` : ''}`),
     link && `شوف الصور والنهارات الخاوين: ${link}`,
-    'عطيني النهار، المدينة وشحال من ضيف ونصيفط ليك الدوفي فالحين 🙏',
+    usesGuests() ? 'عطيني النهار، المدينة وشحال من ضيف ونصيفط ليك الدوفي فالحين 🙏' : 'عطيني النهار والمدينة ونصيفط ليك الدوفي فالحين 🙏',
   ].filter(Boolean).join('\n')])
-  out.push(['النهار والضياف', 'السلام عليكم ومرحبا 🌿\nعافاك عطيني: النهار ديال العرس، المدينة والقاعة، وشحال من ضيف تقريبا.\nنشوف واش النهار خاوي ونصيفط ليك الدوفي 🙏'])
+  out.push(usesGuests() ? ['النهار والضياف', 'السلام عليكم ومرحبا 🌿\nعافاك عطيني: النهار ديال العرس، المدينة والقاعة، وشحال من ضيف تقريبا.\nنشوف واش النهار خاوي ونصيفط ليك الدوفي 🙏'] : ['النهار', 'السلام عليكم ومرحبا 🌿\nعافاك عطيني: النهار ديال العرس، المدينة والقاعة.\nنشوف واش النهار خاوي ونصيفط ليك الدوفي 🙏'])
   const how = [pay.rib && `🏦 ${pay.bank || 'البنك'} · ${pay.holder || ''}\nRIB: ${pay.rib}`, pay.cashplus_phone && `💸 CashPlus: ${pay.cashplus_name || ''} · ${pay.cashplus_phone}`, pay.wafacash_phone && `💸 Wafacash: ${pay.wafacash_name || ''} · ${pay.wafacash_phone}`].filter(Boolean)
   out.push(['العربون', [`باش نحجزو ليكم النهار كنطلبو عربون ${t.arboun_pct || 30}% من المجموع.`, how.length ? `تقدرو تخلّصو هنا:\n${how.join('\n')}` : 'غادي نصيفط ليكم الرابط ديال الدوفي فيه كيفاش تخلّصو.', 'ومن بعد صيفطو لينا صورة الوصل ونأكّدو ليكم الحجز ✅'].join('\n')])
-  if (link) out.push(['الصفحة ديالي', `السلام عليكم 🌿\nهادي الصفحة ديال ${t.name || 'التريتور'}: المينوهات، الأثمنة والنهارات الخاوين، وتقدر تطلب الدوفي مباشرة:\n${link}`])
+  if (link) out.push(['الصفحة ديالي', `السلام عليكم 🌿\nهادي الصفحة ديال ${t.name || theTrade()}: المينوهات، الأثمنة والنهارات الخاوين، وتقدر تطلب الدوفي مباشرة:\n${link}`])
   return out
 }
 

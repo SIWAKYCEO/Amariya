@@ -2,8 +2,10 @@
 // kept in memory, every change written to Supabase (or to localStorage in demo mode).
 import { createClient } from '@supabase/supabase-js'
 import { useSyncExternalStore } from 'react'
-import { demoSeed } from './seed'
+import { demoSeed, demoForTrade } from './seed'
 import { dayKey, setHomeFromPhone } from './util'
+import { setTrade, vocabOn, perGuest, usesFood, keyRoles, isTraiteur, tradeKey } from './trades'
+import { startTranslator } from './i18n'
 
 export const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
 export const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
@@ -19,7 +21,14 @@ const empty = () => ({ traiteur: null, me: null, packages: [], weddings: [], pay
 let state = empty()
 const subs = new Set()
 const emit = () => { if (isDemo) try { localStorage.setItem('amariya-demo', JSON.stringify(state)) } catch { /* */ } ; subs.forEach((f) => f()) }
-const set = (patch) => { state = { ...state, ...patch }; if (patch.traiteur) setHomeFromPhone(patch.traiteur.phone); emit() }
+// the trade decides words, roles and prices: set it before anything renders with the new account
+let tradeSeen = ''
+function useTradeOf(t) {
+  setTrade(t)
+  const k = [t?.trade, ...(t?.trades || []), JSON.stringify(t?.rules?.perGuest ?? '')].join(',')
+  if (k !== tradeSeen) { tradeSeen = k; if (vocabOn()) startTranslator() }
+}
+const set = (patch) => { if (patch.traiteur) { useTradeOf(patch.traiteur); setHomeFromPhone(patch.traiteur.phone) } state = { ...state, ...patch }; emit() }
 export const useStore = () => useSyncExternalStore((f) => { subs.add(f); return () => subs.delete(f) }, () => state)
 export const getState = () => state
 
@@ -45,6 +54,10 @@ export async function load() {
     const q = new URLSearchParams(location.search)
     if (q.has('pro')) state.traiteur = { ...state.traiteur, plan: 'premium', plan_until: null }
     if (q.has('free')) state.traiteur = { ...state.traiteur, plan: 'free', plan_until: null }
+    // ?demo=1&type=music → the demo as an orchestra (also negg, photo, hall…; type=tr,negg for two trades)
+    if (q.get('type')) { const ts = q.get('type').split(','); if (ts.join() !== (state.traiteur.trades || ['tr']).join()) state = demoForTrade(state, ts) }
+    else if (state.traiteur.trade && state.traiteur.trade !== 'tr') state = demoSeed()
+    useTradeOf(state.traiteur)
     emit()
     return true
   }
@@ -58,6 +71,7 @@ export async function load() {
   // material tables are optional: an error there must never block the app
   res.forEach((r, i) => { if (r.error) { if (keys[i] === 'items' || keys[i] === 'witems') { next[keys[i]] = []; return } throw r.error } next[keys[i]] = r.data })
   state = { ...empty(), ...next }
+  useTradeOf(state.traiteur)
   setHomeFromPhone(state.traiteur?.phone)
   emit()
   return true
@@ -202,7 +216,10 @@ export function weddingItemsOf(w, s = state) {
 
 /* ---------- business rules ---------- */
 export const extrasSum = (w) => (w.extras || []).reduce((s, e) => s + (+e.amount || 0), 0)
-export const totalOf = (w) => Math.round((+w.guests || 0) * (+w.price || 0) + extrasSum(w))
+// a wedding is priced per guest (traiteur) or as one price for the night (all the others); saved on each wedding
+export const baseOf = (w) => (w.flat ? +w.price || 0 : (+w.guests || 0) * (+w.price || 0))
+export const totalOf = (w) => Math.round(baseOf(w) + extrasSum(w))
+export const newIsFlat = () => !perGuest()
 export const paidOf = (w, payments = state.payments) => payments.filter((p) => p.wedding_id === w.id).reduce((s, p) => s + (+p.amount || 0), 0)
 export const restOf = (w, payments) => Math.max(0, totalOf(w) - paidOf(w, payments))
 // the traiteur's own rules (Settings → قواعد الخدمة); these are only the starting values
@@ -217,13 +234,28 @@ export const RULE_DEFAULTS = {
     'الماتريال ديال التريتور اللي تهرّس من عند الضياف كيتحسب على العائلة بالثمن ديالو.',
   ],
 }
-export const ruleOf = (k, t = state.traiteur) => { const v = (t?.rules || {})[k]; return v === undefined || v === null || v === '' ? RULE_DEFAULTS[k] : v }
-export const serveursNeeded = (w) => Math.max(+ruleOf('minServeurs') || 0, Math.ceil((+w.guests || 0) / Math.max(1, +ruleOf('perServeur') || 20)))
+// clauses for everyone who is not a traiteur (no food in them)
+export const CLAUSES_OTHER = [
+  'إلا تلغى العرس من جيهة العائلة، العربون ما كيرجعش.',
+  'الخدمة كتكون بحال ما مكتوب فهاد العقد، فالوقت والبلاصة اللي متافقين عليهم.',
+  'أي حاجة تهرّسات ولا ضاعت من عند الضياف كتتحسب على العائلة بالثمن ديالها.',
+]
+export const ruleDefault = (k) => (k === 'clauses' && !isTraiteur() ? CLAUSES_OTHER : k === 'guests' && !isTraiteur() ? 150 : RULE_DEFAULTS[k])
+export const ruleOf = (k, t = state.traiteur) => { const v = (t?.rules || {})[k]; return v === undefined || v === null || v === '' ? ruleDefault(k) : v }
+export const serveursNeeded = (w) => (isTraiteur() ? Math.max(+ruleOf('minServeurs') || 0, Math.ceil((+w.guests || 0) / Math.max(1, +ruleOf('perServeur') || 20))) : 0)
 
 export function teamOf(w, s = state) {
   const rows = s.assignments.filter((a) => a.wedding_id === w.id).map((a) => ({ ...a, person: s.staff.find((p) => p.id === a.staff_id) })).filter((a) => a.person)
   const serveursOk = rows.filter((a) => a.person.role === 'serveur' && a.status === 'ok').length
   return { rows, serveursOk, need: serveursNeeded(w) }
+}
+
+// the team counter shown on lists: serveurs for a traiteur, confirmed people for everyone else
+export function teamBar(w, s = state) {
+  const t = teamOf(w, s)
+  if (isTraiteur()) return { ok: t.serveursOk, need: t.need, label: 'السرباية', short: t.serveursOk < t.need }
+  const ok = t.rows.filter((a) => a.status === 'ok').length
+  return { ok, need: t.rows.length, label: 'الفريق', short: ok < t.rows.length }
 }
 
 // what is wrong with a wedding, in order of urgency (only these get the henna colour)
@@ -235,6 +267,7 @@ export function problemsOf(w, s = state) {
   const t = teamOf(w, s)
   if (t.serveursOk < t.need) out.push('serveurs')
   if (t.rows.some((a) => a.status === 'no')) out.push('refused')
+  if (!isTraiteur() && keyRoles().length && s.staff.length && !t.rows.some((a) => keyRoles().includes(a.person.role) && a.status === 'ok')) out.push('team')
   return out
 }
 
@@ -242,12 +275,17 @@ export function problemsOf(w, s = state) {
 export function readinessOf(w, s = state) {
   const t = teamOf(w, s)
   const ok = (role) => t.rows.some((a) => a.person.role === role && a.status === 'ok')
-  const items = [
+  const kr = keyRoles()
+  const items = isTraiteur() ? [
     ['العربون', paidOf(w, s.payments) > 0],
     ['السرباية', t.serveursOk >= t.need],
     ruleOf('needNeggafa', s.traiteur) && ['النكافة', ok('neggafa')],
     ruleOf('needCuisine', s.traiteur) && ['الكوزينة', ok('cuisine') || ok('chef')],
-  ].filter(Boolean)
+  ].filter(Boolean) : [
+    ['العربون', paidOf(w, s.payments) > 0],
+    ['الفريق', !s.staff.length || (kr.length ? t.rows.some((a) => kr.includes(a.person.role) && a.status === 'ok') : t.rows.some((a) => a.status === 'ok'))],
+    ['الباقي', restOf(w, s.payments) <= 0],
+  ]
   return { items, done: items.filter((i) => i[1]).length, total: items.length }
 }
 
@@ -272,6 +310,7 @@ export const MISC_LABEL = 'الزيت، العطرية، الخبز والبوط
 export const priceOf = (label, s = state) => { const v = (s.traiteur?.costs || {})[label]; return v === undefined || v === '' ? PRICE_DEFAULTS[label] || 0 : +v }
 
 export function shoppingOf(w, s = state) {
+  if (!usesFood()) return []
   const pkg = s.packages.find((p) => p.id === w.package_id)
   const items = pkg?.items || []
   const out = []
@@ -294,17 +333,18 @@ export function profitOf(w, s = state) {
   const income = totalOf(w)
   const guests = +w.guests || 0
   const shop = shoppingOf(w, s)
-  const misc = Math.round(guests * priceOf('misc', s))
+  const misc = usesFood() ? Math.round(guests * priceOf('misc', s)) : 0
   const foodEst = shop.reduce((a, x) => a + x.cost, 0) + misc
   const linked = s.expenses.filter((e) => e.wedding_id === w.id)
-  const foodReal = linked.filter((e) => isFood(e.label)).reduce((a, e) => a + +e.amount, 0)
-  const other = linked.filter((e) => !isFood(e.label)).reduce((a, e) => a + +e.amount, 0)
+  const food_ = (e) => usesFood() && isFood(e.label)
+  const foodReal = linked.filter(food_).reduce((a, e) => a + +e.amount, 0)
+  const other = linked.filter((e) => !food_(e)).reduce((a, e) => a + +e.amount, 0)
   const past = w.status === 'done' || w.day < dayKey(new Date())
   const team = s.assignments.filter((a) => a.wedding_id === w.id && (past ? a.status === 'ok' : a.status !== 'no'))
   const staff = team.reduce((a, x) => a + (+x.pay || 0), 0)
-  const food = foodReal > 0 ? foodReal : foodEst
+  const food = foodReal > 0 ? foodReal : foodEst  // 0 for trades without food
   const net = income - food - staff - other
-  return { income, food, foodEst, foodReal, estimated: foodReal <= 0, misc, shop, staff, staffCount: team.length, other, otherCount: linked.length - linked.filter((e) => isFood(e.label)).length, net, perGuest: guests ? Math.round(net / guests) : 0, pct: income ? Math.round((net / income) * 100) : 0, past }
+  return { income, food, foodEst, foodReal, estimated: foodReal <= 0, misc, shop, staff, staffCount: team.length, other, otherCount: linked.length - linked.filter(food_).length, net, perGuest: guests ? Math.round(net / guests) : 0, pct: income ? Math.round((net / income) * 100) : 0, past }
 }
 
 /* ---------- public links, deposit proofs, reminders ---------- */
@@ -365,10 +405,10 @@ export async function seedSample() {
     const price = +pk?.price || 250
     const w = await add('weddings', {
       family: 'عائلة المثال (تجريبي)', phone: t.phone || '', day: dayKey(addDays(new Date(), 21)), time: ruleOf('time', t),
-      hall: 'قاعة النخيل', city: t.city || '', guests: 200, package_id: pk?.id || null, package_name: pk?.name || '', price,
-      extras: [{ label: 'الحلويات', amount: 3000 }], notes: '__sample', status: 'confirmed',
+      hall: 'قاعة النخيل', city: t.city || '', guests: perGuest() || tradeKey() === 'hall' || tradeKey() === 'tent' ? 200 : 0, package_id: pk?.id || null, package_name: pk?.name || '', price, flat: !perGuest(),
+      extras: isTraiteur() ? [{ label: 'الحلويات', amount: 3000 }] : [], notes: '__sample', status: 'confirmed',
     })
-    await add('payments', { wedding_id: w.id, amount: Math.round(price * 200 * 0.3), kind: 'arboun', paid_on: dayKey(new Date()) })
+    await add('payments', { wedding_id: w.id, amount: Math.round((perGuest() ? price * 200 : price) * 0.3), kind: 'arboun', paid_on: dayKey(new Date()) })
     await saveTraiteur({ rules: { ...(t.rules || {}), sample_done: true } })
   } catch { /* the app works without the sample */ } finally { seeding = false }
 }

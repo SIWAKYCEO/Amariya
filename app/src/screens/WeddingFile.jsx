@@ -1,27 +1,28 @@
 import { useState } from 'react'
 import { add, isPro, isSample, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
 import { ProofSheet, methodLabel, remindText } from './Inbox'
-import { ROLES, ROLES_PL, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
+import { ROLES, ROLES_PL, roleName, rolePl, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
 import { Count, DH, Field, Ic, Locked, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
 import { receiptImage } from '../lib/receipt'
 import { ProfitCard } from './Profit'
 import { DocsCard, MaterialCard } from './ProExtras'
+import { L, delivery, isTraiteur, pkgWord, stockOf, stockWord, theTrade, usesFood } from '../lib/trades'
 
 function devisText(w, traiteur) {
   const lines = [
     `السلام عليكم ${w.family} 🌿`,
-    `هادا الدوفي ديال العرس من ${traiteur?.name || 'التريتور'}:`,
+    `هادا الدوفي ديال العرس من ${traiteur?.name || theTrade()}:`,
     `📅 ${dayLabel(w.day)} مع ${w.time}${w.hall ? ' · ' + w.hall : ''}`,
-    `👥 ${w.guests} ضيف · ${w.package_name || 'المينو'} (${money(w.price)} DH للضيف) = ${money(w.guests * w.price)} DH`,
+    w.flat ? `🎁 ${w.package_name || pkgWord()}: ${money(w.price)} DH` : `👥 ${w.guests} ضيف · ${w.package_name || pkgWord()} (${money(w.price)} DH للضيف) = ${money(w.guests * w.price)} DH`,
     ...(w.extras || []).map((e) => `➕ ${e.label}: ${money(e.amount)} DH`),
     `💰 المجموع: ${money(totalOf(w))} DH`,
     devisLink(w) && `\nالدوفي كامل وكيفاش تخلّصو العربون:\n${devisLink(w)}`,
   ].filter(Boolean)
   return lines.join('\n')
 }
-const receiptText = (w, p, paidSoFar, total, tr) => [`🧾 وصل · ${tr?.name || 'التريتور'}`, `العائلة: ${w.family}`, `العرس: ${dayLabel(w.day)}`, `${p.kind === 'arboun' ? 'العربون' : 'خلاص'}: ${money(p.amount)} DH · ${dayLabel(p.paid_on, false)}`, `تخلّص حتى لدابا: ${money(paidSoFar)} DH`, `الباقي: ${money(Math.max(0, total - paidSoFar))} DH`, 'شكرا على الثقة 🙏'].join('\n')
-const teamText = (w, rows) => [`📣 عرس ${w.family}`, `📅 ${dayLabel(w.day)} · ${w.time}`, `📍 ${[w.hall, w.city].filter(Boolean).join('، ')}`, `👥 ${w.guests} ضيف`, '', 'الخدامة:', ...rows.filter((a) => a.status !== 'no').map((a) => `• ${a.person.name} (${ROLES[a.person.role]})`), '', 'كونو تما قبل الوقت بساعة 🙏'].join('\n')
+const receiptText = (w, p, paidSoFar, total, tr) => [`🧾 وصل · ${tr?.name || theTrade()}`, `العائلة: ${w.family}`, `العرس: ${dayLabel(w.day)}`, `${p.kind === 'arboun' ? 'العربون' : 'خلاص'}: ${money(p.amount)} DH · ${dayLabel(p.paid_on, false)}`, `تخلّص حتى لدابا: ${money(paidSoFar)} DH`, `الباقي: ${money(Math.max(0, total - paidSoFar))} DH`, 'شكرا على الثقة 🙏'].join('\n')
+const teamText = (w, rows) => [`📣 عرس ${w.family}`, `📅 ${dayLabel(w.day)} · ${w.time}`, `📍 ${[w.hall, w.city].filter(Boolean).join('، ')}`, +w.guests > 0 && `👥 ${w.guests} ضيف`, '', 'الخدامة:', ...rows.filter((a) => a.status !== 'no').map((a) => `• ${a.person.name} (${ROLES[a.person.role] || roleName(a.person.role)})`), '', 'كونو تما قبل الوقت بساعة 🙏'].filter((x) => x !== false).join('\n')
 const askText = (p, w) => `السلام ${p.name}، عندنا عرس نهار ${dayLabel(w.day)} مع ${w.time}${w.hall ? ' ف' + w.hall : ''}${w.city ? ' (' + w.city + ')' : ''}. واش معانا؟`
 
 const TICK = {
@@ -68,7 +69,8 @@ export default function WeddingFile({ w, back, go }) {
     if (w.phone) setTimeout(() => openExternal(waLink(w.phone, rc.text)), 600)
   }
   const closeRc = () => { if (rc?.url) URL.revokeObjectURL(rc.url); setRc(null) }
-  const byRole = Object.keys(ROLES).map((r) => [r, team.rows.filter((a) => a.person.role === r)]).filter(([, l]) => l.length)
+  const roleKeys = [...new Set([...Object.keys(ROLES), ...s.staff.map((p) => p.role).filter(Boolean)])]
+  const byRole = roleKeys.map((r) => [r, team.rows.filter((a) => a.person.role === r)]).filter(([, l]) => l.length)
 
   async function addPay() {
     const a = +amount
@@ -118,12 +120,13 @@ export default function WeddingFile({ w, back, go }) {
               <div className="rd-i">{ready.items.map(([l, ok]) => <span key={l} className={ok ? 'y' : 'n'}>{ok ? Ic.check(12) : Ic.x(11)} {l}</span>)}</div>
               {probs.includes('serveurs') && <small className="rd-p">خاصك <b>{team.need - team.serveursOk}</b> سرباي باش تكمّل</small>}
               {probs.includes('refused') && <small className="rd-p">شي واحد قال ما جايش. قلب على واحد آخر.</small>}
+              {probs.includes('team') && <small className="rd-p">باقي ما أكّدتي الفريق ديال هاد العرس.</small>}
             </div>
           </div>
         )}
 
         <div className="segs" role="tablist">
-          {[['money', 'الفلوس', Ic.cash], ['team', 'الخدامة', Ic.team], ['food', 'الماكلة', Ic.cart], ['more', 'المزيد', Ic.doc]].map(([k, l, ic]) => (
+          {[['money', 'الفلوس', Ic.cash], ['team', 'الخدامة', Ic.team], ['food', usesFood() ? 'الماكلة' : pkgWord(), usesFood() ? Ic.cart : Ic.box], ['more', 'المزيد', Ic.doc]].map(([k, l, ic]) => (
             <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{ic(17)}<span>{l}</span></button>
           ))}
         </div>
@@ -156,7 +159,7 @@ export default function WeddingFile({ w, back, go }) {
         </div>
 
         {w.status !== 'cancelled' && (pro ? <ProfitCard w={w} /> : (
-          <Locked go={go} title="شحال كتربح بصّح فهاد العرس؟" why="Amariya كيحسب ليك الربح الصافي: الماكلة، الخدامة والمصاريف. كتعرف العرس اللي كيخسّرك قبل ما تأكّدو.">
+          <Locked go={go} title="شحال كتربح بصّح فهاد العرس؟" why={usesFood() ? 'Amariya كيحسب ليك الربح الصافي: الماكلة، الخدامة والمصاريف. كتعرف العرس اللي كيخسّرك قبل ما تأكّدو.' : 'Amariya كيحسب ليك الربح الصافي: الفريق والمصاريف. كتعرف العرس اللي كيخسّرك قبل ما تأكّدو.'}>
             <ProfitCard w={w} />
           </Locked>
         ))}
@@ -164,10 +167,10 @@ export default function WeddingFile({ w, back, go }) {
 
         {tab === 'team' && <div className="card">
           <div className="ch"><h3>الخدامة ديال الليلة</h3><button className="mini" onClick={() => setSheet('staff')}>{Ic.plus(16)} زيد</button></div>
-          {team.rows.length === 0 && <p className="muted">باقي ما زدتي حتى واحد. زيد السرباية والنكافة والكوزينة.</p>}
+          {team.rows.length === 0 && <p className="muted">{isTraiteur() ? 'باقي ما زدتي حتى واحد. زيد السرباية والنكافة والكوزينة.' : 'باقي ما زدتي حتى واحد من الفريق ديالك لهاد العرس.'}</p>}
           {byRole.map(([r, list]) => (
             <div key={r} className="grp">
-              <span className="gl">{ROLES_PL[r]} <b dir="ltr">{list.filter((a) => a.status === 'ok').length}/{r === 'serveur' ? team.need : list.length}</b></span>
+              <span className="gl">{ROLES_PL[r] || rolePl(r)} <b dir="ltr">{list.filter((a) => a.status === 'ok').length}/{r === 'serveur' && isTraiteur() ? team.need : list.length}</b></span>
               {list.map((a) => (
                 <div key={a.id} className={'srow ' + a.status}>
                   <button className="st" onClick={() => update('assignments', a.id, { status: NEXT[a.status] }).catch(fail)} aria-label={'بدّل: ' + TICK[a.status][1]}>
@@ -184,7 +187,7 @@ export default function WeddingFile({ w, back, go }) {
 
         {tab === 'food' && <>
         <div className="card">
-          <div className="ch"><h3>المينو · {w.package_name}</h3><span className="muted"><span dir="ltr">{w.guests}</span> ضيف</span></div>
+          <div className="ch"><h3>{pkgWord()} · {w.package_name}</h3>{+w.guests > 0 && <span className="muted"><span dir="ltr">{w.guests}</span> ضيف</span>}</div>
           <ul className="menu">{(pkg?.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
           {(w.extras || []).length > 0 && <ul className="extras">{w.extras.map((e, i) => <li key={i}><span>{e.label}</span><DH v={e.amount} /></li>)}{w.extras.length > 1 && <li className="t"><span>الزيادات</span><DH v={extrasSum(w)} /></li>}</ul>}
         </div>
@@ -197,14 +200,16 @@ export default function WeddingFile({ w, back, go }) {
         )}
         </>}
 
+        {tab === 'food' && delivery() && w.status !== 'cancelled' && <DeliveryCard w={w} />}
+
         {tab === 'more' && <>
         {w.status !== 'cancelled' && (pro ? <DocsCard w={w} /> : (
           <Locked compact go={go} title="الدوفي والعقد PDF باللوغو ديالك" why="وراق نقيين كيبانو بحال شركة كبيرة. العائلة كتوقّع، والعربون كيبقى مضمون.">
             <DocsCard w={w} />
           </Locked>
         ))}
-        {w.status !== 'cancelled' && (pro ? <MaterialCard w={w} go={go} /> : (
-          <Locked compact go={go} title="الماتريال ديال هاد العرس" why="شحال خرج من الطباسل والكيسان، شحال رجع وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.">
+        {w.status !== 'cancelled' && stockOf() && (pro ? <MaterialCard w={w} go={go} /> : (
+          <Locked compact go={go} title={L([`${stockWord()} ديال هاد العرس`, `${stockWord()} de ce mariage`, `${stockWord()} for this wedding`])} why={isTraiteur() ? 'شحال خرج من الطباسل والكيسان، شحال رجع وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.' : 'شنو خرج لهاد العرس، شنو رجع وشنو تهرّس. ما يبقاش يضيع ليك والو.'}>
             <MaterialCard w={w} go={go} />
           </Locked>
         ))}
@@ -243,12 +248,12 @@ export default function WeddingFile({ w, back, go }) {
       {sheet === 'staff' && (
         <Sheet title="شكون غادي يخدم؟" onClose={() => setSheet(null)}>
           {s.staff.length === 0 && <p className="muted">باقي ما زدتي حتى خدام. زيدهم من «الخدامة».</p>}
-          {Object.keys(ROLES).map((r) => {
+          {roleKeys.map((r) => {
             const list = s.staff.filter((p) => p.role === r && p.active !== false)
             if (!list.length) return null
             return (
               <div key={r} className="pick">
-                <span className="gl">{ROLES_PL[r]}</span>
+                <span className="gl">{ROLES_PL[r] || rolePl(r)}</span>
                 {list.map((p) => {
                   const on = s.assignments.some((a) => a.wedding_id === w.id && a.staff_id === p.id)
                   return <button key={p.id} className={'prow' + (on ? ' on' : '')} onClick={() => toggleStaff(p)}><span className="box">{on && Ic.check(13)}</span>{p.name}</button>
@@ -269,6 +274,24 @@ export default function WeddingFile({ w, back, go }) {
         </Sheet>
       )}
       {proof && <ProofSheet p={proof} onClose={() => setProof(null)} />}
+    </div>
+  )
+}
+
+// photo / video: the album and the film are handed over after the wedding — date promised, and done or not
+function DeliveryCard({ w }) {
+  const [due, setDue] = useState(w.delivery_due || '')
+  const late = w.delivery_due && !w.delivered_at && w.delivery_due < dayKey(new Date())
+  const save = (patch) => update('weddings', w.id, patch).then(() => toast('تسجّل')).catch(fail)
+  return (
+    <div className={'card deliv' + (late ? ' late' : '')}>
+      <div className="ch"><h3>{Ic.box(17)} التسليم ديال الصور والفيديو</h3>{w.delivered_at ? <span className="pill good">تسلّم</span> : late ? <span className="pill hot">تعطّل</span> : null}</div>
+      <Field label="فوقاش وعدتي العائلة بالتسليم؟"><input type="date" value={due} onChange={(e) => { setDue(e.target.value); save({ delivery_due: e.target.value || null }) }} /></Field>
+      {w.delivery_due && !w.delivered_at && <p className="muted">{daysFromToday(w.delivery_due) >= 0 ? `بعد ${daysFromToday(w.delivery_due)} يوم` : `قبل ${-daysFromToday(w.delivery_due)} أيام`}</p>}
+      {w.delivered_at
+        ? <button className="linkrow" onClick={() => save({ delivered_at: null })}>{Ic.x(15)} رجّعها ما تسلّماتش</button>
+        : <button className="btn green wide" onClick={() => save({ delivered_at: new Date().toISOString() })}>{Ic.check(17)} سلّمت الصور والفيديو</button>}
+      {w.phone && w.delivered_at && <button className="linkrow" onClick={() => openExternal(waLink(w.phone, `السلام عليكم ${w.family} 🌿\nالصور والفيديو ديال العرس واجدين. الله يكمّل بالخير 🙏`))}>{Ic.wa(16)} قول للعائلة</button>}
     </div>
   )
 }

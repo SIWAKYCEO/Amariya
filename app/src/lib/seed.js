@@ -50,3 +50,26 @@ export function demoSeed() {
     proofs: [{ id: 'pr1', wedding_id: 'w-4', amount: 10000, method: 'cashplus', path: '', demo_url: '', payer: 'عائلة الحسني', status: 'pending', created_at: new Date(Date.now() - 2 * 3600e3).toISOString() }],
   }
 }
+
+// the same demo as another trade (?demo=1&type=music): same families and days, its own bundles, team and stock
+import { PKG_SEEDS, STOCK_SEEDS, TRADES } from './trades'
+const NAMES = { hall: 'قاعة الياقوت', negg: 'النكافة حياة', photo: 'ستوديو الياقوت', music: 'أوركسترا الياقوت', sweet: 'حلويات الياقوت', deco: 'ديكور الياقوت', tent: 'خيام الياقوت', car: 'طوموبيلات الياقوت', caftan: 'قفاطن الياقوت', henna: 'النقاشة سلمى', other: 'خدمات الياقوت' }
+export function demoForTrade(st, ts) {
+  const k = TRADES[ts[0]] ? ts[0] : 'tr'
+  const base = demoSeed()
+  const trades = ts.filter((x) => TRADES[x])
+  if (k === 'tr') return { ...base, traiteur: { ...base.traiteur, trade: 'tr', trades } }
+  const seeds = PKG_SEEDS[k]
+  const packages = seeds.map(([name, price, items], i) => ({ id: 'p' + (i + 1), name, price, items, sort: i }))
+  const guests = !!TRADES[k].guests
+  const weddings = base.weddings.map((w) => { const p = packages.find((x) => x.id === w.package_id); return { ...w, flat: true, guests: guests ? w.guests : 0, package_name: p.name, price: p.price, extras: [], notes: '' } })
+  const roles = TRADES[k].roles.filter((r) => r !== 'other')
+  const staff = base.staff.slice(0, 6).map((p, i) => ({ ...p, role: roles[i % roles.length], rate: 400 }))
+  const assignments = [['w-0', 0, 'ok'], ['w-0', 1, 'ok'], ['w-0', 2, 'ok'], ['w-1', 0, 'ok'], ['w-1', 3, 'asked'], ['w-2', 1, 'asked']].map(([w, s, status]) => ({ id: `a-${w}-${s}`, wedding_id: w, staff_id: 's-' + s, status, pay: 400 }))
+  const payments = weddings.filter((w) => w.status !== 'devis').map((w, i) => ({ id: 'pay' + i, wedding_id: w.id, amount: Math.round((w.status === 'done' ? 1 : 0.3) * w.price), kind: 'arboun', paid_on: w.day < base.weddings[0].day ? w.day : base.weddings[0].day, created_at: new Date().toISOString() }))
+  const items = (STOCK_SEEDS[k] || []).map(([name, qty], i) => ({ id: 'it' + i, name, qty }))
+  const witems = items.length ? [['w-0', 0, Math.min(2, items[0].qty)], ['w-1', 1, Math.min(1, items[1]?.qty || 1)]].filter(([, i]) => items[i]).map(([wedding_id, i, qty_out], j) => ({ id: 'wi' + j, wedding_id, item_id: 'it' + i, qty_out, qty_back: null, broken: 0 })) : []
+  const expenses = [['المازوط', 600, -1, null], ['الكرا ديال المحل', 3000, -10, null]].map(([label, amount, n, wedding_id], i) => ({ id: 'e' + i, label, amount, spent_on: base.payments[0].paid_on, wedding_id, created_at: new Date().toISOString() }))
+  const requests = base.requests.map((r) => ({ ...r, guests: guests ? r.guests : null, note: '' }))
+  return { ...base, traiteur: { ...base.traiteur, name: NAMES[k], bio: '', trade: k, trades }, packages, weddings, staff, assignments, payments, items, witems, expenses, requests, proofs: [] }
+}

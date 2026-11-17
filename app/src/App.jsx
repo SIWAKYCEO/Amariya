@@ -89,10 +89,10 @@ export default function App() {
           <Logo size={34} />
           {phase === 'welcome' ? (
             <>
-              <span className="kicker">التطبيق ديال الـ<span dir="ltr">traiteur</span></span>
+              <span className="kicker">التطبيق ديال خدمات الأعراس</span>
               <h1>العراسات ديالك<br />كاملين فبلاصة وحدة</h1>
               {err ? <p className="err">{err}</p> : <p>الكالوندري، العربون، الخدامة، الدوفي والفلوس… من التيليفون، بلا كارني.</p>}
-              <ul className="wfeat"><li><i>{Ic.cal(18)}</i>شكون حاجز وشمن نهار خاوي</li><li><i>{Ic.cash(18)}</i>العربون والباقي ديال كل عرس</li><li><i>{Ic.team(18)}</i>السرباية والنكافة مأكدين</li></ul>
+              <ul className="wfeat"><li><i>{Ic.cal(18)}</i>شكون حاجز وشمن نهار خاوي</li><li><i>{Ic.cash(18)}</i>العربون والباقي ديال كل عرس</li><li><i>{Ic.team(18)}</i>الفريق ديالك مأكّد لكل عرس</li></ul>
               <a className="btn brass" href="?demo=1">جرّب التطبيق دابا</a>
               <a className="btn glassbtn" href="https://amariya.vercel.app">بغيت نخدم بيه · سجّل</a>
               <small className="wsub">وصلك الرابط فالواتساب؟ حلّو مباشرة وغادي تدخل.</small>

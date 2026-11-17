@@ -95,14 +95,8 @@ const ROT = [PHOTOS.hall, PHOTOS.amariya, PHOTOS.a, PHOTOS.c, PHOTOS.hall2]
 export const initial = (n = '') => { const w = n.replace(/^(عائلة|الشاف|للا|السيد|مدام)\s+/, '').trim(); return (w.replace(/^ال(?=\S{2})/, '') || w).slice(0, 1) }
 export const photoFor = (id = '') => ROT[[...id].reduce((s, c) => s + c.charCodeAt(0), 0) % ROT.length]
 
-export const ROLES = {
-  serveur: 'سرباي',
-  neggafa: 'نكافة',
-  cuisine: 'كوزينة',
-  chef: 'شاف',
-  other: 'آخر',
-}
-export const ROLES_PL = { serveur: 'السرباية', neggafa: 'النكافة', cuisine: 'الكوزينة', chef: 'الشاف', other: 'آخرين' }
+// team roles change with the trade (lib/trades.js fills them when the account loads)
+export { ROLES, ROLES_PL, roleName, rolePl } from './trades'
 
 export function greeting() {
   const h = new Date().getHours()

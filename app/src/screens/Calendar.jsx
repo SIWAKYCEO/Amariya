@@ -63,7 +63,7 @@ export default function Calendar({ back, go, day }) {
             {list.map((w) => (
               <button key={w.id} className="wrow" onClick={() => go('wedding', { id: w.id })}>
                 <span className="dbox t"><small>الساعة</small><b dir="ltr">{w.time}</b></span>
-                <span className="mid"><b>{w.family}</b><span className="meta">{[w.hall, w.city].filter(Boolean).join(' · ')} · <span dir="ltr">{w.guests}</span> ضيف</span></span>
+                <span className="mid"><b>{w.family}</b><span className="meta">{[w.hall, w.city, +w.guests > 0 ? `${w.guests} ضيف` : w.package_name].filter(Boolean).join(' · ')}</span></span>
                 <span className="amt"><DH v={totalOf(w)} unit={false} /><small>DH</small></span>
               </button>
             ))}

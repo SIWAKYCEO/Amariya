@@ -1,3 +1,4 @@
+import { isTraiteur } from '../lib/trades'
 import { useState } from 'react'
 import { add, owedOf, payStaff, remove, stockOf, update, useStore, weddingItemsOf } from '../lib/data'
 import { dayLabel, money, openExternal, waLink } from '../lib/util'
@@ -64,7 +65,7 @@ export function MaterialCard({ w, go }) {
       <div className="ch"><h3>{Ic.box(17)} الماتريال</h3>{rows.length > 0 && <button className="mini" onClick={() => setSheet('out')}>{Ic.pen(15)} بدّل</button>}</div>
       {short.length > 0 && <div className="alert sm">{short.map((r) => <p key={r.id}>ناقصك <b dir="ltr">{r.short}</b> {r.item.name} نهار {dayLabel(w.day)}: كاين عرس آخر ف نفس النهار.</p>)}</div>}
       {past && out.length > 0 && <div className="alert sm"><p>باقي ما رجعش الماتريال ديال هاد العرس. سجّل شنو رجع.</p></div>}
-      {rows.length === 0 ? <p className="muted">سجّل شنو غادي يخرج لهاد العرس (الطباسل، الكيسان…) باش تعرف واش كافي وشنو رجع.</p> : (
+      {rows.length === 0 ? <p className="muted">{isTraiteur() ? 'سجّل شنو غادي يخرج لهاد العرس (الطباسل، الكيسان…) باش تعرف واش كافي وشنو رجع.' : 'سجّل شنو غادي يخرج لهاد العرس باش تعرف واش كافي وشنو رجع.'}</p> : (
         <ul className="mat">{rows.map((r) => (
           <li key={r.id}>
             <span className="mn"><b>{r.item.name}</b>
@@ -101,7 +102,7 @@ function OutSheet({ w, close, go }) {
     <Sheet title="شنو غادي يخرج؟" onClose={close}>
       {s.items.length === 0 ? (
         <>
-          <p className="muted">باقي ما زدتي الماتريال ديالك. زيدو مرة وحدة (شحال عندك من طبسيل، كاس…) ومن بعد غير كتختار.</p>
+          <p className="muted">{isTraiteur() ? 'باقي ما زدتي الماتريال ديالك. زيدو مرة وحدة (شحال عندك من طبسيل، كاس…) ومن بعد غير كتختار.' : 'باقي ما زدتي الماتريال ديالك. زيدو مرة وحدة ومن بعد غير كتختار.'}</p>
           <button className="btn brass wide" onClick={() => { close(); go('stock') }}>زيد الماتريال ديالك</button>
         </>
       ) : (

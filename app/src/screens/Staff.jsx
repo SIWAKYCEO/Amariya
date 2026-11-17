@@ -1,7 +1,8 @@
+import { isTraiteur } from '../lib/trades'
 import { useState } from 'react'
 import { add, isPro, remove, update, useStore } from '../lib/data'
 import { StaffPayCard } from './ProExtras'
-import { PHOTOS, ROLES, ROLES_PL, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
+import { PHOTOS, ROLES, ROLES_PL, roleName, rolePl, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
 import { Band, Empty, Fab, Field, Ic, Locked, Sheet, fail, toast } from '../ui'
 
 export default function Staff({ go }) {
@@ -10,11 +11,12 @@ export default function Staff({ go }) {
   const [edit, setEdit] = useState(null) // null | {} new | person
   const people = s.staff.filter((p) => p.active !== false && (role === 'all' || p.role === role)).sort((a, b) => a.name.localeCompare(b.name, 'ar'))
   const upcoming = (p) => s.assignments.filter((a) => a.staff_id === p.id && a.status !== 'no').map((a) => s.weddings.find((w) => w.id === a.wedding_id)).filter((w) => w && w.status !== 'cancelled' && daysFromToday(w.day) >= 0).length
-  const counts = Object.fromEntries(Object.keys(ROLES).map((r) => [r, s.staff.filter((p) => p.role === r && p.active !== false).length]))
+  const roleKeys = [...new Set([...Object.keys(ROLES), ...s.staff.filter((p) => p.active !== false).map((p) => p.role).filter(Boolean)])]
+  const counts = Object.fromEntries(roleKeys.map((r) => [r, s.staff.filter((p) => p.role === r && p.active !== false).length]))
 
   return (
     <div className="screen">
-      <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={<>{s.staff.filter((p) => p.active !== false).length} خدام · السرباية، النكافة والكوزينة</>} />
+      <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={<>{s.staff.filter((p) => p.active !== false).length} خدام · {Object.values(ROLES_PL).slice(0, 3).join('، ')}</>} />
       <div className="content pt" style={{ paddingTop: 16 }}>
         {isPro(s.traiteur) ? <StaffPayCard /> : (
           <Locked compact go={go} title="شكون خلّصتي وشكون باقي؟" why="التطبيق كيحسب الخلصة ديال كل خدام من العراسات اللي خدم فيهم، وكيصيفط ليه ميساج ملّي تخلّصو. ما تنسى حتى واحد.">
@@ -23,9 +25,9 @@ export default function Staff({ go }) {
         )}
         <div className="filters">
           <button className={role === 'all' ? 'on' : ''} onClick={() => setRole('all')}>كلهم <b>{s.staff.filter((p) => p.active !== false).length}</b></button>
-          {Object.keys(ROLES).filter((r) => counts[r]).map((r) => <button key={r} className={role === r ? 'on' : ''} onClick={() => setRole(r)}>{ROLES_PL[r]} <b>{counts[r]}</b></button>)}
+          {roleKeys.filter((r) => counts[r]).map((r) => <button key={r} className={role === r ? 'on' : ''} onClick={() => setRole(r)}>{ROLES_PL[r] || rolePl(r)} <b>{counts[r]}</b></button>)}
         </div>
-        {people.length === 0 && <Empty title="ما كاين حتى خدام" sub="زيد السرباية والنكافة والكوزينة مرة وحدة، ومن بعد غير كتختارهم لكل عرس." />}
+        {people.length === 0 && <Empty title="ما كاين حتى خدام" sub={isTraiteur() ? 'زيد السرباية والنكافة والكوزينة مرة وحدة، ومن بعد غير كتختارهم لكل عرس.' : 'زيد الفريق ديالك مرة وحدة، ومن بعد غير كتختارهم لكل عرس.'} />}
         <div>
           {people.map((p) => {
             const n = upcoming(p)
@@ -33,7 +35,7 @@ export default function Staff({ go }) {
               <div className="srow2" key={p.id} role="button" tabIndex={0} onClick={() => setEdit(p)}>
                 <span className="who" style={{ display: 'contents' }}>
                   <span className="av2">{initial(p.name)}</span>
-                  <span className="mid"><b>{p.name}</b><span className="meta">{ROLES[p.role]}{+p.rate ? <> · <span dir="ltr">{money(p.rate)} DH</span> لليلة</> : ''}</span></span>
+                  <span className="mid"><b>{p.name}</b><span className="meta">{ROLES[p.role] || roleName(p.role)}{+p.rate ? <> · <span dir="ltr">{money(p.rate)} DH</span> لليلة</> : ''}</span></span>
                   {n > 0 && <span className="pill2 br">{n} {n === 1 ? 'عرس' : 'عراسات'}</span>}
                 </span>
                 {p.phone && <button className="wab" onClick={(e) => { e.stopPropagation(); openExternal(waLink(p.phone, `السلام ${p.name}`)) }} aria-label="واتساب">{Ic.wa(19)}</button>}
@@ -42,14 +44,14 @@ export default function Staff({ go }) {
           })}
         </div>
       </div>
-      <Fab onClick={() => setEdit({ role: role === 'all' ? 'serveur' : role })}>زيد خدام</Fab>
+      <Fab onClick={() => setEdit({ role: role === 'all' ? Object.keys(ROLES)[0] : role })}>زيد خدام</Fab>
       {edit && <PersonSheet p={edit} close={() => setEdit(null)} />}
     </div>
   )
 }
 
 function PersonSheet({ p, close }) {
-  const [f, setF] = useState({ name: p.name || '', phone: prettyPhone(p.phone), role: p.role || 'serveur', rate: p.rate ?? '' })
+  const [f, setF] = useState({ name: p.name || '', phone: prettyPhone(p.phone), role: p.role || Object.keys(ROLES)[0], rate: p.rate ?? '' })
   const save = async () => {
     const row = { name: f.name.trim(), phone: normPhone(f.phone), role: f.role, rate: +f.rate || 0 }
     try {

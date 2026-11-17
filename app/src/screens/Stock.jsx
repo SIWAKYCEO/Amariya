@@ -1,9 +1,13 @@
+import { isTraiteur, trades } from '../lib/trades'
 import { useState } from 'react'
 import { add, isPro, remove, stockOf, update, useStore } from '../lib/data'
 import { PHOTOS, dayLabel } from '../lib/util'
 import { Band, Empty, Fab, Field, Ic, Locked, Sheet, fail, toast } from '../ui'
 
-const SUGGEST = ['الطباسل', 'الكيسان', 'الفرشيطات', 'المغارف', 'الطيفورات', 'الطناجر الكبار', 'البرّادات', 'الصواني', 'النابات', 'الكراسي', 'الطابلات']
+const SUGGEST_TR = ['الطباسل', 'الكيسان', 'الفرشيطات', 'المغارف', 'الطيفورات', 'الطناجر الكبار', 'البرّادات', 'الصواني', 'النابات', 'الكراسي', 'الطابلات']
+
+const SUGGEST_BY = { hall: ['الكراسي', 'الطابلات', 'الزرابي', 'الضو', 'السماعات'], negg: ['التكاشط', 'القفاطن', 'العمارية', 'الميدا', 'التاج', 'الحلي'], photo: ['الكاميرات', 'الضو', 'الدرون', 'الميكروات', 'الحوامل'], music: ['السماعات', 'الميكروات', 'الأورغ', 'الطبول', 'الضو'], deco: ['الكوشات', 'الشمعدانات', 'الورد', 'الضو', 'الزرابي'], tent: ['الخيام', 'الكراسي', 'الطابلات', 'الزرابي', 'الضو'], car: ['الطوموبيلات', 'الزواق'], caftan: ['القفاطن', 'التكاشط', 'الإكسسوارات'], other: ['الماتريال'] }
+export const stockSuggest = () => (isTraiteur() ? SUGGEST_TR : SUGGEST_BY[(trades().find((k) => SUGGEST_BY[k])) || 'other'])
 
 export default function Stock({ back, go }) {
   const s = useStore()
@@ -31,9 +35,9 @@ export default function Stock({ back, go }) {
   )
   return (
     <div className="screen">
-      <Band photo={PHOTOS.prep} title="الماتريال" back={back} kicker="شحال عندك، شحال خارج وشحال تهرّس" />
+      <Band photo={isTraiteur() ? PHOTOS.prep : PHOTOS.hall} title="الماتريال" back={back} kicker="شحال عندك، شحال خارج وشحال تهرّس" />
       <div className="content" style={{ paddingTop: 16 }}>
-        {pro ? list : <Locked go={go} title="الماتريال ديالك تحت العين" why="كتعرف فين مشا كل طبسيل وكاس، واش كافيك لجوج عراسات فنهار واحد، وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.">{list}</Locked>}
+        {pro ? list : <Locked go={go} title="الماتريال ديالك تحت العين" why={isTraiteur() ? 'كتعرف فين مشا كل طبسيل وكاس، واش كافيك لجوج عراسات فنهار واحد، وشحال تهرّس. ما يبقاش يضيع ليك الماتريال.' : 'كتعرف فين مشات كل حاجة، واش كافياك لجوج عراسات فنهار واحد، وشنو تهرّس. ما يبقاش يضيع ليك الماتريال.'}>{list}</Locked>}
         {pro && <p className="hint" style={{ margin: '12px 4px' }}>الرقم الكبير هو اللي فالدار دابا. كليكي على حاجة باش تبدّل العدد ديالها.</p>}
       </div>
       {pro && <Fab onClick={() => setEdit({})}>زيد ماتريال</Fab>}
@@ -55,8 +59,8 @@ function ItemSheet({ i, close }) {
   const hist = i.id ? s.witems.filter((x) => x.item_id === i.id).map((x) => ({ x, w: s.weddings.find((w) => w.id === x.wedding_id) })).filter((r) => r.w).sort((a, b) => b.w.day.localeCompare(a.w.day)).slice(0, 5) : []
   return (
     <Sheet title={i.id ? i.name : 'ماتريال جديد'} onClose={close}>
-      {!i.id && <div className="quick">{SUGGEST.filter((n) => !s.items.some((x) => x.name === n)).slice(0, 8).map((n) => <button key={n} className={'qchip' + (f.name === n ? ' on' : '')} onClick={() => setF({ ...f, name: n })}>{n}</button>)}</div>}
-      <Field label="السمية"><input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="مثلا: الطباسل" /></Field>
+      {!i.id && <div className="quick">{stockSuggest().filter((n) => !s.items.some((x) => x.name === n)).slice(0, 8).map((n) => <button key={n} className={'qchip' + (f.name === n ? ' on' : '')} onClick={() => setF({ ...f, name: n })}>{n}</button>)}</div>}
+      <Field label="السمية"><input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder={`مثلا: ${stockSuggest()[0]}`} /></Field>
       <Field label="شحال عندك فالمجموع؟"><input inputMode="numeric" dir="ltr" className="big" value={f.qty} onChange={(e) => setF({ ...f, qty: e.target.value.replace(/\D/g, '') })} placeholder="0" /></Field>
       {hist.length > 0 && <ul className="mat">{hist.map(({ x, w }) => <li key={x.id}><span className="mn"><b>{w.family}</b><small>{dayLabel(w.day)}{x.qty_back != null && (x.broken ? ` · تهرّس ${x.broken}` : ' · رجع')}</small></span><b className="mq" dir="ltr">{x.qty_out}</b></li>)}</ul>}
       <button className="btn brass wide" disabled={f.name.trim().length < 2} onClick={save}>سجّل</button>
