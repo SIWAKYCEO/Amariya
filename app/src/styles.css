@@ -1816,3 +1816,10 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .pres-wa.must { border-color: rgba(200,161,90,.5); background: rgba(200,161,90,.1); gap: 8px }
 .pres-wa.must b { font-size: 16px; color: #F2D79B }
 .pres-wa.must .pres-btn.main { margin-top: 4px; background: #1FA855; color: #fff; justify-content: center; gap: 8px; box-shadow: 0 14px 30px -14px rgba(31,168,85,.8) }
+/* piano gratis: contatore dei matrimoni del mese */
+.hd-meter { display: grid; gap: 8px; padding: 14px 18px; border-top: 1px solid #E3D7C1; font-size: 13px; color: #5B574E }
+.hd-meter b { font-family: var(--num); font-size: 15px; color: var(--ink) }
+.hd-meter i { display: block; height: 7px; border-radius: 7px; background: #fff; overflow: hidden }
+.hd-meter em { display: block; height: 100%; background: var(--green); border-radius: 7px }
+.hd-meter.full em { background: var(--henna) } .hd-meter.full span { color: #8F3A1E }
+.hd-meter .hd-btn { justify-self: start }

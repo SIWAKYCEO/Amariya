@@ -1,5 +1,10 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"وصلتي للحد ديال هاد الشهر فالمجاني": ["Limite du mois atteinte (gratuit)", "Monthly free limit reached"],
+"عراسات جداد هاد الشهر فالمجاني": ["nouveaux mariages ce mois-ci (gratuit)", "new weddings this month (free)"],
+"دوز لـ Pro": ["Passer à Pro", "Upgrade to Pro"],
+"الباقة المجانية فيها 3 عراسات جداد فالشهر. العراسات اللي عندك كيبقاو كاملين: كتشوفهم، كتبدّلهم وكتسجّل الخلاص عادي. باش تزيد عراسات جداد، دوز لـ Pro.": ["Le gratuit inclut 3 nouveaux mariages par mois. Tous vos mariages restent : vous les voyez, les modifiez et enregistrez les paiements normalement. Pour en ajouter de nouveaux, passez à Pro.", "Free includes 3 new weddings a month. All your weddings stay: you can see them, edit them and record payments as usual. To add new ones, move to Pro."],
+"وصلتي لـ 3 عراسات جداد هاد الشهر": ["Vous avez atteint 3 nouveaux mariages ce mois-ci", "You reached 3 new weddings this month"],
 "خلّص بطريقة أخرى": ["Payer autrement", "Pay another way"],
 "آخر خطوة: كمّل معانا فالواتساب": ["Dernière étape : continuez avec nous sur WhatsApp", "Last step: continue with us on WhatsApp"],
 "باش نبداو السيت، اللوغو، الفيديوهات والريلز ديالك، صيفط لينا الميساج واجد وغادي نتواصلو معاك.": ["Pour lancer votre site, logo, vidéos et reels, envoyez-nous le message prêt et nous vous contactons.", "To start your website, logo, videos and reels, send us the ready message and we will get in touch."],

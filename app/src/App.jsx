@@ -119,7 +119,7 @@ export default function App() {
       {route.v === 'stock' && <Stock back={back} go={go} />}
       {route.v === 'plans' && <Plans back={back} />}
       {route.v === 'requests' && <Requests go={go} back={back} />}
-      {route.v === 'new' && <NewWedding back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
+      {route.v === 'new' && <NewWedding go={go} back={back} done={(id) => { history.replaceState({ v: 'wedding', id }, ''); setRoute({ v: 'wedding', id }) }} prefill={route.prefill} />}
       {route.v === 'edit' && w && <NewWedding key={w.id} edit={w} back={back} done={back} />}
       {route.v === 'wedding' && (w ? <WeddingFile w={w} back={back} go={go} /> : desk ? <Dashboard go={go} /> : <Weddings go={go} />)}
       </Suspense>

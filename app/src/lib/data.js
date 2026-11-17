@@ -136,6 +136,12 @@ export function planOf(t = state.traiteur) {
   return p
 }
 export const isPro = (t = state.traiteur) => planOf(t) !== 'free'
+// free plan: this many new weddings a month, then Pro (nothing is deleted, everything stays readable and editable)
+export const FREE_WEDDINGS = 3
+export const monthAdded = (s = state) => { const m = new Date().toISOString().slice(0, 7); return s.weddings.filter((w) => w.notes !== '__sample' && String(w.created_at || '').slice(0, 7) === m).length }
+// who already had 3+ weddings when the limit started gets a few more, only that month
+export const freeLimit = (t = state.traiteur) => FREE_WEDDINGS + (t?.free_bonus_month === new Date().toISOString().slice(0, 7) ? +t.free_bonus || 0 : 0)
+export const atLimit = (s = state) => !isDemo && !isPro(s.traiteur) && !s.traiteur?.internal && monthAdded(s) >= freeLimit(s.traiteur)
 export const PRICES = { pro: 199, premium: 199, ultra: 590 }
 export const ULTRA_SETUP = 1790
 export const PLAN_NAME = { free: 'المجاني', pro: 'Pro', premium: 'Premium', ultra: 'Ultra' }

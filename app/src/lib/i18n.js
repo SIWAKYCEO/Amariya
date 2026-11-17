@@ -158,6 +158,7 @@ const P = [
   [/^باقة (Pro|Ultra|Premium)$/, 'Formule $1', '$1 plan'],
   [/^دير التحويل ديال (.+) درهم من البنك ولا من التطبيق ديال البنك$/, 'Faites le virement de $1 DH depuis votre banque ou son application', 'Transfer $1 DH from your bank or its app'],
   [/^صيفط لينا صورة الوصل فالواتساب، ونفعّلو ليك (.+) فنفس النهار$/, 'Envoyez-nous la photo du reçu sur WhatsApp, et nous activons $1 le jour même', 'Send us the receipt photo on WhatsApp, and we turn $1 on the same day'],
+  [/^وصلتي لـ (\d+) عراسات جداد هاد الشهر$/, 'Vous avez atteint $1 nouveaux mariages ce mois-ci', 'You reached $1 new weddings this month'],
   [/^السلام عليكم (.+?)( 🌿)?$/, 'Bonjour $1$2', 'Hello $1$2'],
   [/^السلام (.+)$/, 'Bonjour $1', 'Hi $1'],
   [/^العرس (.+)$/, 'Mariage $1', 'Wedding $1'],

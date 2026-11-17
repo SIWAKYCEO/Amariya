@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { add, extrasSum, ruleOf, update, useStore, newIsFlat, pkgFlat } from '../lib/data'
+import { add, atLimit, extrasSum, ruleOf, update, useStore, newIsFlat, pkgFlat, FREE_WEDDINGS, freeLimit } from '../lib/data'
+import { Locked } from '../ui'
 import { quickExtras, usesGuests, pkgWord } from '../lib/trades'
 import { addDays, dayKey, dayLabel, money, normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, MoneyInput, Stepper, TopBar, fail, toast } from '../ui'
 
 
-export default function NewWedding({ back, done, edit, prefill }) {
+export default function NewWedding({ back, done, edit, prefill, go }) {
   const s = useStore()
   const pk0 = s.packages[0]
   const [step, setStep] = useState(0)
@@ -40,8 +41,19 @@ export default function NewWedding({ back, done, edit, prefill }) {
       if (a > 0) await add('payments', { wedding_id: w.id, amount: a, kind: 'arboun', paid_on: dayKey(new Date()) })
       toast(a > 0 ? 'العرس تسجّل والعربون معاه' : 'الدوفي تسجّل')
       done(w.id)
-    } catch (e) { fail(e); setBusy(false) }
+    } catch (e) { if (String(e?.message || '').includes('free_limit')) { toast('وصلتي للحد ديال الباقة المجانية هاد الشهر', 'err'); go?.('plans') } else fail(e); setBusy(false) }
   }
+
+  if (!edit && atLimit(s)) return (
+    <div className="screen form">
+      <TopBar title="عرس جديد" back={back} />
+      <div className="pane">
+        <Locked title={`وصلتي لـ ${freeLimit(s.traiteur)} عراسات جداد هاد الشهر`} why="الباقة المجانية فيها 3 عراسات جداد فالشهر. العراسات اللي عندك كيبقاو كاملين: كتشوفهم، كتبدّلهم وكتسجّل الخلاص عادي. باش تزيد عراسات جداد، دوز لـ Pro." go={go || back}>
+          <div className="card" style={{ padding: 20, minHeight: 160 }} />
+        </Locked>
+      </div>
+    </div>
+  )
 
   const steps = ['شكون؟', guestsOn ? 'الضياف' : pkgWord(), edit ? 'راجع' : 'الدوفي']
   return (

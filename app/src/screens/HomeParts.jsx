@@ -1,5 +1,5 @@
 // Home blocks shared by the phone and the PC: the next wedding, what to do today, the month in numbers.
-import { owedOf, paidOf, problemsOf, readinessOf, teamBar, totalOf, useStore, devisLink } from '../lib/data'
+import { freeLimit, isDemo, isPro, monthAdded, owedOf, paidOf, problemsOf, readinessOf, teamBar, totalOf, useStore, devisLink } from '../lib/data'
 import { usesGuests } from '../lib/trades'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Ic } from '../ui'
@@ -73,6 +73,9 @@ export function TodoCard({ s, go }) {
     const sum = owed.reduce((a, o) => a + o.total, 0)
     t.push({ k: 'staff', ic: Ic.team(18), cls: 'g', title: `خلّص ${owed.length} من الخدامة`, sub: `المجموع ${money(sum)} درهم`, btn: 'شوف الخلاص', on: () => go('staff') })
   }
+  const free = !isDemo && !isPro(s.traiteur) && !s.traiteur?.internal
+  const used = free ? monthAdded(s) : 0
+  const FREE_WEDDINGS = freeLimit(s.traiteur)
   return (
     <section className="hd-card">
       <div className="hd-h"><h2>خاصك تدير اليوم</h2>{t.length > 0 && <span className="hd-n"><bdi dir="ltr">{t.length}</bdi> {t.length === 1 ? 'حاجة' : 'حوايج'}</span>}</div>
@@ -84,6 +87,13 @@ export function TodoCard({ s, go }) {
             <span className="hd-tx"><b>{x.title}</b><small>{x.sub}</small><button className={'hd-btn' + (x.main ? ' main' : '')} onClick={x.on}>{x.btn}</button></span>
           </div>
         ))}
+      {free && (
+        <div className={'hd-meter' + (used >= FREE_WEDDINGS ? ' full' : '')}>
+          <span><b>{`${Math.min(used, FREE_WEDDINGS)} / ${FREE_WEDDINGS}`}</b> {used >= FREE_WEDDINGS ? 'وصلتي للحد ديال هاد الشهر فالمجاني' : 'عراسات جداد هاد الشهر فالمجاني'}</span>
+          <i><em style={{ width: Math.min(100, (used / FREE_WEDDINGS) * 100) + '%' }} /></i>
+          {used >= FREE_WEDDINGS - 1 && <button className="hd-btn main" onClick={() => go('plans')}>دوز لـ Pro</button>}
+        </div>
+      )}
     </section>
   )
 }
