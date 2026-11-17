@@ -23,7 +23,7 @@ export default function PayChoice({ plan, name, onClose }) {
   const [amt, setAmt] = useState(null)
   const [busy, setBusy] = useState(false)
   const s = useStore()
-  if (how === 'card') return <PayCard plan={plan} name={name} onClose={onClose} />
+  if (how === 'card') return <PayCard plan={plan} name={name} onClose={onClose} onOther={() => setHow('pick')} />
 
   async function manual(m) {
     setBusy(true)

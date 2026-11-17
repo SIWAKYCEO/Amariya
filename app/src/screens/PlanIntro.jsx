@@ -1,4 +1,5 @@
 import { isTraiteur } from '../lib/trades'
+import { LANG } from '../lib/i18n'
 import { useEffect, useRef, useState } from 'react'
 import { PRICES, ULTRA_SETUP, cardPay, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
 import { Ic, LangPill, Logo, Sheet, toast } from '../ui'
@@ -58,7 +59,35 @@ export const PLANS = [
   },
 ]
 
-// four plans side by side: pills on top to jump, cards that swipe; every plan reachable without scrolling the page
+// plan windows: an arch on top of every card that shows what the plan gives, before reading anything
+function PlanWindow({ k }) {
+  if (k === 'free') return (
+    <div className="pz-win" aria-hidden="true">
+      <span className="pz-star" />
+      <div className="pz-cal">
+        <div className="pz-cal-h"><span>الكالوندري ديالك</span><span>3 عراسات</span></div>
+        <div className="pz-cal-g">{Array.from({ length: 14 }, (_, i) => <i key={i} className={i === 2 || i === 11 ? 'w' : i === 5 ? 'h' : ''} />)}</div>
+      </div>
+    </div>
+  )
+  if (k === 'pro') return (
+    <div className="pz-win" aria-hidden="true">
+      <span className="pz-live"><i />كيجاوب بوحدو · 24/24</span>
+      <div className="pz-chat">
+        <p className="pz-in">سلام، واش 14 دجنبر خاوي؟ وشحال الثمن؟</p>
+        <p className="pz-out">مرحبا بيك، 14 دجنبر خاوي. هادا الدوفي ورابط العربون باش نحجزو ليك النهار<small>Amariya · دابا</small></p>
+      </div>
+    </div>
+  )
+  return (
+    <div className="pz-win" aria-hidden="true">
+      <span className="pz-crown">{crown(12)} حنا كنخدمو عليك</span>
+      <div className="pz-tiles"><i className="site" /><i className="vid" /><i className="reels"><b dir="ltr">4×</b></i></div>
+    </div>
+  )
+}
+
+// three plans: on the phone small arches on top (all three always visible) and cards that swipe; on tablet and PC the three side by side
 export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start = 'pro', after, intro = false }) {
   const current = cur0 === 'premium' ? 'pro' : cur0
   const [on, setOn] = useState(start === 'premium' ? 'pro' : start)
@@ -66,11 +95,11 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
   const go = (k, smooth = true) => {
     setOn(k)
     const t = track.current, el = t?.querySelector(`[data-k="${k}"]`)
-    if (!el) return
+    if (!el || getComputedStyle(t).overflowX === 'visible') return
     const tr = t.getBoundingClientRect(), r = el.getBoundingClientRect()
-    t.scrollBy({ left: (r.left + r.width / 2) - (tr.left + tr.width / 2), behavior: smooth ? 'smooth' : 'auto' })
+    t.scrollTo({ left: t.scrollLeft + (r.left + r.width / 2) - (tr.left + tr.width / 2), behavior: smooth ? 'smooth' : 'auto' })
   }
-  useEffect(() => { go(start === 'premium' ? 'pro' : start, false) }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const id = requestAnimationFrame(() => go(start === 'premium' ? 'pro' : start, false)); return () => cancelAnimationFrame(id) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const onScroll = () => {
     const t = track.current; if (!t) return
     const tr = t.getBoundingClientRect(), mid = tr.left + tr.width / 2
@@ -89,40 +118,42 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
     if (r === 'demo') toast(`تفعّل ${PLANS.find((p) => p.k === k).name} فالتجربة`)
     after?.()
   }
+  const short = (p) => (p.k === 'free' ? 'ديما' : 'درهم / الشهر')
   return (
-    <div className="pcar" data-keep-cur>
-      <div className="pc-pills" role="tablist">
+    <div className="pz" data-keep-cur>
+      <div className="pz-tabs" role="tablist">
         {PLANS.map((p) => (
-          <button key={p.k} role="tab" aria-selected={on === p.k} className={'pc-pill ' + p.k + (on === p.k ? ' on' : '')} onClick={() => go(p.k)}>
-            {p.k === 'ultra' && crown(13)}{p.name}
+          <button key={p.k} role="tab" aria-selected={on === p.k} className={'pz-tab ' + p.k + (on === p.k ? ' on' : '')} onClick={() => go(p.k)}>
+            {p.k === 'pro' && <span className="pz-flag">{p.badge}</span>}
+            <b>{p.k === 'ultra' && crown(11)}{p.name}</b>
+            <i className="num" dir="ltr">{p.price}</i>
+            <small>{short(p)}</small>
           </button>
         ))}
       </div>
-      <div className="pc-track" ref={track} onScroll={onScroll}>
+      <div className="pz-track" ref={track} onScroll={onScroll}>
         {PLANS.map((p) => (
-          <article key={p.k} data-k={p.k} className={'pc-card ' + p.k + (current === p.k ? ' cur' : '')}>
-            <div className="pc-top">
-              {p.badge && <span className="pc-badge">{p.k === 'ultra' && crown(12)}{p.badge}</span>}
-              <header className="pc-h">
-                <b>{p.k === 'ultra' && crown(20)}{p.name}</b>
-                <span className="pc-price"><i className="num" dir="ltr">{p.price}</i><small>{p.per}</small></span>
-              </header>
-              {p.setup && <p className="pc-setup">+ <span className="num" dir="ltr">{p.setup.toLocaleString('de-DE')}</span> درهم مرة وحدة فالبداية</p>}
-              <p className="pc-line">{p.line}</p>
-            </div>
-            <div className="pc-body">
-              {p.all && <p className="pc-all">{p.all}</p>}
-              <ul className="pc-list">
-                {p.items.map(([t, d]) => <li key={t}><i className="pc-ic">{Ic.check(12)}</i><span><b>{t}</b>{d && <small>{d}</small>}</span></li>)}
-              </ul>
-            </div>
-            <div className="pc-foot">
-              {p.note && <small className="pc-note">{p.note}</small>}
-              {current === p.k
-                ? <span className="pc-cur">{Ic.check(14)} هادي اللي عندك دابا</span>
-                : p.k === 'free'
-                  ? (onFree && <button className="btn wide pc-btn" onClick={() => pick('free')}>{freeLabel || 'جرّب المجاني'}</button>)
-                  : <button className="btn wide pc-btn" onClick={() => pick(p.k)}>{cardPay() ? Ic.cash(17) : Ic.wa(17)} بغيت {p.name}</button>}
+          <article key={p.k} data-k={p.k} className={'pz-card ' + p.k + (current === p.k ? ' cur' : '')}>
+            {p.k === 'pro' && <span className="pz-badge">{p.badge}</span>}
+            <PlanWindow k={p.k} />
+            <div className="pz-body">
+              <div className="pz-row">
+                <span className="pz-name">{p.name}</span>
+                <span className="pz-price"><i className="num" dir="ltr">{p.price}</i><small>{p.per}</small></span>
+              </div>
+              {p.setup && <p className="pz-setup">+ <span className="num" dir="ltr">{p.setup.toLocaleString('de-DE')}</span> درهم مرة وحدة فالبداية</p>}
+              <p className="pz-line">{p.line}</p>
+              <div className="pz-feats">
+                {p.all && <p className="pz-all">{p.all}</p>}
+                <ul>{p.items.map(([t, d]) => <li key={t} title={d || undefined}>{t}</li>)}</ul>
+              </div>
+              <div className="pz-foot">
+                {current === p.k
+                  ? <span className="pz-cur">{Ic.check(14)} هادي اللي عندك دابا</span>
+                  : p.k === 'free'
+                    ? (onFree && <button className="pz-btn" onClick={() => pick('free')}>{freeLabel || 'جرّب المجاني'}<i>←</i></button>)
+                    : <button className="pz-btn" onClick={() => pick(p.k)}>بغيت {p.name}<i>←</i></button>}
+              </div>
             </div>
           </article>
         ))}
@@ -138,15 +169,17 @@ export default function PlanIntro({ onClose }) {
   const [leaving, setLeaving] = useState(false)
   const close = () => { try { localStorage.setItem(KEY(s.traiteur?.id), String(Date.now())) } catch { /* */ } setLeaving(true); setTimeout(onClose, 260) }
   return (
-    <div className={'intro' + (leaving ? ' out' : '')} role="dialog" aria-modal="true" aria-label="اختار الباقة">
-      <div className="in-wrap">
-        <div className="in-top">
-          <div className="in-bar"><Logo size={24} /><LangPill /></div>
-          <h1>{old ? 'اختار الباقة ديالك' : 'كيفاش بغيتي تبدا؟'}</h1>
-          <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. تقدر تبدّل الباقة وقتما بغيتي.'}</p>
+    <div className={'intro pzi' + (leaving ? ' out' : '')} role="dialog" aria-modal="true" aria-label="اختار الباقة">
+      <div className="pzi-arch" aria-hidden="true" />
+      <div className="pzi-wrap">
+        <div className="pzi-bar"><Logo size={24} /><LangPill light /></div>
+        <div className="pzi-top">
+          <span className="pzi-pill">بلا التزام · بدّل ولا وقّف فاين ما بغيتي</span>
+          <h1>{LANG !== 'ar' ? (old ? 'اختار الباقة ديالك' : 'كيفاش بغيتي تبدا؟') : old ? <>اختار <em>الباقة</em> ديالك</> : <>كيفاش بغيتي <em>تبدا</em>؟</>}</h1>
+          <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. ختار الباقة اللي كتناسب الخدمة ديالك.'}</p>
         </div>
         <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
-        <p className="ip-foot">{cardPay() ? <>{Ic.cash(13)} كتخلّص بالكارطة البنكية بأمان، والباقة كتفعّل فالحين.</> : <>{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</>}</p>
+        <p className="pzi-foot">{cardPay() ? <>{Ic.cash(13)} كتخلّص بالكارطة، بالتحويل البنكي ولا بـ CashPlus، والباقة كتفعّل ليك.</> : <>{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</>}</p>
       </div>
     </div>
   )

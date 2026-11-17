@@ -17,7 +17,7 @@ const call = async (body) => {
   return r.json().catch(() => ({}))
 }
 
-export default function PayCard({ plan, name, onClose }) {
+export default function PayCard({ plan, name, onClose, onOther }) {
   const [st, setSt] = useState('loading') // loading | form | paying | done | fail | error
   const [why, setWhy] = useState('')
   const [round, setRound] = useState(0) // "try again" makes a fresh payment
@@ -62,39 +62,61 @@ export default function PayCard({ plan, name, onClose }) {
     setSt('done')
   }
 
+  const retry = () => { setInfo(null); setWhy(''); setSt('loading'); setRound((x) => x + 1) }
+  if (st === 'done') return <PayResult ok plan={plan} name={name} onClose={onClose} />
+  if (st === 'fail' || st === 'error') return <PayResult plan={plan} name={name} error={st === 'error'} why={why} onRetry={retry} onOther={onOther} onClose={onClose} />
+
   return (
     <Sheet onClose={onClose} title={`خلّص ${name} بالكارطة`}>
       <div className="ycp">
-        {info && st !== 'done' && st !== 'fail' && <div className="pm-head"><span className="pm-logos"><Visa /><Mastercard /></span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
+        {info && <div className="pm-head"><span className="pm-logos"><Visa /><Mastercard /></span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
-        {(st === 'error' || st === 'fail') && (
-          <div className="ycp-res bad">
-            <span className="ycp-ic">{Ic.x(30)}</span>
-            <b>ما دازش الخلاص</b>
-            <p>{st === 'error' ? 'ما قدرناش نحلّو الخلاص دابا. عاود جرّب من بعد شوية.' : 'البنك ما قبلش الخلاص. شوف المعلومات ديال الكارطة ولا جرّب بكارطة أخرى.'}</p>
-            {why && <small dir="auto">{why}</small>}
-            <button className="btn wide brass" onClick={() => { setInfo(null); setWhy(''); setSt('loading'); setRound((x) => x + 1) }}>عاود جرّب</button>
-            <button className="btn wide ghost" onClick={() => openExternal(contactWaLink(`حاولت نخلّص ${name} بالكارطة وما دازش.`))}>{Ic.wa(17)} عاوننا فالواتساب</button>
-          </div>
-        )}
-        {st === 'done'
-          ? <div className="ycp-res good">
-            <span className="ycp-ic">{Ic.check(30)}</span>
-            <b>مبروك! دابا راك فـ {name}</b>
-            <p>تخلّص بنجاح، وكلشي تحلّ ليك فالتطبيق.</p>
-            <div className="ycp-wa">
-              <b>بغيتي الواتساب يجاوب الكليان ديالك بوحدو؟</b>
-              <small>صيفط لينا ميساج ونشغّلوه ليك.</small>
-              <button className="btn wide green" onClick={() => openExternal(contactWaLink(`خلّصت ${name}، بغيت نشغّل الواتساب اللي كيجاوب بوحدو.`))}>{Ic.wa(17)} شغّلو ليا الواتساب</button>
-            </div>
-            <button className="btn wide" onClick={onClose}>بدا تخدم</button>
-          </div>
-          : st !== 'fail' && st !== 'error' && <>
-            <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' ? 'block' : 'none' }} />
-            {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
-          </>}
+        <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' ? 'block' : 'none' }} />
+        {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
         <p className="ycp-note">الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>
       </div>
     </Sheet>
+  )
+}
+
+const UNLOCKED = {
+  pro: ['واتساب كيجاوب بوحدو 24/24', 'الربح الصافي ديال كل عرس', 'الدوفي والعقد PDF باللوغو ديالك', 'خلاص الخدامة والماتريال'],
+  ultra: ['سيت ويب كامل باسمك', 'لوغو وهوية كاملة', 'فيديو إشهاري للأدز', 'مونطاج 4 ريلز كل شهر'],
+}
+
+// full screen after the card payment: approved (green arch, gold star) or refused (clear reason, what to do now)
+export function PayResult({ ok, plan, name, error, why, onRetry, onOther, onClose }) {
+  return (
+    <div className={'pres ' + (ok ? 'ok' : 'ko')} role="dialog" aria-modal="true" aria-label={ok ? 'الخلاص داز' : 'ما دازش الخلاص'}>
+      <div className="pres-arch" aria-hidden="true" />
+      <div className="pres-in">
+        <div className="pres-mark" aria-hidden="true"><span className="pres-star" /><i>{ok ? Ic.check(30) : Ic.x(28)}</i></div>
+        {ok ? <>
+          <span className="pres-k">تخلّص بنجاح</span>
+          <h1>مبروك! دابا راك فـ <em>{name}</em></h1>
+          <p>كلشي تحلّ ليك فالتطبيق دابا، بلا ما تبدّل والو.</p>
+          {UNLOCKED[plan] && <ul className="pres-list">{UNLOCKED[plan].map((t) => <li key={t}><i>{Ic.check(12)}</i>{t}</li>)}</ul>}
+          <div className="pres-wa">
+            <b>بغيتي الواتساب يجاوب الكليان ديالك بوحدو؟</b>
+            <small>صيفط لينا ميساج ونشغّلوه ليك.</small>
+            <button className="pres-btn line" onClick={() => openExternal(contactWaLink(`خلّصت ${name}، بغيت نشغّل الواتساب اللي كيجاوب بوحدو.`))}>{Ic.wa(17)} شغّلو ليا الواتساب</button>
+          </div>
+          <button className="pres-btn main" onClick={onClose}>بدا تخدم<i>←</i></button>
+        </> : <>
+          <span className="pres-k">ما دازش الخلاص</span>
+          <h1>{error ? 'ما قدرناش نحلّو الخلاص دابا' : 'البنك ما قبلش الخلاص'}</h1>
+          <p>{error ? 'عاود جرّب من بعد شوية.' : 'شوف المعلومات ديال الكارطة ولا جرّب بكارطة أخرى.'}</p>
+          {why && <small className="pres-why" dir="auto">{why}</small>}
+          <div className="pres-tips">
+            <span>تأكد من الرقم والتاريخ والـ CVV</span>
+            <span>شوف واش الكارطة مفتوحة للخلاص فالأنترنيت</span>
+          </div>
+          <button className="pres-btn main" onClick={onRetry}>عاود جرّب<i>←</i></button>
+          {onOther && <button className="pres-btn line" onClick={onOther}>{Ic.cash(17)} خلّص بالتحويل البنكي ولا CashPlus</button>}
+          <button className="pres-link" onClick={() => openExternal(contactWaLink(`حاولت نخلّص ${name} بالكارطة وما دازش.`))}>{Ic.wa(15)} عاوننا فالواتساب</button>
+          <button className="pres-link mute" onClick={onClose}>رجع</button>
+        </>}
+      </div>
+    </div>
   )
 }
