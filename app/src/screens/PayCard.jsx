@@ -110,7 +110,7 @@ export default function PayCard({ plan, name, onClose, onOther, via = 'credit-ca
         </div>
         {(st === 'form' || st === 'paying') && <button className="ycp-pay" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? <><Spin /> كنخلّصو…</> : cp ? 'عطيني الكود ديال CashPlus' : <>{Ic.lock(17)} خلّص <span className="num" dir="ltr">{info ? info.amount.toLocaleString('de-DE') : ''}</span> درهم</>}</button>}
         {st === 'code' && <div className="ycp-wa"><b>سجّل الكود وخلّص بيه فأقرب وكالة CashPlus</b><small>ملي تخلّص، {name} كتفعّل فالتطبيق بوحدها، بلا ما تصيفط حتى حاجة.</small><button className="btn wide" onClick={onClose}>مزيان</button></div>}
-        {st !== 'code' && <p className="ycp-trust">{Ic.lock(13)} الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>}
+        {st !== 'code' && <p className="ycp-trust">{Ic.lock(13)} الخلاص آمن ومحمي. ما كنشوفوش معلومات الكارطة ديالك.</p>}
       </div>
     </Sheet>
   )
