@@ -107,10 +107,10 @@ export function PayResult({ ok, plan, name, error, why, onRetry, onOther, onClos
           <h1>{error ? 'ما قدرناش نحلّو الخلاص دابا' : 'البنك ما قبلش الخلاص'}</h1>
           <p>{error ? 'عاود جرّب من بعد شوية.' : 'شوف المعلومات ديال الكارطة ولا جرّب بكارطة أخرى.'}</p>
           {why && <small className="pres-why" dir="auto">{why}</small>}
-          <div className="pres-tips">
-            <span>تأكد من الرقم والتاريخ والـ CVV</span>
-            <span>شوف واش الكارطة مفتوحة للخلاص فالأنترنيت</span>
-          </div>
+          <ul className="pres-list">
+            <li><i>{Ic.cash(13)}</i>تأكد من الرقم والتاريخ والـ CVV</li>
+            <li><i>{Ic.check(12)}</i>شوف واش الكارطة مفتوحة للخلاص فالأنترنيت</li>
+          </ul>
           <button className="pres-btn main" onClick={onRetry}>عاود جرّب<i>←</i></button>
           {onOther && <button className="pres-btn line" onClick={onOther}>{Ic.cash(17)} خلّص بالتحويل البنكي ولا CashPlus</button>}
           <button className="pres-link" onClick={() => openExternal(contactWaLink(`حاولت نخلّص ${name} بالكارطة وما دازش.`))}>{Ic.wa(15)} عاوننا فالواتساب</button>

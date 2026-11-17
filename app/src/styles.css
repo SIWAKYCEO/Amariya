@@ -1591,3 +1591,23 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
   .pzi-pill { display: inline-block; margin-bottom: 4px }
   .pzi-arch { width: 1700px; height: 600px; top: -100px; border-radius: 850px 850px 0 0 / 420px 420px 0 0 }
 }
+/* esito rifiutato v2: stesso livello dell'approvato, notte calda con luce henna */
+.pres.ko { background: #140F0C; color: #F3EDE3 }
+.ko .pres-arch { background: radial-gradient(50% 45% at 50% 68%, rgba(224,99,58,.28), transparent 70%), linear-gradient(180deg, #1B1210, #2A1812) }
+.ko .pres-arch::before { opacity: .16 }
+.ko .pres-arch::after { border-color: rgba(224,99,58,.35) }
+.ko .pres-star::before, .ko .pres-star::after { border-color: rgba(224,99,58,.7); background: rgba(224,99,58,.1); animation: pres-turn 18s linear infinite reverse }
+.ko .pres-mark i { background: linear-gradient(180deg, #F08A62, #D3532B); color: #fff; box-shadow: 0 0 0 8px rgba(224,99,58,.16), 0 0 46px rgba(224,99,58,.55) }
+.ko .pres-mark { animation: pres-pop .6s cubic-bezier(.2,1.4,.4,1) both, pres-shake .5s .6s ease-in-out }
+@keyframes pres-shake { 20%, 60% { transform: translateX(-6px) } 40%, 80% { transform: translateX(6px) } }
+.ko .pres-k { color: #FFB59A; background: rgba(224,99,58,.12); border-color: rgba(224,99,58,.35) }
+.ko .pres-in > p { opacity: .72 }
+.ko .pres-list { grid-template-columns: 1fr 1fr }
+.ko .pres-list li { background: rgba(255,255,255,.05); border-color: rgba(224,99,58,.18) }
+.ko .pres-list li i { background: rgba(224,99,58,.16); color: #FFB59A }
+.ko .pres-btn.main { background: linear-gradient(180deg, #E9CB86, #C8A15A); color: var(--ink); box-shadow: 0 12px 30px -12px rgba(200,161,90,.7) }
+.ko .pres-btn.main i { background: rgba(10,23,20,.12) }
+.ko .pres-btn.line { background: rgba(255,255,255,.06); color: #F3EDE3; border: 1px solid rgba(243,237,227,.16) }
+.ko .pres-link { color: #9FE3B9 }
+.ko .pres-link.mute { color: rgba(243,237,227,.5) }
+@media (prefers-reduced-motion: reduce) { .ko .pres-mark { animation: none } }
