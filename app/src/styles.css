@@ -1627,3 +1627,113 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .ko .pres-btn.line { background: #fff; color: var(--ink); border: 1px solid #EADFCF; box-shadow: 0 10px 24px -20px rgba(15,42,36,.5) }
 .ko .pres-link { color: #128c4a }
 .ko .pres-link.mute { color: #8a8478 }
+
+/* ===== home v3 (17/11): testata verde, prossimo matrimonio con foto ad arco, cose da fare, numeri del mese ===== */
+/* PC: fascia verde dietro la testata */
+.desk .dmain:has(> .dash) { position: relative; overflow-x: clip }
+.desk .dmain:has(> .dash)::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 290px; background: linear-gradient(180deg, #0F2A24, #173F35); border-end-start-radius: 28px }
+.dash { position: relative }
+.dhead2 { display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--ivory); padding: 6px 2px 2px }
+.dhead2 h1 { font-size: 26px; font-weight: 900; letter-spacing: -.01em; line-height: 1.3 }
+.dhead2 small { display: block; font-size: 13.5px; color: rgba(243,237,227,.68); margin-top: 2px }
+.dhead2 .ac { display: flex; gap: 10px; align-items: center; flex: none }
+.dhead2 .dsr { height: 42px; border-radius: 12px; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16) }
+.dhead2 .dqr { height: 42px; border-radius: 12px; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16) }
+.dhead2 .dcta { height: 42px; border-radius: 12px; font-weight: 800; font-size: 14px }
+.dash .dacc .accplan { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14) }
+.drow1 { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 18px; align-items: stretch }
+.drow1.solo { grid-template-columns: 1fr }
+.dash .dpn { border: 1px solid #E6DFD2; box-shadow: 0 1px 2px rgba(15,42,36,.04), 0 18px 40px -30px rgba(15,42,36,.45); border-radius: 18px }
+.dash .dcal { background: var(--green); border-color: var(--green); color: var(--ivory) }
+.dash .dcal h2 { color: var(--ivory) } .dash .dcal .dlink { color: var(--brass) }
+.dash .dcal .mcal > span { color: rgba(243,237,227,.45) }
+.dash .dcal .mcal button b { color: rgba(243,237,227,.85) }
+.dash .dcal .mcal button:hover { background: rgba(255,255,255,.08) }
+.dash .dcal .mcal button.b { background: var(--ivory) } .dash .dcal .mcal button.b b { color: var(--green) }
+.dash .dcal .mcal button.h { background: var(--henna) } .dash .dcal .mcal button.h b { color: #fff }
+.dash .dcal .mlg { color: rgba(243,237,227,.6) } .dash .dcal .mlg i.b { background: var(--ivory) }
+
+/* prossimo matrimonio */
+.hn-card { display: grid; grid-template-columns: minmax(0, 1fr) 230px; background: #fff; border: 1px solid #E6DFD2; border-radius: 18px; box-shadow: 0 1px 2px rgba(15,42,36,.04), 0 18px 40px -30px rgba(15,42,36,.45); cursor: pointer; text-align: start; overflow: hidden }
+.hn-ph { order: 2; position: relative; margin: 12px; min-height: 290px; border-radius: 115px 115px 12px 12px / 95px 95px 12px 12px; background: center 40% / cover no-repeat }
+.hn-date { position: absolute; inset: auto 10px 10px 10px; background: #fff; border-radius: 10px; padding: 7px 10px; text-align: center; color: var(--ink) }
+.hn-date b { display: block; font: 750 22px/1.1 var(--num) }
+.hn-date small { font-size: 11.5px; color: var(--mute) }
+.hn-in { padding: 20px 22px; display: flex; flex-direction: column; min-width: 0 }
+.hn-lbl { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; color: #1E4A3F }
+.hn-lbl::before { content: ''; width: 8px; height: 8px; transform: rotate(45deg); background: var(--brass) }
+.hn-in h3 { font-size: 24px; font-weight: 900; color: var(--ink); margin: 6px 0 10px; letter-spacing: -.01em }
+.hn-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: #4E5853 }
+.hn-meta span { display: inline-flex; align-items: center; gap: 6px }
+.hn-meta svg { color: #8A928E; flex: none }
+.hn-chk { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 }
+.hn-ci { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 10px; background: #F6F3ED; font-size: 13.5px; font-weight: 600; color: var(--ink); min-width: 0 }
+.hn-ci i { flex: none; width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; background: #DDEBE3; color: #23704F; font-style: normal; font-weight: 900; font-size: 12px }
+.hn-ci.bad { background: #FDF1EC; color: #8F3A1E }
+.hn-ci.bad i { background: var(--henna); color: #fff }
+.hn-ci b { margin-inline-start: auto; font-size: 12.5px; color: var(--henna) }
+.hn-pay { margin-top: auto; padding-top: 14px; border-top: 1px solid #F1ECE3 }
+.hn-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--mute) }
+.hn-row b { color: var(--ink) } .hn-row b .num { font-size: 17px; font-weight: 750 } .hn-row b.hot .num { color: var(--henna) }
+.hn-row .ok { color: var(--ok); font-weight: 700; display: inline-flex; gap: 5px; align-items: center }
+.hn-bar { height: 8px; border-radius: 9px; background: #EFEAE0; margin: 10px 0 0; overflow: hidden }
+.hn-bar i { display: block; height: 100%; background: var(--green); border-radius: 9px }
+.hn-btn { margin-top: 12px; height: 38px; padding: 0 14px; border-radius: 10px; border: 1px solid #E6DFD2; background: #fff; color: var(--ink); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 7px }
+.hn-btn svg { color: #128C4A }
+
+/* cose da fare oggi */
+.hd-card { background: #EFE6D4; border: 1px solid #E3D7C1; border-radius: 18px; overflow: hidden; color: var(--ink) }
+.hd-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid #E3D7C1 }
+.hd-h h2 { font-size: 16px; font-weight: 900 }
+.hd-n { font-size: 12px; font-weight: 700; background: var(--green); color: var(--ivory); padding: 3px 10px; border-radius: 99px }
+.hd-it { display: flex; gap: 12px; padding: 14px 18px; align-items: flex-start }
+.hd-it + .hd-it { border-top: 1px solid #E3D7C1 }
+.hd-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; background: #fff; color: #6E6250 }
+.hd-ic.r { color: var(--henna) } .hd-ic.g { color: #23704F }
+.hd-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start }
+.hd-tx b { font-size: 14px; font-weight: 800; line-height: 1.45 }
+.hd-tx small { font-size: 12.5px; color: #6E6A60; margin: 2px 0 8px; line-height: 1.5 }
+.hd-btn { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700; background: #fff; border: 1px solid #E3D7C1; color: var(--ink) }
+.hd-btn.main { background: var(--green); border-color: var(--green); color: var(--ivory) }
+.hd-ok { display: flex; gap: 12px; align-items: center; padding: 18px }
+.hd-ok i { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #fff; color: var(--ok) }
+.hd-ok b { display: block; font-size: 14px } .hd-ok small { font-size: 12.5px; color: #6E6A60 }
+
+/* numeri del mese */
+.hs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px }
+.hs-t { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 16px 18px; border-radius: 18px; background: #fff; border: 1px solid #E6DFD2; box-shadow: 0 1px 2px rgba(15,42,36,.04), 0 18px 40px -32px rgba(15,42,36,.45); text-align: start; color: var(--ink) }
+.hs-t small { font-size: 12.5px; color: var(--mute); font-weight: 600 }
+.hs-t > b { font-size: 28px; line-height: 1.15 } .hs-t > b .num, .hs-t > b.num { font-size: 28px; font-weight: 750 }
+.hs-t > b .num small { font-size: 12px; color: var(--mute); font-weight: 600 }
+.hs-t > b.hot .num { color: var(--henna) }
+.hs-t > span { font-size: 12px; color: var(--mute) }
+.hs-t > span .num { font-size: 12px }
+.hs-t.g { background: var(--green); border-color: var(--green); color: var(--ivory) }
+.hs-t.g small, .hs-t.g > span, .hs-t.g > b .num small { color: rgba(243,237,227,.65) }
+.hs-t.y { background: #EFE6D4; border-color: #E3D7C1 }
+@media (max-width: 1320px) { .drow1 { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) } .hn-card { grid-template-columns: minmax(0, 1fr) 190px } }
+
+/* telefono e tablet */
+.hero.h3 { background: linear-gradient(180deg, #0F2A24, #173F35); border-radius: 0 0 28px 28px }
+.screen .content > .hn-card, .screen .content > .hd-card, .screen .content > .hs { margin-top: 14px }
+@media (max-width: 1023px) {
+  .hn-card { grid-template-columns: 1fr }
+  .hn-ph { order: 0; min-height: 180px; margin: 10px 10px 0; border-radius: 150px 150px 12px 12px / 80px 80px 12px 12px }
+  .hn-date { inset: auto auto 10px 10px; display: flex; align-items: baseline; gap: 6px; padding: 6px 12px }
+  .hn-date b { font-size: 18px }
+  .hn-in { padding: 16px }
+  .hn-in h3 { font-size: 21px }
+  .hn-btn { width: 100%; justify-content: center; height: 42px }
+  .hs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px }
+  .hs-t { padding: 14px; border-radius: 16px }
+  .hs-t > b .num, .hs-t > b.num { font-size: 22px }
+  .hd-it { padding: 12px 14px } .hd-h { padding: 14px }
+}
+@media (max-width: 420px) { .hn-chk { grid-template-columns: 1fr; gap: 6px } }
+@media (min-width: 640px) and (max-width: 1023px) {
+  .hn-card { grid-template-columns: minmax(0, 1fr) 220px }
+  .hn-ph { order: 2; min-height: 260px; margin: 12px; border-radius: 110px 110px 12px 12px / 90px 90px 12px 12px }
+  .hn-date { inset: auto 10px 10px 10px; display: block; text-align: center }
+}
+/* in francese/inglese (sinistra→destra) il menu laterale va a sinistra, come il margine del contenuto */
+.desk .dside { inset: 0 auto; inset-inline-start: 0; inset-inline-end: auto }

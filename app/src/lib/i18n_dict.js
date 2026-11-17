@@ -1,5 +1,16 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"خاصك تدير اليوم": ["À faire aujourd'hui", "To do today"],
+"كلشي مزيان اليوم": ["Tout va bien aujourd'hui", "All good today"],
+"ما كاين حتى حاجة خاصها تتحل دابا": ["Rien à régler pour l'instant", "Nothing to fix right now"],
+"صيفط تذكير للعائلة": ["Envoyer un rappel à la famille", "Send a reminder to the family"],
+"صيفط تذكير": ["Envoyer un rappel", "Send a reminder"],
+"شوف العرس": ["Voir le mariage", "See the wedding"],
+"شوف الخلاص": ["Voir les paiements", "See payments"],
+"خلّصو": ["Payé", "Paid"],
+"الربح الصافي ديال الشهر": ["Bénéfice net du mois", "Net profit this month"],
+"من بعد المصاريف والخدامة": ["Après dépenses et équipe", "After expenses and staff"],
+"الفلوس اللي دخلات": ["Argent encaissé", "Money received"],
 "الكالوندري ديالك": ["Votre calendrier", "Your calendar"],
 "3 عراسات": ["3 mariages", "3 weddings"],
 "كيجاوب بوحدو": ["Répond tout seul", "Replies on its own"],

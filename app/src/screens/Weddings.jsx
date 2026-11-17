@@ -5,6 +5,7 @@ import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar } from './Account'
+import { NextCard, Stats, TodoCard } from './HomeParts'
 
 const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا', team: 'الفريق باقي ما تأكّد' }
 
@@ -17,35 +18,6 @@ export function WeddingChips({ w, s }) {
       {w.status !== 'done' && t.need > 0 && <span className={'chip' + (t.short ? ' hot' : ' ok')}>{Ic.team(13)} {t.label} <b dir="ltr">{t.ok}/{t.need}</b></span>}
       {probs.includes('noArboun') ? <span className="chip hot">بلا عربون</span> : <span className="chip ok">{Ic.check(12)} العربون</span>}
     </div>
-  )
-}
-
-const until = (w) => {
-  const n = daysFromToday(w.day)
-  if (n > 1) return `بعد ${n} أيام`
-  if (n === 1) return 'غدا'
-  const [h, m] = (w.time || '20:00').split(':').map(Number), t = new Date(); t.setHours(h, m || 0, 0, 0)
-  const mins = Math.round((t - Date.now()) / 60000)
-  return mins > 60 ? `بعد ${Math.floor(mins / 60)} ساعات` : mins > 0 ? `بعد ${mins} دقيقة` : 'دابا'
-}
-
-function TodayCard({ w, s, go, next }) {
-  const total = totalOf(w), paid = paidOf(w, s.payments), rest = Math.max(0, total - paid)
-  const r = readinessOf(w, s)
-  return (
-    <button className={'tcard' + (next ? ' next' : '')} onClick={() => go('wedding', { id: w.id })}>
-      <span className="ph" style={{ backgroundImage: `url(${photoFor(w.id)})` }} />
-      <span className="grad" />
-      <span className="body">
-        <span className="row1">
-          <span><span className="until">{until(w)} · <span dir="ltr">{w.time}</span></span><b className="fam">{w.family}</b><span className="meta">{Ic.pin(13)} {[w.hall, w.city].filter(Boolean).join(' · ')}</span></span>
-          <Ring done={r.done} total={r.total} light size={52} />
-        </span>
-        <WeddingChips w={w} s={s} />
-        <span className="bar"><i style={{ width: Math.min(100, (paid / (total || 1)) * 100) + '%' }} /></span>
-        <span className="row2">{rest > 0 ? <span>الباقي <b className="restv"><DH v={rest} /></b></span> : <span className="paidall">{Ic.check(13)} خالص كامل</span>}<span>من <DH v={total} /></span></span>
-      </span>
-    </button>
   )
 }
 
@@ -84,9 +56,7 @@ export default function Weddings({ go }) {
 
   return (
     <div className="screen">
-      <section className="hero">
-        <div className="bgphoto" style={{ backgroundImage: `url(${PHOTOS.hall2})` }} />
-        <div className="shade" />
+      <section className="hero h3">
         <div className="hero-in">
           <div className="hero-top">
             <Logo size={20} />
@@ -118,8 +88,6 @@ export default function Weddings({ go }) {
       </section>
 
       <div className="content">
-        <InstallNudge />
-        <Inbox go={go} />
         {realCount === 0 && (
           <div className="startx">
             <h4 className="sec">بدا من هنا</h4>
@@ -128,8 +96,12 @@ export default function Weddings({ go }) {
             <button className="stc" onClick={() => setQr(true)}><i>{sample ? 3 : 2}</i><span><b>جرّب الردود ديال الواتساب</b><small>جاوب الكليان فثانية بالثمن والنهارات الخاوين</small></span>{Ic.back(16)}</button>
           </div>
         )}
-        {todays.length > 0 && <><h4 className="sec">اليوم</h4>{todays.map((w) => <TodayCard key={w.id} w={w} s={s} go={go} />)}</>}
-        {!todays.length && (week[0] || later[0]) && <><h4 className="sec">العرس الجاي</h4><TodayCard w={week[0] || later[0]} s={s} go={go} next /></>}
+        {todays.length > 0 && todays.map((w) => <NextCard key={w.id} w={w} s={s} go={go} label="اليوم" />)}
+        {!todays.length && (week[0] || later[0]) && <NextCard w={week[0] || later[0]} s={s} go={go} />}
+        <Inbox go={go} />
+        {realCount > 0 && <TodoCard s={s} go={go} />}
+        {realCount > 0 && <Stats s={s} go={go} />}
+        <InstallNudge />
         {(todays.length ? week : week.slice(1)).length > 0 && <><h4 className="sec">هاد السيمانة</h4><div className="list">{(todays.length ? week : week.slice(1)).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
         {(!todays.length && !week.length ? later.slice(1) : later).length > 0 && <><h4 className="sec">من بعد</h4><div className="list">{(!todays.length && !week.length ? later.slice(1) : later).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
         {!todays.length && !week.length && !later.length && realCount > 0 && <Empty title="ما كاين حتى عرس جاي" sub="زيد أول عرس وغادي تلقاه هنا" />}

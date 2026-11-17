@@ -7,6 +7,7 @@ import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, 
 import { DH, Empty, Ic, LangPill, Logo } from '../ui'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar, ContactSheet } from './Account'
+import { NextCard, Stats, TodoCard, nextWedding } from './HomeParts'
 
 export function Side({ v, go }) {
   const s = useStore()
@@ -74,15 +75,7 @@ export function Dashboard({ go }) {
   const todays = upcoming.filter((w) => w.day === today)
 
   const monthW = live.filter((w) => w.day.startsWith(mk))
-  const income = s.payments.filter((p) => p.paid_on?.startsWith(mk)).reduce((a, p) => a + +p.amount, 0)
-  const staffCost = s.assignments.filter((a) => a.status === 'ok').reduce((sum, a) => {
-    const w = s.weddings.find((x) => x.id === a.wedding_id)
-    return w && w.status !== 'cancelled' && w.day.startsWith(mk) && w.day <= today ? sum + (+a.pay || 0) : sum
-  }, 0)
-  const spent = s.expenses.filter((e) => e.spent_on?.startsWith(mk)).reduce((a, e) => a + +e.amount, 0) + staffCost
   const owed = live.filter((w) => w.status !== 'devis').map((w) => ({ w, rest: restOf(w, s.payments), paid: paidOf(w, s.payments) })).filter((x) => x.rest > 0)
-  const owedTotal = owed.reduce((a, x) => a + x.rest, 0)
-  const noArboun = owed.filter((x) => x.paid <= 0 && daysFromToday(x.w.day) >= 0)
 
   let rows = f === 'week' ? thisWeek : f === 'todo' ? upcoming.filter((w) => problemsOf(w, s).length) : f === 'past' ? live.filter((w) => daysFromToday(w.day) < 0).reverse() : upcoming
   const n = q.trim()
@@ -97,27 +90,26 @@ export function Dashboard({ go }) {
   const hot = (k) => (byDay[k] || []).some((w) => problemsOf(w, s).length)
 
   const first_ = (s.me?.name || '').split(' ')[0]
+  const nx = nextWedding(s)
   return (
     <div className="dash">
-      <section className="dhead" style={{ backgroundImage: `url(${PHOTOS.hall2})` }}>
+      <section className="dhead2">
         <div className="t">
-          <small>{greeting()}{first_ ? '، ' + first_ : ''} · {DAYS[now.getDay()]} {now.getDate()} {MONTHS[now.getMonth()]}</small>
-          <h1>{todays.length ? <>عندك <b dir="ltr">{todays.length}</b> {todays.length === 1 ? 'عرس' : 'عراسات'} اليوم</> : thisWeek.length ? <>عندك <b dir="ltr">{thisWeek.length}</b> {thisWeek.length === 1 ? 'عرس' : 'عراسات'} هاد السيمانة</> : 'ما عندك حتى عرس هاد السيمانة'}</h1>
+          <h1>{greeting()}{first_ ? '، ' + first_ : ''}</h1>
+          <small>{DAYS[now.getDay()]} {now.getDate()} {MONTHS[now.getMonth()]} · {todays.length ? <>عندك <bdi dir="ltr">{todays.length}</bdi> {todays.length === 1 ? 'عرس' : 'عراسات'} اليوم</> : thisWeek.length ? <>عندك <bdi dir="ltr">{thisWeek.length}</bdi> {thisWeek.length === 1 ? 'عرس' : 'عراسات'} هاد السيمانة</> : 'ما عندك حتى عرس هاد السيمانة'}</small>
         </div>
         <div className="ac">
-          <label className="dsr">{Ic.search(18)}<input ref={search} value={q} onChange={(e) => setQ(e.target.value)} placeholder="قلّب على عائلة، قاعة، تيليفون…" /><kbd dir="ltr">Ctrl K</kbd></label>
-          <button className="dqr" onClick={() => setQr(true)} aria-label="ردود جاهزين">{Ic.wa(18)}<span>ردود جاهزين</span></button>
-          <button className="dcta" onClick={() => go('new')}>{Ic.plus(18)} عرس جديد</button>
+          <label className="dsr">{Ic.search(17)}<input ref={search} value={q} onChange={(e) => setQ(e.target.value)} placeholder="قلّب على عائلة، قاعة، تيليفون…" /><kbd dir="ltr">Ctrl K</kbd></label>
+          <button className="dqr" onClick={() => setQr(true)} aria-label="ردود جاهزين">{Ic.wa(17)}<span>ردود جاهزين</span></button>
+          <button className="dcta" onClick={() => go('new')}>{Ic.plus(17)} عرس جديد</button>
         </div>
       </section>
       <div className="dacc"><AccountBar go={go} /></div>
-
-      <section className="dkpi">
-        <div className="k"><small>عراسات {MONTHS[now.getMonth()]}</small><div className="v"><b className="num">{monthW.length}</b><u>{monthW.length === 1 ? 'عرس' : 'عراسات'}</u></div><span className="mut">{upcoming.length} جايين فالمجموع</span></div>
-        <div className="k"><small>الفلوس اللي دخلات هاد الشهر</small><div className="v"><DH v={income} /></div><span className="mut">المصاريف: <DH v={spent} /></span></div>
-        <div className="k"><small>الصافي ديال الشهر</small><div className={'v' + (income - spent < 0 ? ' neg' : ' pos')}><DH v={income - spent} /></div><span className="mut">مدخول ناقص المصاريف والخدامة</span></div>
-        <div className={'k' + (owedTotal > 0 ? ' al' : '')}><small>باقي عند الناس</small><div className="v"><DH v={owedTotal} /></div><span className="mut">{noArboun.length ? `${noArboun.length} ما عطاوش العربون` : 'كلشي عطا العربون'}</span></div>
+      <section className={'drow1' + (nx ? '' : ' solo')}>
+        {nx && <NextCard w={nx} s={s} go={go} label={nx.day === today ? 'اليوم' : 'العرس الجاي'} />}
+        <TodoCard s={s} go={go} />
       </section>
+      <Stats s={s} go={go} />
 
       <section className="dgrid">
         <div className="dpn">
@@ -148,7 +140,7 @@ export function Dashboard({ go }) {
 
         <div className="dcol">
           <Inbox go={go} compact />
-          <div className="dpn">
+          <div className="dpn dcal">
             <div className="dpn-h"><h2>{MONTHS[now.getMonth()]} <span dir="ltr">{now.getFullYear()}</span></h2><button className="dlink" onClick={() => go('calendar')}>الكالوندري كامل ←</button></div>
             <div className="mcal">
               {['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'].map((x) => <span key={x}>{x}</span>)}
