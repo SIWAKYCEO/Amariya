@@ -1,5 +1,14 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"المبلغ اللي غادي تحوّل": ["Montant à virer", "Amount to transfer"],
+"الحساب ديال Amariya": ["Le compte Amariya", "Amariya's account"],
+"كوبي": ["Copier", "Copy"],
+"تكوبيا": ["Copié", "Copied"],
+"الاسم": ["Nom", "Name"],
+"RIB · 24 رقم": ["RIB · 24 chiffres", "RIB · 24 digits"],
+"كوبي الـRIB والاسم": ["Copiez le RIB et le nom", "Copy the RIB and the name"],
+"طريقة أخرى ديال الخلاص": ["Autre moyen de paiement", "Another payment method"],
+"صيفط صورة الوصل": ["Envoyer la photo du reçu", "Send the receipt photo"],
 "خاصك تدير اليوم": ["À faire aujourd'hui", "To do today"],
 "كلشي مزيان اليوم": ["Tout va bien aujourd'hui", "All good today"],
 "ما كاين حتى حاجة خاصها تتحل دابا": ["Rien à régler pour l'instant", "Nothing to fix right now"],

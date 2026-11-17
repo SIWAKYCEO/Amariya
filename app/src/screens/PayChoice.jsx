@@ -1,5 +1,5 @@
 // How the traiteur pays a plan: card (automatic, YouCan Pay), bank transfer or CashPlus (we turn the plan on after the receipt on WhatsApp).
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SALES_WA, SUPABASE_URL, isDemo, supabase, useStore } from '../lib/data'
 import { Ic, Sheet, Spin, toast } from '../ui'
 import { openExternal } from '../lib/util'
@@ -15,7 +15,53 @@ const call = async (body) => {
   const r = await fetch(`${SUPABASE_URL}/functions/v1/amariya-pay`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session?.access_token || ''}` }, body: JSON.stringify(body) })
   return r.json().catch(() => ({}))
 }
-const copy = (v) => { try { navigator.clipboard.writeText(v.replace(/\s/g, v.length > 20 ? '' : ' ')); toast('تكوبيا') } catch { toast(v) } }
+const copy = async (v) => {
+  try { await navigator.clipboard.writeText(v); return true } catch {
+    // older phones: select a hidden field and copy it
+    try { const t = document.createElement('textarea'); t.value = v; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok } catch { return false }
+  }
+}
+
+// one value to copy: big, readable, with a clear button that confirms
+function CopyRow({ label, value, show, big }) {
+  const [ok, setOk] = useState(false)
+  useEffect(() => { if (!ok) return; const t = setTimeout(() => setOk(false), 2200); return () => clearTimeout(t) }, [ok])
+  const go = async () => { if (await copy(value)) { setOk(true); toast('تكوبيا ✓') } else toast(value) }
+  return (
+    <div className={'vr-row' + (big ? ' big' : '')}>
+      <span className="vr-l">{label}</span>
+      <b className="vr-v" dir="ltr">{show || value}</b>
+      <button className={'vr-cp' + (ok ? ' ok' : '')} onClick={go}>{ok ? <>{Ic.check(14)} تكوبيا</> : <>{Ic.copy ? Ic.copy(14) : Ic.doc(14)} كوبي</>}</button>
+    </div>
+  )
+}
+
+// bank transfer: the amount, our account like a bank card, three simple steps
+function Virement({ amt, name, onSend, onBack }) {
+  const rib = RIB.replace(/\s/g, '')
+  const ribShow = <>{rib.slice(0, 3)} <span>{rib.slice(3, 6)}</span> {rib.slice(6, 14)} <span>{rib.slice(14, 22)}</span> {rib.slice(22)}</>
+  return (
+    <div className="vr">
+      <div className="vr-amt">
+        <small>المبلغ اللي غادي تحوّل</small>
+        <b><span className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</span> درهم</b>
+        <span className="vr-for">باقة {name}</span>
+      </div>
+      <div className="vr-card">
+        <div className="vr-card-h"><span className="vr-bank"><Bank /></span><span>الحساب ديال Amariya</span></div>
+        <CopyRow label="الاسم" value={PAYEE} />
+        <CopyRow label="RIB · 24 رقم" value={rib} show={ribShow} big />
+      </div>
+      <ol className="vr-steps">
+        <li><i>1</i><span>كوبي الـRIB والاسم</span></li>
+        <li><i>2</i><span>دير التحويل ديال <b className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</b> درهم من البنك ولا من التطبيق ديال البنك</span></li>
+        <li><i>3</i><span>صيفط لينا صورة الوصل فالواتساب، ونفعّلو ليك {name} فنفس النهار</span></li>
+      </ol>
+      <button className="vr-send" onClick={onSend}>{Ic.wa(19)} صيفط صورة الوصل</button>
+      <button className="vr-back" onClick={onBack}>{Ic.back(15)} طريقة أخرى ديال الخلاص</button>
+    </div>
+  )
+}
 
 export default function PayChoice({ plan, name, onClose }) {
   const [how, setHow] = useState('pick') // pick | card | virement | cashplus
@@ -63,19 +109,7 @@ export default function PayChoice({ plan, name, onClose }) {
           <p className="ycp-note">{Ic.lock(13)} الخلاص آمن. ما كنشوفوش معلومات الكارطة ديالك.</p>
         </div>
       )}
-      {how === 'virement' && (
-        <div className="paymanual">
-          <div className="pm-head"><Bank /><p className="ycp-amt"><b className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</b> درهم</p></div>
-          <p className="muted">دير التحويل لهاد الحساب:</p>
-          <div className="pm-rows">
-            <button className="pm-row" onClick={() => copy(PAYEE)}><small>باسم</small><b dir="ltr">{PAYEE}</b>{Ic.doc(15)}</button>
-            <button className="pm-row" onClick={() => copy(RIB)}><small>RIB</small><b dir="ltr">{RIB}</b>{Ic.doc(15)}</button>
-          </div>
-          <p className="muted">من بعد صيفط لينا صورة الوصل فالواتساب، ونفعّلو ليك {name} فنفس النهار.</p>
-          <button className="btn wide green" onClick={sendReceipt}>{Ic.wa(18)} صيفط صورة الوصل</button>
-          <button className="linkrow" onClick={() => setHow('pick')}>{Ic.back(15)} طريقة أخرى</button>
-        </div>
-      )}
+      {how === 'virement' && <Virement amt={amt} name={name} onSend={sendReceipt} onBack={() => setHow('pick')} />}
     </Sheet>
   )
 }

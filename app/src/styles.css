@@ -1737,3 +1737,31 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 }
 /* in francese/inglese (sinistra→destra) il menu laterale va a sinistra, come il margine del contenuto */
 .desk .dside { inset: 0 auto; inset-inline-start: 0; inset-inline-end: auto }
+
+/* ===== bonifico (17/11): importo grande, conto come una carta, copia chiara, 3 passi ===== */
+.vr { display: grid; gap: 14px; padding-bottom: 6px }
+.vr-amt { text-align: center; padding: 6px 0 2px }
+.vr-amt small { display: block; font-size: 13px; color: var(--mute); font-weight: 600 }
+.vr-amt b { display: block; font-size: 20px; font-weight: 900; color: var(--ink); margin-top: 2px }
+.vr-amt b .num { font-size: 42px; font-weight: 800; letter-spacing: -.03em; margin-inline-end: 4px }
+.vr-for { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--green); background: #E7F1EC; padding: 3px 10px; border-radius: 99px }
+.vr-card { border-radius: 22px; padding: 16px; background: linear-gradient(160deg, #173F35, #0F2A24 70%); color: var(--ivory); box-shadow: 0 22px 40px -24px rgba(15,42,36,.8); display: grid; gap: 10px }
+.vr-card-h { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 700; color: rgba(243,237,227,.8); padding-bottom: 2px }
+.vr-bank { width: 36px; height: 24px; border-radius: 6px; background: #fff; display: grid; place-items: center; overflow: hidden }
+.vr-bank svg { width: 100%; height: 100% }
+.vr-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "l b" "v b"; align-items: center; gap: 2px 10px; padding: 12px 12px 12px 10px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1) }
+.vr-l { grid-area: l; font-size: 11.5px; font-weight: 600; color: rgba(243,237,227,.6) }
+.vr-v { grid-area: v; font-family: var(--num); font-size: 16px; font-weight: 700; letter-spacing: .02em; color: #fff; text-align: start; word-break: break-word; line-height: 1.35 }
+.vr-row.big .vr-v { font-size: 18px; letter-spacing: .06em }
+.vr-v span { color: #E9CB86 }
+.vr-cp { grid-area: b; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 84px; height: 40px; padding: 0 12px; border-radius: 12px; background: #C8A15A; color: var(--ink); font-weight: 800; font-size: 13.5px; transition: background .2s, transform .1s }
+.vr-cp:active { transform: scale(.96) }
+.vr-cp.ok { background: #7BE0A6; color: #0B3A24 }
+.vr-steps { list-style: none; display: grid; gap: 0; border: 1px solid var(--line); border-radius: 18px; background: #fff; padding: 4px 14px }
+.vr-steps li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; font-size: 14px; line-height: 1.6; color: var(--ink) }
+.vr-steps li + li { border-top: 1px dashed rgba(15,42,36,.12) }
+.vr-steps i { flex: none; width: 26px; height: 26px; border-radius: 9px; display: grid; place-items: center; background: var(--green); color: var(--ivory); font: 700 13px var(--num); font-style: normal; margin-top: 1px }
+.vr-steps b { font-family: var(--num) }
+.vr-send { height: 56px; border-radius: 18px; background: #1FA855; color: #fff; font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 14px 28px -14px rgba(31,168,85,.8) }
+.vr-back { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--mute); padding: 6px }
+@media (max-width: 360px) { .vr-row { grid-template-columns: 1fr; grid-template-areas: "l" "v" "b" } .vr-cp { width: 100%; margin-top: 6px } .vr-amt b .num { font-size: 36px } }
