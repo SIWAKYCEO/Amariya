@@ -1804,3 +1804,5 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .ycp-pay .spin, .ycp-pay [class*="spin"] { width: 18px; height: 18px }
 .ycp-trust { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--mute); text-align: center; line-height: 1.6 }
 .ycp-trust svg { flex: none; color: var(--ok) }
+/* niente rimandi al fornitore dentro il modulo della carta */
+#ycp-form a[href*="youcan" i], #ycp-form *:has(> a[href*="youcan" i]) { display: none !important }

@@ -1,5 +1,6 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"الخلاص آمن ومحمي. ما كنشوفوش معلومات الكارطة ديالك.": ["Paiement sécurisé et protégé. Nous ne voyons pas les données de votre carte.", "Secure, protected payment. We never see your card details."],
 "المبلغ اللي غادي تخلّص": ["Montant à payer", "Amount to pay"],
 "المبلغ اللي غادي تخلّص فـ CashPlus": ["Montant à payer chez CashPlus", "Amount to pay at CashPlus"],
 "معلومات الكارطة": ["Informations de la carte", "Card details"],
