@@ -1,5 +1,5 @@
 // Home blocks shared by the phone and the PC: the next wedding, what to do today, the month in numbers.
-import { freeLimit, isDemo, isPro, monthAdded, owedOf, paidOf, problemsOf, readinessOf, teamBar, totalOf, useStore, devisLink } from '../lib/data'
+import { LIMITS_ON, freeLimit, isDemo, isPro, monthAdded, owedOf, paidOf, problemsOf, readinessOf, teamBar, totalOf, useStore, devisLink } from '../lib/data'
 import { usesGuests } from '../lib/trades'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Ic } from '../ui'
@@ -73,7 +73,7 @@ export function TodoCard({ s, go }) {
     const sum = owed.reduce((a, o) => a + o.total, 0)
     t.push({ k: 'staff', ic: Ic.team(18), cls: 'g', title: `خلّص ${owed.length} من الخدامة`, sub: `المجموع ${money(sum)} درهم`, btn: 'شوف الخلاص', on: () => go('staff') })
   }
-  const free = !isDemo && !isPro(s.traiteur) && !s.traiteur?.internal
+  const free = LIMITS_ON() && !isDemo && !isPro(s.traiteur) && !s.traiteur?.internal
   const used = free ? monthAdded(s) : 0
   const FREE_WEDDINGS = freeLimit(s.traiteur)
   return (
