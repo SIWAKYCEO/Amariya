@@ -4,6 +4,7 @@ import { SALES_WA, SUPABASE_URL, isDemo, supabase, useStore } from '../lib/data'
 import { Ic, Sheet, Spin, toast } from '../ui'
 import { openExternal } from '../lib/util'
 import PayCard from './PayCard'
+import { Bank, CashPlus, Mastercard, Visa } from '../PayLogos'
 
 // our receiving details (given by Siwaky)
 const PAYEE = 'Mohamed Amine Ennachti'
@@ -42,16 +43,29 @@ export default function PayChoice({ plan, name, onClose }) {
   return (
     <Sheet onClose={onClose} title={how === 'pick' ? `كيفاش بغيتي تخلّص ${name}؟` : `خلّص ${name}`}>
       {how === 'pick' && (
-        <div className="payhow">
-          <button className="btn wide brass" onClick={() => setHow('card')}>{Ic.cash(18)} بالكارطة البنكية · كتفعّل فالحين</button>
-          <button className="btn wide glassbtn2" disabled={busy} onClick={() => manual('virement')}>{Ic.doc(18)} بالتحويل البنكي (virement)</button>
-          <button className="btn wide glassbtn2" disabled={busy} onClick={() => manual('cashplus')}>{Ic.wa(18)} بـ CashPlus</button>
+        <div className="pmopts">
+          <button className="pmopt best" onClick={() => setHow('card')}>
+            <span className="pm-top"><b>بالكارطة البنكية</b><span className="pm-tag">كتفعّل فالحين</span></span>
+            <small>Visa · Mastercard · الكارطة ديال أي بنك مغربي</small>
+            <span className="pm-logos"><Visa /><Mastercard /></span>
+          </button>
+          <button className="pmopt" disabled={busy} onClick={() => manual('virement')}>
+            <span className="pm-top"><b>بالتحويل البنكي</b></span>
+            <small>Virement من البنك ولا من التطبيق ديال البنك</small>
+            <span className="pm-logos"><Bank /></span>
+          </button>
+          <button className="pmopt" disabled={busy} onClick={() => manual('cashplus')}>
+            <span className="pm-top"><b>CashPlus</b></span>
+            <small>خلّص كاش من أقرب وكالة CashPlus</small>
+            <span className="pm-logos"><CashPlus /></span>
+          </button>
           {busy && <div className="ycp-wait"><Spin /></div>}
+          <p className="ycp-note">{Ic.lock(13)} الخلاص آمن. ما كنشوفوش معلومات الكارطة ديالك.</p>
         </div>
       )}
       {(how === 'virement' || how === 'cashplus') && (
         <div className="paymanual">
-          <p className="ycp-amt"><b className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</b> درهم</p>
+          <div className="pm-head">{how === 'cashplus' ? <CashPlus /> : <Bank />}<p className="ycp-amt"><b className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</b> درهم</p></div>
           <p className="muted">{how === 'cashplus' ? 'صيفط المبلغ من أي وكالة CashPlus بهاد المعلومات:' : 'دير التحويل لهاد الحساب:'}</p>
           <div className="pm-rows">
             <button className="pm-row" onClick={() => copy(PAYEE)}><small>{how === 'cashplus' ? 'الاسم' : 'باسم'}</small><b dir="ltr">{PAYEE}</b>{Ic.doc(15)}</button>

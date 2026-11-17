@@ -2937,4 +2937,11 @@ Object.assign(EX, {
   "طريقة أخرى": ["Autre moyen", "Another way"],
   "تكوبيا": ["Copié", "Copied"],
   "وقع مشكل، عاود جرّب": ["Un problème est survenu, réessayez", "Something went wrong, try again"],
+  "بالكارطة البنكية": ["Carte bancaire", "Bank card"],
+  "كتفعّل فالحين": ["Activé tout de suite", "Active right away"],
+  "Visa · Mastercard · الكارطة ديال أي بنك مغربي": ["Visa · Mastercard · toute carte bancaire marocaine", "Visa · Mastercard · any Moroccan bank card"],
+  "بالتحويل البنكي": ["Virement bancaire", "Bank transfer"],
+  "Virement من البنك ولا من التطبيق ديال البنك": ["Virement depuis la banque ou son application", "Transfer from your bank or its app"],
+  "خلّص كاش من أقرب وكالة CashPlus": ["Payez en espèces dans l'agence CashPlus la plus proche", "Pay cash at the nearest CashPlus agency"],
+  "الخلاص آمن. ما كنشوفوش معلومات الكارطة ديالك.": ["Paiement sécurisé. Nous ne voyons pas les données de votre carte.", "Secure payment. We never see your card details."],
 })

@@ -1380,3 +1380,19 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .pm-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 13px 14px; border-radius: 16px; background: rgba(15,42,36,.06); text-align: start }
 .pm-row small { font-size: 12px; opacity: .65 } .pm-row b { font-size: 15px; font-weight: 800; letter-spacing: .3px }
 .pm-row svg { opacity: .55 }
+
+/* payment methods */
+.pmopts { display: grid; gap: 10px }
+.pmopt { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "top logos" "sub logos"; align-items: center; gap: 3px 12px; padding: 16px 16px; border-radius: 20px; background: #fff; border: 1.5px solid rgba(15,42,36,.1); text-align: start; color: var(--ink); box-shadow: 0 10px 24px -18px rgba(15,42,36,.5); transition: transform .15s, border-color .15s }
+.pmopt:active { transform: scale(.985) }
+.pmopt.best { border-color: var(--brass); background: linear-gradient(180deg, #fffaf0, #fff); box-shadow: 0 16px 32px -18px rgba(200,161,90,.7) }
+.pmopt .pm-top { grid-area: top; display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.pmopt .pm-top b { font-size: 16px; font-weight: 900 }
+.pmopt small { grid-area: sub; font-size: 12.5px; opacity: .65 }
+.pmopt .pm-logos { grid-area: logos }
+.pm-tag { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 99px; background: var(--green); color: var(--ivory) }
+.pm-logos { display: flex; gap: 6px; align-items: center }
+.pmk { width: 44px; height: 28px; border-radius: 5px; box-shadow: 0 0 0 1px rgba(15,42,36,.12); flex: none }
+.pmk.wide { width: 78px }
+.pm-head { display: grid; justify-items: center; gap: 8px }
+.ycp-note svg { vertical-align: -2px }

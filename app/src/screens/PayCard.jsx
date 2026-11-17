@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SUPABASE_URL, contactWaLink, load, supabase } from '../lib/data'
 import { Ic, Sheet, Spin } from '../ui'
 import { openExternal } from '../lib/util'
+import { Mastercard, Visa } from '../PayLogos'
 
 let ypLoading = null
 const loadYp = () => ypLoading || (ypLoading = new Promise((ok, ko) => {
@@ -64,7 +65,7 @@ export default function PayCard({ plan, name, onClose }) {
   return (
     <Sheet onClose={onClose} title={`خلّص ${name} بالكارطة`}>
       <div className="ycp">
-        {info && st !== 'done' && st !== 'fail' && <p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p>}
+        {info && st !== 'done' && st !== 'fail' && <div className="pm-head"><span className="pm-logos"><Visa /><Mastercard /></span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
         {(st === 'error' || st === 'fail') && (
           <div className="ycp-res bad">
