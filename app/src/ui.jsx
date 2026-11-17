@@ -1,4 +1,4 @@
-import { PRICES, isDemo, wantPlan } from './lib/data'
+import { PRICES, cardPay, wantPlan } from './lib/data'
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 const PayCard = lazy(() => import('./screens/PayCard'))
 import { money } from './lib/util'
@@ -245,7 +245,7 @@ export function Locked({ title, why, go, children, compact }) {
         <span className="lk-ic">{Ic.lock(20)}</span>
         <b>{title}</b>
         {why && <p>{why}</p>}
-        <button className="btn brass" onClick={() => (isDemo ? wantPlan('pro', title) : setPay(true))}>{Ic.cash(16)} فتح بـ Pro · <span className="num" dir="ltr">{PRICES.pro}</span> درهم</button>
+        <button className="btn brass" onClick={() => (cardPay() ? setPay(true) : wantPlan('pro', title))}>{cardPay() ? Ic.cash(16) : Ic.wa(16)} فتح بـ Pro · <span className="num" dir="ltr">{PRICES.pro}</span> درهم</button>
         <button className="linkbtn lk-more" onClick={() => go('plans')}>شوف شنو كاين فـ Pro</button>
       </div>
       {pay && <Suspense fallback={null}><PayCard plan="pro" name="Pro" onClose={() => setPay(false)} /></Suspense>}

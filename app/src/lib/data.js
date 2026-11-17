@@ -11,6 +11,8 @@ export const SUPABASE_URL = 'https://tonxmajfvgflvlkkutou.supabase.co'
 export const SUPABASE_KEY = 'sb_publishable__qWxALxtce2El0zEMW-5Lg_c_tbiEKC'
 
 export const isDemo = import.meta.env.VITE_DEMO === '1' || new URLSearchParams(location.search).has('demo')
+// card payment (YouCan Pay) is still being tested: only internal and TEST accounts see it; everyone else is sent to our WhatsApp
+export const cardPay = (t = state.traiteur) => !isDemo && !!t && (t.internal === true || /^TEST/i.test(t.name || ''))
 export const supabase = isDemo ? null : createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'amariya-auth' },
 })

@@ -1,6 +1,6 @@
 import { isTraiteur } from '../lib/trades'
 import { useEffect, useRef, useState } from 'react'
-import { PRICES, ULTRA_SETUP, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
+import { PRICES, ULTRA_SETUP, cardPay, choosePlan, isDemo, planOf, useStore, wantPlan } from '../lib/data'
 import { Ic, LangPill, Logo, Sheet, toast } from '../ui'
 import PayCard from './PayCard'
 
@@ -81,7 +81,7 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
   const [card, setCard] = useState(null)
   async function pick(k) {
     if (k === 'free') { if (intro) choosePlan('free'); return onFree?.() }
-    if (!isDemo) return setCard(k)
+    if (cardPay()) return setCard(k)
     return viaWa(k)
   }
   async function viaWa(k) {
@@ -122,7 +122,7 @@ export function PlanCarousel({ current: cur0 = 'free', onFree, freeLabel, start 
                 ? <span className="pc-cur">{Ic.check(14)} هادي اللي عندك دابا</span>
                 : p.k === 'free'
                   ? (onFree && <button className="btn wide pc-btn" onClick={() => pick('free')}>{freeLabel || 'جرّب المجاني'}</button>)
-                  : <button className="btn wide pc-btn" onClick={() => pick(p.k)}>{Ic.cash(17)} بغيت {p.name}</button>}
+                  : <button className="btn wide pc-btn" onClick={() => pick(p.k)}>{cardPay() ? Ic.cash(17) : Ic.wa(17)} بغيت {p.name}</button>}
             </div>
           </article>
         ))}
@@ -146,7 +146,7 @@ export default function PlanIntro({ onClose }) {
           <p>{old ? 'جرّبتي التطبيق. إلا بقيتي فالمجاني، كلشي ديالك كيبقى.' : 'المجاني مجاني ديما. تقدر تبدّل الباقة وقتما بغيتي.'}</p>
         </div>
         <PlanCarousel intro current={null} onFree={close} freeLabel={old ? 'نبقى فالمجاني دابا' : 'جرّب المجاني'} after={close} />
-        <p className="ip-foot">{Ic.cash(13)} كتخلّص بالكارطة البنكية بأمان، والباقة كتفعّل فالحين.</p>
+        <p className="ip-foot">{cardPay() ? <>{Ic.cash(13)} كتخلّص بالكارطة البنكية بأمان، والباقة كتفعّل فالحين.</> : <>{Ic.wa(13)} كتهضر معانا فالواتساب، كنشرحو ليك كلشي، كتخلّص بتحويل بنكي وكنفعّلو ليك فنفس النهار.</>}</p>
       </div>
     </div>
   )
