@@ -1,7 +1,7 @@
 // Home blocks shared by the phone and the PC: the next wedding, what to do today, the month in numbers.
 import { owedOf, paidOf, problemsOf, readinessOf, teamBar, totalOf, useStore, devisLink } from '../lib/data'
 import { usesGuests } from '../lib/trades'
-import { DAYS, MONTHS, dayKey, daysFromToday, fromKey, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
+import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
 import { DH, Ic } from '../ui'
 
 export const until = (w) => {
@@ -120,4 +120,19 @@ export function Stats({ s, go }) {
 export function nextWedding(s) {
   const live = s.weddings.filter((w) => w.status !== 'cancelled' && w.status !== 'done' && daysFromToday(w.day) >= 0).sort((a, b) => (a.day + a.time).localeCompare(b.day + b.time))
   return live[0] || null
+}
+
+// no wedding coming: a big, clear card to add the next one
+export function AddCard({ go }) {
+  return (
+    <section className="hn-card hn-add" role="button" tabIndex={0} onClick={() => go('new')}>
+      <div className="hn-ph" style={{ backgroundImage: `url(${PHOTOS.hall})` }} />
+      <div className="hn-in">
+        <span className="hn-lbl">العرس الجاي</span>
+        <h3>ما عندك حتى عرس جاي</h3>
+        <p className="hn-p">زيد العرس الجاي ديالك: غير السمية، النهار وعدد الضياف. التطبيق كيحسب ليك الدوفي، العربون والفريق بوحدو.</p>
+        <button className="hn-big" onClick={(e) => { e.stopPropagation(); go('new') }}>{Ic.plus(20)} زيد عرس جديد</button>
+      </div>
+    </section>
+  )
 }

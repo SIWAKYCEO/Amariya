@@ -4,10 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { PLAN_NAME, paidOf, planOf, problemsOf, restOf, teamBar, teamOf, totalOf, useStore } from '../lib/data'
 import { isTraiteur, pkgWord, stockOf, usesGuests } from '../lib/trades'
 import { DAYS, MONTHS, PHOTOS, dayKey, daysFromToday, fromKey, greeting, money, openExternal, photoFor, todayKey, waLink } from '../lib/util'
-import { DH, Empty, Ic, LangPill, Logo } from '../ui'
+import { DH, Empty, Fab, Ic, LangPill, Logo } from '../ui'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar, ContactSheet } from './Account'
-import { NextCard, Stats, TodoCard, nextWedding } from './HomeParts'
+import { AddCard, NextCard, Stats, TodoCard, nextWedding } from './HomeParts'
 
 export function Side({ v, go }) {
   const s = useStore()
@@ -105,8 +105,8 @@ export function Dashboard({ go }) {
         </div>
       </section>
       <div className="dacc"><AccountBar go={go} /></div>
-      <section className={'drow1' + (nx ? '' : ' solo')}>
-        {nx && <NextCard w={nx} s={s} go={go} label={nx.day === today ? 'اليوم' : 'العرس الجاي'} />}
+      <section className="drow1">
+        {nx ? <NextCard w={nx} s={s} go={go} label={nx.day === today ? 'اليوم' : 'العرس الجاي'} /> : <AddCard go={go} />}
         <TodoCard s={s} go={go} />
       </section>
       <Stats s={s} go={go} />
@@ -165,6 +165,7 @@ export function Dashboard({ go }) {
           </div>
         </div>
       </section>
+      <Fab onClick={() => go('new')}>عرس جديد</Fab>
       {qr && <QuickReplies onClose={() => setQr(false)} />}
     </div>
   )

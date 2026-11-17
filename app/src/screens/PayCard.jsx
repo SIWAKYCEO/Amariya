@@ -95,12 +95,22 @@ export default function PayCard({ plan, name, onClose, onOther, via = 'credit-ca
   return (
     <Sheet onClose={onClose} title={cp ? `خلّص ${name} بـ CashPlus` : `خلّص ${name} بالكارطة`}>
       <div className="ycp">
-        {info && <div className="pm-head"><span className="pm-logos">{cp ? <CashPlus /> : <><Visa /><Mastercard /></>}</span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
+        {info && <div className="vr-amt">
+          <small>{cp ? 'المبلغ اللي غادي تخلّص فـ CashPlus' : 'المبلغ اللي غادي تخلّص'}</small>
+          <b><span className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</span> درهم</b>
+          <span className="vr-for">باقة {name}{info.sandbox ? ' · تجربة' : ''}</span>
+        </div>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
-        <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' || st === 'code' ? 'block' : 'none' }} />
-        {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{cp ? 'عطيني الكود ديال CashPlus' : st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
+        <div className="ycp-box" style={{ display: st === 'form' || st === 'paying' || st === 'code' ? 'block' : 'none' }}>
+          <div className="ycp-box-h">
+            <span>{cp ? 'المعلومات ديالك' : 'معلومات الكارطة'}</span>
+            <span className="pm-logos">{cp ? <CashPlus /> : <><Visa /><Mastercard /></>}</span>
+          </div>
+          <div id="ycp-form" key={round} />
+        </div>
+        {(st === 'form' || st === 'paying') && <button className="ycp-pay" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? <><Spin /> كنخلّصو…</> : cp ? 'عطيني الكود ديال CashPlus' : <>{Ic.lock(17)} خلّص <span className="num" dir="ltr">{info ? info.amount.toLocaleString('de-DE') : ''}</span> درهم</>}</button>}
         {st === 'code' && <div className="ycp-wa"><b>سجّل الكود وخلّص بيه فأقرب وكالة CashPlus</b><small>ملي تخلّص، {name} كتفعّل فالتطبيق بوحدها، بلا ما تصيفط حتى حاجة.</small><button className="btn wide" onClick={onClose}>مزيان</button></div>}
-        {st !== 'code' && <p className="ycp-note">الخلاص آمن ومحمي. ما كنشوفوش معلومات الكارطة ديالك.</p>}
+        {st !== 'code' && <p className="ycp-trust">{Ic.lock(13)} الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>}
       </div>
     </Sheet>
   )

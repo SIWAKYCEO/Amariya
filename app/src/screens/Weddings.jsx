@@ -5,7 +5,7 @@ import { DH, Empty, Fab, Ic, Logo, Ring } from '../ui'
 import { InstallNudge } from '../install'
 import { Inbox, QuickReplies } from './Inbox'
 import { AccountBar } from './Account'
-import { NextCard, Stats, TodoCard } from './HomeParts'
+import { AddCard, NextCard, Stats, TodoCard } from './HomeParts'
 
 const PROBLEM = { noArboun: 'ما خلّصوش العربون', serveurs: 'خاصك السرباية', refused: 'شي حد قال لا', team: 'الفريق باقي ما تأكّد' }
 
@@ -98,13 +98,14 @@ export default function Weddings({ go }) {
         )}
         {todays.length > 0 && todays.map((w) => <NextCard key={w.id} w={w} s={s} go={go} label="اليوم" />)}
         {!todays.length && (week[0] || later[0]) && <NextCard w={week[0] || later[0]} s={s} go={go} />}
+        {!todays.length && !week.length && !later.length && realCount > 0 && <AddCard go={go} />}
         <Inbox go={go} />
         {realCount > 0 && <TodoCard s={s} go={go} />}
         {realCount > 0 && <Stats s={s} go={go} />}
         <InstallNudge />
         {(todays.length ? week : week.slice(1)).length > 0 && <><h4 className="sec">هاد السيمانة</h4><div className="list">{(todays.length ? week : week.slice(1)).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
         {(!todays.length && !week.length ? later.slice(1) : later).length > 0 && <><h4 className="sec">من بعد</h4><div className="list">{(!todays.length && !week.length ? later.slice(1) : later).map((w) => <Row key={w.id} w={w} s={s} go={go} />)}</div></>}
-        {!todays.length && !week.length && !later.length && realCount > 0 && <Empty title="ما كاين حتى عرس جاي" sub="زيد أول عرس وغادي تلقاه هنا" />}
+        
         {past.length > 0 && (
           <button className="linkbtn" onClick={() => setShowPast(!showPast)}>{showPast ? 'خبّي العراسات اللي فاتو' : `العراسات اللي فاتو (${past.length})`}</button>
         )}

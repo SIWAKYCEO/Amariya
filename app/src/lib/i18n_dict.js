@@ -1,5 +1,13 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"المبلغ اللي غادي تخلّص": ["Montant à payer", "Amount to pay"],
+"المبلغ اللي غادي تخلّص فـ CashPlus": ["Montant à payer chez CashPlus", "Amount to pay at CashPlus"],
+"معلومات الكارطة": ["Informations de la carte", "Card details"],
+"المعلومات ديالك": ["Vos informations", "Your details"],
+"خلّص": ["Payer", "Pay"],
+"ما عندك حتى عرس جاي": ["Aucun mariage à venir", "No upcoming wedding"],
+"زيد عرس جديد": ["Ajouter un mariage", "Add a wedding"],
+"زيد العرس الجاي ديالك: غير السمية، النهار وعدد الضياف. التطبيق كيحسب ليك الدوفي، العربون والفريق بوحدو.": ["Ajoutez votre prochain mariage : juste le nom, la date et le nombre d'invités. L'app calcule le devis, l'acompte et l'équipe toute seule.", "Add your next wedding: just the name, the date and the number of guests. The app works out the quote, the deposit and the team by itself."],
 "المبلغ اللي غادي تحوّل": ["Montant à virer", "Amount to transfer"],
 "الحساب ديال Amariya": ["Le compte Amariya", "Amariya's account"],
 "كوبي": ["Copier", "Copy"],

@@ -1765,3 +1765,42 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .vr-send { height: 56px; border-radius: 18px; background: #1FA855; color: #fff; font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 14px 28px -14px rgba(31,168,85,.8) }
 .vr-back { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--mute); padding: 6px }
 @media (max-width: 360px) { .vr-row { grid-template-columns: 1fr; grid-template-areas: "l" "v" "b" } .vr-cp { width: 100%; margin-top: 6px } .vr-amt b .num { font-size: 36px } }
+
+/* funzione Pro bloccata (17/11): la scheda si allarga al contenuto, niente tagli */
+.locked { display: grid; border-radius: 22px }
+.locked > .lk-prev, .locked > .lk-over { grid-area: 1 / 1 }
+.locked > .lk-prev { max-height: none; min-height: 100%; overflow: hidden }
+.lk-over { position: relative; inset: auto; z-index: 1; padding: 26px 18px; gap: 6px; background: linear-gradient(180deg, rgba(246,241,232,.55), rgba(246,241,232,.94) 45%); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px) }
+.lk-ic { width: 52px; height: 52px; border-radius: 50%; background: var(--green); color: #E9CB86; box-shadow: 0 0 0 6px rgba(15,42,36,.08), 0 12px 26px -12px rgba(15,42,36,.8); margin-bottom: 4px }
+.lk-ic svg { width: 22px; height: 22px }
+.lk-over b { font-size: 17px; color: var(--ink) }
+.lk-over p { font-size: 13.5px; color: #4A554F; max-width: 360px }
+.lk-over .btn.brass { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; min-width: 240px; padding: 0 22px; margin-top: 8px; border-radius: 14px; font-size: 15px; font-weight: 800; background: linear-gradient(180deg, #E9CB86, #C8A15A); color: var(--ink); box-shadow: 0 12px 24px -12px rgba(200,161,90,.8) }
+.lk-over .btn.brass .num { font-size: 15px }
+.lk-over .lk-more { margin-top: 4px; font-size: 13.5px; font-weight: 700; color: var(--green); text-decoration: underline; text-underline-offset: 3px }
+@media (max-width: 420px) { .lk-over .btn.brass { min-width: 0; width: 100% } }
+
+/* nessun matrimonio in arrivo: scheda grande per aggiungerne uno */
+.hn-p { font-size: 14px; line-height: 1.75; color: #4E5853; max-width: 46ch }
+.hn-big { margin-top: 18px; align-self: flex-start; height: 52px; padding: 0 22px; border-radius: 14px; background: var(--green); color: var(--ivory); font-weight: 800; font-size: 15.5px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 14px 28px -14px rgba(15,42,36,.8) }
+.hn-big svg { color: #E9CB86 }
+.hn-add .hn-in { justify-content: center }
+@media (max-width: 1023px) { .hn-big { width: 100%; justify-content: center } }
+/* PC: «عرس جديد» sempre a portata, in basso */
+.desk .fab { background: linear-gradient(180deg, #E9CB86, #C8A15A); color: var(--ink); box-shadow: 0 16px 34px -14px rgba(200,161,90,.9), 0 0 0 4px rgba(246,241,232,.9) }
+.desk .fab.mini { padding: 0 20px 0 22px } .desk .fab.mini span { opacity: 1; max-width: 120px }
+
+/* pagamento con la carta (17/11): importo grande, modulo in una scheda pulita, pulsante chiaro */
+.ycp { gap: 14px }
+.ycp-box { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 14px; box-shadow: 0 14px 30px -24px rgba(15,42,36,.5) }
+.ycp-box-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid #F1ECE3; font-size: 14px; font-weight: 800; color: var(--ink) }
+.ycp-box-h .pm-logos svg, .ycp-box-h .pmk { width: 38px; height: 24px }
+#ycp-form { min-height: 180px }
+#ycp-form input, #ycp-form select { border-radius: 12px !important; min-height: 48px; font-size: 15px !important }
+.ycp-pay { height: 56px; border-radius: 16px; background: var(--green); color: var(--ivory); font-weight: 900; font-size: 16.5px; display: flex; align-items: center; justify-content: center; gap: 9px; box-shadow: 0 14px 28px -14px rgba(15,42,36,.85) }
+.ycp-pay svg { color: #E9CB86 }
+.ycp-pay .num { font-size: 18px }
+.ycp-pay:disabled { opacity: .8 }
+.ycp-pay .spin, .ycp-pay [class*="spin"] { width: 18px; height: 18px }
+.ycp-trust { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--mute); text-align: center; line-height: 1.6 }
+.ycp-trust svg { flex: none; color: var(--ok) }
