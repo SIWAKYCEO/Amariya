@@ -1,7 +1,8 @@
 // Pay a plan by card with YouCan Pay: our server makes the token, yp.js shows the card form here, the webhook turns the plan on.
 import { useEffect, useRef, useState } from 'react'
-import { SUPABASE_URL, load, supabase } from '../lib/data'
-import { Sheet, Spin, toast } from '../ui'
+import { SUPABASE_URL, contactWaLink, load, supabase } from '../lib/data'
+import { Ic, Sheet, Spin } from '../ui'
+import { openExternal } from '../lib/util'
 
 let ypLoading = null
 const loadYp = () => ypLoading || (ypLoading = new Promise((ok, ko) => {
@@ -16,7 +17,9 @@ const call = async (body) => {
 }
 
 export default function PayCard({ plan, name, onClose }) {
-  const [st, setSt] = useState('loading') // loading | form | paying | done | error
+  const [st, setSt] = useState('loading') // loading | form | paying | done | fail | error
+  const [why, setWhy] = useState('')
+  const [round, setRound] = useState(0) // "try again" makes a fresh payment
   const [info, setInfo] = useState(null)
   const pay = useRef(null)
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function PayCard({ plan, name, onClose }) {
       } catch { if (!dead) setSt('error') }
     })()
     return () => { dead = true }
-  }, [plan])
+  }, [plan, round])
 
   async function confirm() {
     if (!pay.current) return
@@ -48,7 +51,7 @@ export default function PayCard({ plan, name, onClose }) {
       if (i >= 2 && r?.error) break
       await new Promise((w) => setTimeout(w, 2000))
     }
-    if (!paid) { setSt('form'); toast(r?.error?.message || 'ما دازش الخلاص، عاود جرّب', 'err'); return }
+    if (!paid) { setWhy(String(r?.error?.message || r?.message || '').slice(0, 140)); setSt('fail'); return }
     await load().catch(() => {})
     setSt('done')
   }
@@ -56,13 +59,32 @@ export default function PayCard({ plan, name, onClose }) {
   return (
     <Sheet onClose={onClose} title={`خلّص ${name} بالكارطة`}>
       <div className="ycp">
-        {info && <p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p>}
+        {info && st !== 'done' && st !== 'fail' && <p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
-        {st === 'error' && <div className="ycp-err"><p>ما قدرناش نحلّو الخلاص دابا. عاود جرّب من بعد شوية.</p><button className="btn wide" onClick={onClose}>رجع</button></div>}
+        {(st === 'error' || st === 'fail') && (
+          <div className="ycp-res bad">
+            <span className="ycp-ic">{Ic.x(30)}</span>
+            <b>ما دازش الخلاص</b>
+            <p>{st === 'error' ? 'ما قدرناش نحلّو الخلاص دابا. عاود جرّب من بعد شوية.' : 'البنك ما قبلش الخلاص. شوف المعلومات ديال الكارطة ولا جرّب بكارطة أخرى.'}</p>
+            {why && <small dir="auto">{why}</small>}
+            <button className="btn wide brass" onClick={() => { setInfo(null); setWhy(''); setSt('loading'); setRound((x) => x + 1) }}>عاود جرّب</button>
+            <button className="btn wide ghost" onClick={() => openExternal(contactWaLink(`حاولت نخلّص ${name} بالكارطة وما دازش.`))}>{Ic.wa(17)} عاوننا فالواتساب</button>
+          </div>
+        )}
         {st === 'done'
-          ? <div className="ycp-ok"><b>تخلّص بنجاح 🎉</b><p>{name} تفعّل فالحساب ديالك.</p><button className="btn wide" onClick={onClose}>مزيان</button></div>
-          : <>
-            <div id="ycp-form" style={{ display: st === 'form' || st === 'paying' ? 'block' : 'none' }} />
+          ? <div className="ycp-res good">
+            <span className="ycp-ic">{Ic.check(30)}</span>
+            <b>مبروك! دابا راك فـ {name}</b>
+            <p>تخلّص بنجاح، وكلشي تحلّ ليك فالتطبيق.</p>
+            <div className="ycp-wa">
+              <b>بغيتي الواتساب يجاوب الكليان ديالك بوحدو؟</b>
+              <small>صيفط لينا ميساج ونشغّلوه ليك.</small>
+              <button className="btn wide green" onClick={() => openExternal(contactWaLink(`خلّصت ${name}، بغيت نشغّل الواتساب اللي كيجاوب بوحدو.`))}>{Ic.wa(17)} شغّلو ليا الواتساب</button>
+            </div>
+            <button className="btn wide" onClick={onClose}>بدا تخدم</button>
+          </div>
+          : st !== 'fail' && st !== 'error' && <>
+            <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' ? 'block' : 'none' }} />
             {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
           </>}
         <p className="ycp-note">الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>

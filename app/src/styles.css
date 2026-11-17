@@ -1363,3 +1363,14 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .ycp-wait{display:flex;justify-content:center;padding:40px 0}
 .ycp-err,.ycp-ok{text-align:center;display:grid;gap:12px}.ycp-ok b{font-size:20px}
 .ycp-note{font-size:12px;color:#7b756b;text-align:center}
+
+.ycp-res { display: grid; gap: 10px; justify-items: center; text-align: center; padding: 6px 0 4px }
+.ycp-res > b { font-size: 21px; font-weight: 900 }
+.ycp-res > p { font-size: 14px; line-height: 1.7; opacity: .82; max-width: 340px }
+.ycp-res > small { font-size: 12px; opacity: .6 }
+.ycp-res .btn { width: 100% }
+.ycp-ic { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; color: #fff }
+.ycp-res.good .ycp-ic { background: var(--green); box-shadow: 0 0 0 8px rgba(15,42,36,.12) }
+.ycp-res.bad .ycp-ic { background: var(--henna, #E0633A); box-shadow: 0 0 0 8px rgba(224,99,58,.14) }
+.ycp-wa { width: 100%; display: grid; gap: 6px; padding: 14px; border-radius: 20px; background: rgba(15,42,36,.06); text-align: center }
+.ycp-wa b { font-size: 14.5px } .ycp-wa small { font-size: 12.5px; opacity: .7 }
