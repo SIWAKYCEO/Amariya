@@ -1,5 +1,9 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"3 عراسات جداد فالشهر": ["3 nouveaux mariages par mois", "3 new weddings a month"],
+"العراسات اللي عندك كيبقاو ديما": ["Vos mariages restent toujours", "Your weddings always stay"],
+"عراسات بلا حدود": ["Mariages illimités", "Unlimited weddings"],
+"زيد شحال ما بغيتي من عرس كل شهر": ["Ajoutez autant de mariages que vous voulez chaque mois", "Add as many weddings as you want every month"],
 "وصلتي للحد ديال هاد الشهر فالمجاني": ["Limite du mois atteinte (gratuit)", "Monthly free limit reached"],
 "عراسات جداد هاد الشهر فالمجاني": ["nouveaux mariages ce mois-ci (gratuit)", "new weddings this month (free)"],
 "دوز لـ Pro": ["Passer à Pro", "Upgrade to Pro"],
