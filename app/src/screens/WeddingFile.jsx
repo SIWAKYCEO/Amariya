@@ -241,7 +241,8 @@ export default function WeddingFile({ w, back, go }) {
             <input autoFocus inputMode="numeric" dir="ltr" className="big" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} placeholder="0" />
           </Field>
           {rest > 0 && <div className="quick">{[rest, Math.round(rest / 2)].filter((v, i, a) => v > 0 && a.indexOf(v) === i).map((v) => <button key={v} className="qchip" onClick={() => setAmount(String(v))}>{money(v)} DH</button>)}</div>}
-          <button className="btn brass wide" disabled={!+amount} onClick={addPay}>سجّل</button>
+          {total > 0 && +amount > rest && <p className="warn" style={{ margin: '10px 4px 0' }}>{rest > 0 ? `هادا كثر من الباقي بـ \u2066${money(+amount - rest)} DH\u2069. تأكّد من الرقم.` : 'العرس تخلّص كامل. تأكّد واش هاد الخلاص ديال هاد العرس.'}</p>}
+          <button className="btn brass wide" disabled={!+amount} onClick={addPay}>{total > 0 && +amount > rest ? 'سجّل واخا' : 'سجّل'}</button>
         </Sheet>
       )}
 

@@ -2928,6 +2928,8 @@ Object.assign(EX, {
   "الخدمة ديالك": ["Votre activité", "Your business"],
   "الثمن ديال الضيف": ["Prix par invité", "Price per guest"],
   "ثمن واحد للعرس": ["Un prix pour le mariage", "One price per wedding"],
+  "سجّل واخا": ["Enregistrer quand même", "Save anyway"],
+  "العرس تخلّص كامل. تأكّد واش هاد الخلاص ديال هاد العرس.": ["Ce mariage est déjà payé en entier. Vérifiez que ce paiement est bien pour ce mariage.", "This wedding is already fully paid. Check this payment belongs to it."],
   "الثمن ديال العرس كامل (DH)": ["Prix de tout le mariage (DH)", "Price for the whole wedding (DH)"],
   "كل وحدة تقدر تكون بالثمن ديال الضيف ولا بثمن واحد للعرس. الدوفي كيتحسب بوحدو.": ["Chaque formule peut être au prix par invité ou à un prix unique pour le mariage. Le devis se calcule tout seul.", "Each package can be priced per guest or as one price for the wedding. The quote is calculated for you."],
   "DH / ضيف": ["DH / invité", "DH / guest"],

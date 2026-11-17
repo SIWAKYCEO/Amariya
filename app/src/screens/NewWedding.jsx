@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { add, extrasSum, ruleOf, update, useStore, newIsFlat, pkgFlat } from '../lib/data'
 import { quickExtras, usesGuests, pkgWord } from '../lib/trades'
-import { addDays, dayKey, dayLabel, normPhone, prettyPhone } from '../lib/util'
+import { addDays, dayKey, dayLabel, money, normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, Stepper, TopBar, fail, toast } from '../ui'
 
 
@@ -112,6 +112,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
           {!edit && (
             <Field label="العربون اللي خلّصو دابا (إلا كاين)" hint="إلا ما خلّصو والو، خليه خاوي: يتسجّل كدوفي.">
               <input inputMode="numeric" dir="ltr" value={arboun} onChange={(e) => setArboun(e.target.value.replace(/\D/g, ''))} placeholder="0" />
+              {total > 0 && +arboun > total && <p className="warn" style={{ marginTop: 6 }}>{`العربون كثر من المجموع (\u2066${money(total)} DH\u2069). تأكّد من الرقم.`}</p>}
             </Field>
           )}
           <Field label="ملاحظات"><textarea rows={3} value={f.notes === '__sample' ? '' : f.notes || ''} onChange={(e) => set({ notes: e.target.value })} placeholder="شي حاجة خاصك تعقل عليها" /></Field>
