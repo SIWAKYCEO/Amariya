@@ -24,10 +24,12 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,woff2,svg}'],
-        navigateFallback: 'index.html',
+        // the page itself is never served from the old cache: always the newest one from the network,
+        // the saved copy only when offline (so a fresh deploy can never leave a blank screen)
+        globPatterns: ['**/*.{js,css,woff2,svg}'],
+        navigateFallback: null,
         skipWaiting: true, clientsClaim: true, cleanupOutdatedCaches: true,
-        runtimeCaching: [{ urlPattern: /cloudfront\.net\/.*\.jpg$/, handler: 'CacheFirst', options: { cacheName: 'photos', expiration: { maxEntries: 40 } } }],
+        runtimeCaching: [{ urlPattern: ({ request }) => request.mode === 'navigate', handler: 'NetworkFirst', options: { cacheName: 'pages', networkTimeoutSeconds: 4, expiration: { maxEntries: 8 } } }, { urlPattern: /cloudfront\.net\/.*\.jpg$/, handler: 'CacheFirst', options: { cacheName: 'photos', expiration: { maxEntries: 40 } } }],
       },
     }),
   ],

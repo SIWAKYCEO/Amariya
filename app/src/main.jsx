@@ -38,7 +38,7 @@ registerSW({
 setInterval(applyWhenQuiet, 3000)
 document.addEventListener('visibilitychange', applyWhenQuiet)
 // a screen from an old version that is no longer online: load the new version
-addEventListener('vite:preloadError', () => location.reload())
+// (missing files after an update are handled by the safety net in index.html)
 
 // public pages (devis/deposit link and the traiteur's shop window) load without the app or a login
 const Public = lazy(() => import('./Public'))

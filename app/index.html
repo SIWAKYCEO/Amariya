@@ -11,6 +11,24 @@
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <title>Amariya · عمّارية</title>
+    <script>
+      // safety net: if a file of the app is missing (old saved version after an update),
+      // clear the saved copy and load the newest version, once
+      (function () {
+        var K = 'amr-recover', done = false
+        function recover() {
+          if (done) return; done = true
+          try { var t = +sessionStorage.getItem(K) || 0; if (Date.now() - t < 60000) return; sessionStorage.setItem(K, Date.now()) } catch (e) {}
+          var p = []
+          if (navigator.serviceWorker) p.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister() })) }))
+          if (window.caches) p.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k) })) }))
+          Promise.all(p).catch(function () {}).then(function () { location.reload() })
+        }
+        addEventListener('error', function (e) { var t = e.target; if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK') && /\/assets\//.test(t.src || t.href || '')) recover() }, true)
+        addEventListener('vite:preloadError', function (e) { e.preventDefault(); recover() })
+        setTimeout(function () { var r = document.getElementById('root'); if (r && !r.childElementCount) recover() }, 9000)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
