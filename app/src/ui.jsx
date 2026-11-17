@@ -206,6 +206,35 @@ export const Thumb = ({ style, icon, size = 44, radius = 14 }) => (
   <span className="thumb" style={{ width: size, height: size, borderRadius: radius, ...style }}>{!style?.backgroundImage && icon}</span>
 )
 
+// amount field: shows 12 500 while typing (thousands apart, so a wrong digit is seen), keeps plain digits in the state
+const groupDigits = (v) => {
+  const s = String(v ?? '')
+  const [i, d] = s.split('.')
+  const g = i.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F')
+  return d !== undefined ? g + '.' + d : g
+}
+export function MoneyInput({ value, onChange, decimals = false, max = 9, className, ...rest }) {
+  const ref = useRef(null)
+  const change = (e) => {
+    const el = e.target
+    const raw = el.value
+    // digits typed before the caret, so the caret stays after the same digit once the spaces move
+    const before = raw.slice(0, el.selectionStart ?? raw.length).replace(decimals ? /[^\d.]/g : /\D/g, '').length
+    let v = raw.replace(',', '.').replace(decimals ? /[^\d.]/g : /\D/g, '')
+    if (decimals) { const [a, ...b] = v.split('.'); v = b.length ? a + '.' + b.join('').slice(0, 2) : a }
+    v = v.replace(/^0+(?=\d)/, '')
+    if (v.split('.')[0].length > max) return
+    onChange(v)
+    requestAnimationFrame(() => {
+      const n = ref.current; if (!n || document.activeElement !== n) return
+      let pos = 0, seen = 0
+      while (pos < n.value.length && seen < before) { if (/[\d.]/.test(n.value[pos])) seen++; pos++ }
+      try { n.setSelectionRange(pos, pos) } catch { /* */ }
+    })
+  }
+  return <input ref={ref} inputMode={decimals ? 'decimal' : 'numeric'} dir="ltr" autoComplete="off" className={className} value={groupDigits(value)} onChange={change} {...rest} />
+}
+
 // big phone-style keypad for amounts (one hand, no keyboard popping up)
 export function Numpad({ value, onChange }) {
   const press = (k) => {

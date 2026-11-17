@@ -2,7 +2,7 @@ import { usesFood } from '../lib/trades'
 import { useState } from 'react'
 import { MISC_LABEL, PRICE_DEFAULTS, PRICE_UNITS, QTY_DEFAULTS, profitOf, qtyPer100, saveTraiteur, useStore } from '../lib/data'
 import { money } from '../lib/util'
-import { Count, DH, Ic, Sheet, fail, toast } from '../ui'
+import { Count, DH, Ic, MoneyInput, Sheet, fail, toast } from '../ui'
 import { ExpenseSheet } from './Money'
 
 // "how much do I really earn on this wedding?" — income minus food, staff and other costs
@@ -96,13 +96,13 @@ export function PricesSheet({ close }) {
         {keys.map((k) => (
           <label key={k} className="prc">
             <span><b>{k}</b><small>للـ{PRICE_UNITS[k]}</small></span>
-            <span className="pin"><input inputMode="numeric" dir="ltr" value={f[k]} onChange={(e) => set(k, e.target.value)} /><small>DH</small></span>
+            <span className="pin"><MoneyInput value={f[k]} onChange={(v) => set(k, v)} /><small>DH</small></span>
             <span className="pin qty"><input inputMode="decimal" dir="ltr" value={q[k]} onChange={(e) => setq(k, e.target.value)} /><small>{PRICE_UNITS[k]} / 100 ضيف</small></span>
           </label>
         ))}
         <label className="prc wide">
           <span><b>{MISC_LABEL}</b><small>على كل ضيف</small></span>
-          <span className="pin"><input inputMode="numeric" dir="ltr" value={f.misc} onChange={(e) => set('misc', e.target.value)} /><small>DH</small></span>
+          <span className="pin"><MoneyInput value={f.misc} onChange={(v) => set('misc', v)} /><small>DH</small></span>
         </label>
       </div>
       <button className="btn brass wide" onClick={save}>سجّل الأثمنة</button>

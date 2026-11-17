@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_KEY, SUPABASE_URL } from './lib/data'
 import { DAYS, MONTHS, PHOTOS, addDays, cropStyle, dayKey, dayLabel, fromKey, money, waLink } from './lib/util'
-import { Ic, Logo } from './ui'
+import { Ic, Logo, MoneyInput } from './ui'
 import { applyPrefsOf, startTranslator } from './lib/i18n'
 import { L, TRADES, setTrade, tradeName, usesFood, usesGuests, vocabOn } from './lib/trades'
 // the page speaks the language of the business it shows (words, per guest or one price)
@@ -160,7 +160,7 @@ export function PublicDevis({ token }) {
               </button>
               <input ref={fileRef} type="file" accept="image/*,application/pdf" hidden onChange={(e) => { setFile(e.target.files?.[0] || null); setState('idle') }} />
               <div className="ptwo">
-                <label><small>شحال صيفطتي (DH)</small><input inputMode="numeric" dir="ltr" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, '').slice(0, 7))} /></label>
+                <label><small>شحال صيفطتي (DH)</small><MoneyInput value={amount} onChange={setAmount} max={7} /></label>
                 <label><small>سمية اللي خلّص</small><input value={payer} onChange={(e) => setPayer(e.target.value.slice(0, 80))} /></label>
               </div>
               {state === 'error' && <p className="perr">ما تصيفطش. شوف الإنترنت وعاود جرّب.</p>}

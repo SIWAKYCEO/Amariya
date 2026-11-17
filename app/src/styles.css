@@ -193,6 +193,10 @@ h4.sec .sum { font-size: 15px; color: var(--henna) }
 .m3 .good .num { color: var(--ok) }
 .pays { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 6px }
 .pays li, .extras li { display: flex; justify-content: space-between; font-size: 13px; color: var(--mute) }
+.pays li { align-items: center; gap: 8px }
+.pay-ed { flex: 1; min-width: 0; display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 40px; padding: 4px 10px; margin-inline-start: -10px; border-radius: 12px; font: inherit; color: inherit; text-align: start }
+.pay-ed:active { background: rgba(15,42,36,.06) }
+.pay-ed .pen { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-inline-start: 6px; border-radius: 7px; background: rgba(15,42,36,.06); color: var(--green); vertical-align: middle }
 .btnrow { display: flex; gap: 8px; margin-top: 14px }
 .btnrow .btn { flex: 1; height: 48px; font-size: 14px; padding: 0 12px }
 .btnrow.tight { margin: 0; flex: none }

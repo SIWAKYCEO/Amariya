@@ -154,6 +154,7 @@ const P = [
   [/^السلام (.+)$/, 'Bonjour $1', 'Hi $1'],
   [/^العرس (.+)$/, 'Mariage $1', 'Wedding $1'],
   [/^(العربون|خلاص|دفعة): (.+) DH · (.+)$/, '$1 : $2 DH · $3', '$1: $2 DH · $3'],
+  [/^بهاد الرقم غادي يولّي المخلّص كثر من المجموع بـ (.+)\. تأكّد من الرقم\.$/, 'Avec ce montant, le payé dépasserait le total de $1. Vérifiez le chiffre.', 'With this amount, paid would exceed the total by $1. Check the amount.'],
   [/^هادا كثر من الباقي بـ (.+)\. تأكّد من الرقم\.$/, 'Ce montant dépasse le reste de $1. Vérifiez le chiffre.', 'This is more than the balance by $1. Check the amount.'],
   [/^العربون كثر من المجموع \((.+)\)\. تأكّد من الرقم\.$/, "L'acompte dépasse le total ($1). Vérifiez le chiffre.", 'The deposit is more than the total ($1). Check the amount.'],
 ]

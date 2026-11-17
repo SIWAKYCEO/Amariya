@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { add, isPro, isSample, devisLink, extrasSum, markReminded, paidOf, problemsOf, readinessOf, remove, shoppingOf, teamOf, totalOf, update, useStore } from '../lib/data'
 import { ProofSheet, methodLabel, remindText } from './Inbox'
 import { ROLES, ROLES_PL, roleName, rolePl, dayKey, dayLabel, daysFromToday, money, openExternal, photoFor, prettyPhone, relDay, telLink, waLink } from '../lib/util'
-import { Count, DH, Field, Ic, Locked, Ring, Sheet, fail, shareText, toast } from '../ui'
+import { Count, DH, Field, Ic, Locked, MoneyInput, Ring, Sheet, fail, shareText, toast } from '../ui'
 import { WeddingChips } from './Weddings'
 import { receiptImage } from '../lib/receipt'
 import { ProfitCard } from './Profit'
@@ -36,6 +36,7 @@ export default function WeddingFile({ w, back, go }) {
   const s = useStore()
   const [sheet, setSheet] = useState(null)
   const [amount, setAmount] = useState('')
+  const [editPay, setEditPay] = useState(null)
   const [rc, setRc] = useState(null)
   const [proof, setProof] = useState(null)
   const [tab, setTab] = useState('money')
@@ -141,7 +142,7 @@ export default function WeddingFile({ w, back, go }) {
           <div className="bar"><i style={{ width: Math.min(100, (paid / (total || 1)) * 100) + '%' }} /></div>
           {pays.length > 0 && <ul className="pays">{pays.map((p, i) => {
             const soFar = pays.slice(0, i + 1).reduce((a, x) => a + +x.amount, 0)
-            return <li key={p.id}><span>{p.kind === 'arboun' ? 'العربون' : 'خلاص'} · {dayLabel(p.paid_on, false)}</span><span className="pr-r"><DH v={p.amount} /><button className="rcpt" onClick={() => openReceipt(p, soFar)} aria-label="صيفط الوصل">{Ic.receipt(15)}</button></span></li>
+            return <li key={p.id}><button className="pay-ed" onClick={() => setEditPay(p)} aria-label="بدّل ولا مسح هاد الخلاص"><span>{p.kind === 'arboun' ? 'العربون' : 'خلاص'} · {dayLabel(p.paid_on, false)}</span><span className="pr-r"><DH v={p.amount} /><span className="pen">{Ic.pen(13)}</span></span></button><button className="rcpt" onClick={() => openReceipt(p, soFar)} aria-label="صيفط الوصل">{Ic.receipt(15)}</button></li>
           })}</ul>}
           <div className="btnrow">
             <button className="btn green" onClick={() => setSheet('pay')}>{Ic.plus(18)} {paid ? 'زيد خلاص' : 'سجّل العربون'}</button>
@@ -238,13 +239,15 @@ export default function WeddingFile({ w, back, go }) {
       {sheet === 'pay' && (
         <Sheet title={paid ? 'زيد خلاص' : 'سجّل العربون'} onClose={() => setSheet(null)}>
           <Field label="شحال خلّصو؟" hint={rest ? `الباقي: ${money(rest)} DH` : ''}>
-            <input autoFocus inputMode="numeric" dir="ltr" className="big" value={amount} onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))} placeholder="0" />
+            <MoneyInput autoFocus className="big" value={amount} onChange={setAmount} placeholder="0" />
           </Field>
           {rest > 0 && <div className="quick">{[rest, Math.round(rest / 2)].filter((v, i, a) => v > 0 && a.indexOf(v) === i).map((v) => <button key={v} className="qchip" onClick={() => setAmount(String(v))}>{money(v)} DH</button>)}</div>}
-          {total > 0 && +amount > rest && <p className="warn" style={{ margin: '10px 4px 0' }}>{rest > 0 ? `هادا كثر من الباقي بـ \u2066${money(+amount - rest)} DH\u2069. تأكّد من الرقم.` : 'العرس تخلّص كامل. تأكّد واش هاد الخلاص ديال هاد العرس.'}</p>}
+          {total > 0 && +amount > rest && <p className="warn" style={{ margin: '10px 4px 0' }}>{rest > 0 ? `هادا كثر من الباقي بـ \u2066${money(+amount - rest).replace(/ /g, "\u00A0")}\u00A0DH\u2069. تأكّد من الرقم.` : 'العرس تخلّص كامل. تأكّد واش هاد الخلاص ديال هاد العرس.'}</p>}
           <button className="btn brass wide" disabled={!+amount} onClick={addPay}>{total > 0 && +amount > rest ? 'سجّل واخا' : 'سجّل'}</button>
         </Sheet>
       )}
+
+      {editPay && <EditPaySheet p={editPay} total={total} paidOthers={paid - (+editPay.amount || 0)} close={() => setEditPay(null)} />}
 
       {sheet === 'staff' && (
         <Sheet title="شكون غادي يخدم؟" onClose={() => setSheet(null)}>
@@ -294,5 +297,36 @@ function DeliveryCard({ w }) {
         : <button className="btn green wide" onClick={() => save({ delivered_at: new Date().toISOString() })}>{Ic.check(17)} سلّمت الصور والفيديو</button>}
       {w.phone && w.delivered_at && <button className="linkrow" onClick={() => openExternal(waLink(w.phone, `السلام عليكم ${w.family} 🌿\nالصور والفيديو ديال العرس واجدين. الله يكمّل بالخير 🙏`))}>{Ic.wa(16)} قول للعائلة</button>}
     </div>
+  )
+}
+
+// a payment typed wrong: change the amount or the day, or delete it (two taps, so it never goes by mistake)
+function EditPaySheet({ p, total, paidOthers, close }) {
+  const [amount, setAmount] = useState(String(Math.round(+p.amount || 0)))
+  const [day, setDay] = useState(p.paid_on)
+  const [sure, setSure] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const a = +amount || 0
+  const over = total > 0 && paidOthers + a > total
+  const save = async () => {
+    setBusy(true)
+    try { await update('payments', p.id, { amount: a, paid_on: day || p.paid_on }); toast('تبدّل'); close() } catch (e) { fail(e); setBusy(false) }
+  }
+  const del = async () => {
+    if (!sure) { setSure(true); return }
+    setBusy(true)
+    try { await remove('payments', p.id); toast('تمسح'); close() } catch (e) { fail(e); setBusy(false) }
+  }
+  return (
+    <Sheet title={p.kind === 'arboun' ? 'بدّل العربون' : 'بدّل هاد الخلاص'} onClose={close}>
+      <Field label="شحال خلّصو بصّح؟">
+        <MoneyInput className="big" value={amount} onChange={(v) => { setAmount(v); setSure(false) }} placeholder="0" />
+      </Field>
+      {over && <p className="warn" style={{ margin: '0 4px 10px' }}>{`بهاد الرقم غادي يولّي المخلّص كثر من المجموع بـ \u2066${money(paidOthers + a - total).replace(/ /g, "\u00A0")}\u00A0DH\u2069. تأكّد من الرقم.`}</p>}
+      <Field label="النهار"><input type="date" dir="ltr" value={day || ''} onChange={(e) => setDay(e.target.value)} /></Field>
+      <button className="btn brass wide" disabled={busy || !a} onClick={save}>سجّل التبديل</button>
+      <button className="btn ghost wide danger" disabled={busy} onClick={del}>{Ic.trash()} {sure ? 'متأكد؟ كليكي باش يتمسح' : 'مسح هاد الخلاص'}</button>
+      <p className="hint" style={{ textAlign: 'center' }}>إلا غلطتي فالرقم، بدّلو هنا. المجموع والباقي كيتحسبو بوحدهم.</p>
+    </Sheet>
   )
 }

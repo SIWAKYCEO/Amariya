@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { InstallButton } from '../install'
 import { RULE_DEFAULTS, ruleDefault, add, pkgFlat, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
-import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
+import { Band, Field, Ic, MoneyInput, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
 import { ContactSheet } from './Account'
 import { CUR, CURRENCIES, LANG, LANGS, setPrefs } from '../lib/i18n'
@@ -146,7 +146,7 @@ function PackageSheet({ p, close }) {
         <button type="button" className={!f.flat ? 'on' : ''} onClick={() => setF({ ...f, flat: false })}>الثمن ديال الضيف</button>
         <button type="button" className={f.flat ? 'on' : ''} onClick={() => setF({ ...f, flat: true })}>ثمن واحد للعرس</button>
       </div>
-      <Field label={!f.flat ? 'الثمن ديال الضيف (DH)' : 'الثمن ديال العرس كامل (DH)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, '') })} /></Field>
+      <Field label={!f.flat ? 'الثمن ديال الضيف (DH)' : 'الثمن ديال العرس كامل (DH)'}><MoneyInput value={f.price} onChange={(v) => setF({ ...f, price: v })} /></Field>
       <Field label={usesFood() ? 'الماكلة (كل وحدة فسطر)' : 'شنو فيها (كل حاجة فسطر)'}><textarea rows={6} value={f.items} onChange={(e) => setF({ ...f, items: e.target.value })} placeholder={usesFood() ? 'البسطيلة\nالمشوي\nالفواكه' : '…'} /></Field>
       <button className="btn brass wide" disabled={!f.name.trim() || !+f.price} onClick={save}>سجّل</button>
       {p.id && <button className="btn ghost wide danger" onClick={() => remove('packages', p.id).then(close).catch(fail)}>{Ic.trash()} مسحو</button>}

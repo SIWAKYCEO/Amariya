@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { add, extrasSum, ruleOf, update, useStore, newIsFlat, pkgFlat } from '../lib/data'
 import { quickExtras, usesGuests, pkgWord } from '../lib/trades'
 import { addDays, dayKey, dayLabel, money, normPhone, prettyPhone } from '../lib/util'
-import { DH, Field, Ic, Stepper, TopBar, fail, toast } from '../ui'
+import { DH, Field, Ic, MoneyInput, Stepper, TopBar, fail, toast } from '../ui'
 
 
 export default function NewWedding({ back, done, edit, prefill }) {
@@ -85,7 +85,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
             <button type="button" className={!flat ? 'on' : ''} onClick={() => set({ flat: false, guests: +f.guests || +ruleOf('guests', s.traiteur) || 200 })}>الثمن ديال الضيف</button>
             <button type="button" className={flat ? 'on' : ''} onClick={() => set({ flat: true })}>ثمن واحد للعرس</button>
           </div>
-          <Field label={flat ? 'الثمن (تقدر تبدلو)' : 'الثمن ديال الضيف (تقدر تبدلو)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => set({ price: e.target.value.replace(/[^\d.]/g, '') })} /></Field>
+          <Field label={flat ? 'الثمن (تقدر تبدلو)' : 'الثمن ديال الضيف (تقدر تبدلو)'}><MoneyInput decimals value={f.price} onChange={(v) => set({ price: v })} /></Field>
           <span className="lab">زيادات</span>
           <div className="quick">
             {QUICK.filter((q) => !f.extras.some((e) => e.label === q)).map((q) => <button key={q} className="qchip" onClick={() => set({ extras: [...f.extras, { label: q, amount: '' }] })}>+ {q}</button>)}
@@ -94,7 +94,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
           {f.extras.map((e, i) => (
             <div className="extra" key={i}>
               <input value={e.label} placeholder="شنو؟" onChange={(ev) => set({ extras: f.extras.map((x, j) => j === i ? { ...x, label: ev.target.value } : x) })} />
-              <input inputMode="numeric" dir="ltr" value={e.amount} placeholder="DH" onChange={(ev) => set({ extras: f.extras.map((x, j) => j === i ? { ...x, amount: ev.target.value.replace(/\D/g, '') } : x) })} />
+              <MoneyInput value={e.amount} placeholder="DH" onChange={(v) => set({ extras: f.extras.map((x, j) => j === i ? { ...x, amount: v } : x) })} />
               <button className="round sm" onClick={() => set({ extras: f.extras.filter((_, j) => j !== i) })} aria-label="حيّد">{Ic.x(15)}</button>
             </div>
           ))}
@@ -111,8 +111,8 @@ export default function NewWedding({ back, done, edit, prefill }) {
           </div>
           {!edit && (
             <Field label="العربون اللي خلّصو دابا (إلا كاين)" hint="إلا ما خلّصو والو، خليه خاوي: يتسجّل كدوفي.">
-              <input inputMode="numeric" dir="ltr" value={arboun} onChange={(e) => setArboun(e.target.value.replace(/\D/g, ''))} placeholder="0" />
-              {total > 0 && +arboun > total && <p className="warn" style={{ marginTop: 6 }}>{`العربون كثر من المجموع (\u2066${money(total)} DH\u2069). تأكّد من الرقم.`}</p>}
+              <MoneyInput value={arboun} onChange={setArboun} placeholder="0" />
+              {total > 0 && +arboun > total && <p className="warn" style={{ marginTop: 6 }}>{`العربون كثر من المجموع (\u2066${money(total).replace(/ /g, "\u00A0")}\u00A0DH\u2069). تأكّد من الرقم.`}</p>}
             </Field>
           )}
           <Field label="ملاحظات"><textarea rows={3} value={f.notes === '__sample' ? '' : f.notes || ''} onChange={(e) => set({ notes: e.target.value })} placeholder="شي حاجة خاصك تعقل عليها" /></Field>

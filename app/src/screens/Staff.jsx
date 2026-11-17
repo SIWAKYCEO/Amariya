@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { add, isPro, remove, update, useStore } from '../lib/data'
 import { StaffPayCard } from './ProExtras'
 import { PHOTOS, ROLES, ROLES_PL, roleName, rolePl, daysFromToday, money, normPhone, openExternal, prettyPhone, waLink, initial } from '../lib/util'
-import { Band, Empty, Fab, Field, Ic, Locked, Sheet, fail, toast } from '../ui'
+import { Band, Empty, Fab, Field, Ic, Locked, MoneyInput, Sheet, fail, toast } from '../ui'
 
 export default function Staff({ go }) {
   const s = useStore()
@@ -66,7 +66,7 @@ function PersonSheet({ p, close }) {
       <Field label="التيليفون (واتساب)"><input inputMode="tel" dir="ltr" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} placeholder="06 00 00 00 00" /></Field>
       <span className="lab">الخدمة</span>
       <div className="quick">{Object.entries(ROLES).map(([k, l]) => <button key={k} className={'qchip' + (f.role === k ? ' on' : '')} onClick={() => setF({ ...f, role: k })}>{l}</button>)}</div>
-      <Field label="شحال كياخد لليلة؟ (DH)"><input inputMode="numeric" dir="ltr" value={f.rate} onChange={(e) => setF({ ...f, rate: e.target.value.replace(/\D/g, '') })} placeholder="0" /></Field>
+      <Field label="شحال كياخد لليلة؟ (DH)"><MoneyInput value={f.rate} onChange={(v) => setF({ ...f, rate: v })} placeholder="0" /></Field>
       <button className="btn brass wide" disabled={f.name.trim().length < 2} onClick={save}>سجّل</button>
       {p.id && <button className="btn ghost wide danger" onClick={() => remove('staff', p.id).then(() => { toast('تمسح'); close() }).catch(fail)}>{Ic.trash()} مسحو</button>}
     </Sheet>
