@@ -1,5 +1,6 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"خلّص بطريقة أخرى": ["Payer autrement", "Pay another way"],
 "آخر خطوة: كمّل معانا فالواتساب": ["Dernière étape : continuez avec nous sur WhatsApp", "Last step: continue with us on WhatsApp"],
 "باش نبداو السيت، اللوغو، الفيديوهات والريلز ديالك، صيفط لينا الميساج واجد وغادي نتواصلو معاك.": ["Pour lancer votre site, logo, vidéos et reels, envoyez-nous le message prêt et nous vous contactons.", "To start your website, logo, videos and reels, send us the ready message and we will get in touch."],
 "كمّل فالواتساب": ["Continuer sur WhatsApp", "Continue on WhatsApp"],

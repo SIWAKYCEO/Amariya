@@ -45,7 +45,7 @@ function Virement({ amt, name, onSend, onBack }) {
       <div className="vr-amt">
         <small>المبلغ اللي غادي تحوّل</small>
         <b><span className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</span> درهم</b>
-        <span className="vr-for">باقة {name}</span>
+        <span className="vr-for">{`باقة ${name}`}</span>
       </div>
       <div className="vr-card">
         <div className="vr-card-h"><span className="vr-bank"><Bank /></span><span>الحساب ديال Amariya</span></div>
@@ -54,8 +54,8 @@ function Virement({ amt, name, onSend, onBack }) {
       </div>
       <ol className="vr-steps">
         <li><i>1</i><span>كوبي الـRIB والاسم</span></li>
-        <li><i>2</i><span>دير التحويل ديال <b className="num" dir="ltr">{Number(amt).toLocaleString('de-DE')}</b> درهم من البنك ولا من التطبيق ديال البنك</span></li>
-        <li><i>3</i><span>صيفط لينا صورة الوصل فالواتساب، ونفعّلو ليك {name} فنفس النهار</span></li>
+        <li><i>2</i><span>{`دير التحويل ديال ${Number(amt).toLocaleString('de-DE')} درهم من البنك ولا من التطبيق ديال البنك`}</span></li>
+        <li><i>3</i><span>{`صيفط لينا صورة الوصل فالواتساب، ونفعّلو ليك ${name} فنفس النهار`}</span></li>
       </ol>
       <button className="vr-send" onClick={onSend}>{Ic.wa(19)} صيفط صورة الوصل</button>
       <button className="vr-back" onClick={onBack}>{Ic.back(15)} طريقة أخرى ديال الخلاص</button>

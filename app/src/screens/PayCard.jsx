@@ -98,7 +98,7 @@ export default function PayCard({ plan, name, onClose, onOther, via = 'credit-ca
         {info && <div className="vr-amt">
           <small>{cp ? 'المبلغ اللي غادي تخلّص فـ CashPlus' : 'المبلغ اللي غادي تخلّص'}</small>
           <b><span className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</span> درهم</b>
-          <span className="vr-for">باقة {name}{info.sandbox ? ' · تجربة' : ''}</span>
+          <span className="vr-for">{`باقة ${name}`}{info.sandbox ? ' · تجربة' : ''}</span>
         </div>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
         <div className="ycp-box" style={{ display: st === 'form' || st === 'paying' || st === 'code' ? 'block' : 'none' }}>
