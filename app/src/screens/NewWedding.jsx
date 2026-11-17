@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { add, extrasSum, ruleOf, update, useStore, newIsFlat } from '../lib/data'
+import { add, extrasSum, ruleOf, update, useStore, newIsFlat, pkgFlat } from '../lib/data'
 import { quickExtras, usesGuests, pkgWord } from '../lib/trades'
 import { addDays, dayKey, dayLabel, normPhone, prettyPhone } from '../lib/util'
 import { DH, Field, Ic, Stepper, TopBar, fail, toast } from '../ui'
@@ -13,7 +13,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
   const guestsOn = usesGuests()
   const [f, setF] = useState(() => edit
     ? { ...edit, phone: prettyPhone(edit.phone), extras: edit.extras || [] }
-    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: guestsOn ? +ruleOf('guests', s.traiteur) || 200 : 0, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', flat: newIsFlat(), ...prefill })
+    : { family: '', phone: '', day: dayKey(addDays(new Date(), 14)), time: ruleOf('time', s.traiteur), hall: '', city: s.traiteur?.city || '', guests: guestsOn ? +ruleOf('guests', s.traiteur) || 200 : 0, package_id: pk0?.id || null, package_name: pk0?.name || '', price: pk0?.price || 0, extras: [], notes: '', flat: pk0 ? pkgFlat(pk0) : newIsFlat(), ...prefill })
   const flat = !!f.flat
   const QUICK = quickExtras()
   const [arboun, setArboun] = useState('')
@@ -69,17 +69,21 @@ export default function NewWedding({ back, done, edit, prefill }) {
 
       {step === 1 && (
         <div className="pane">
-          {guestsOn && <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>}
+          {(guestsOn || !flat) && <div className="bigq"><span className="lab">عدد الضياف</span><Stepper value={f.guests} onChange={(v) => set({ guests: v })} /></div>}
           <span className="lab">{pkgWord()}</span>
           <div className="pkgs">
             {s.packages.map((p) => (
-              <button key={p.id} className={'pkg' + (f.package_id === p.id ? ' on' : '')} onClick={() => set({ package_id: p.id, package_name: p.name, price: p.price })}>
+              <button key={p.id} className={'pkg' + (f.package_id === p.id ? ' on' : '')} onClick={() => set({ package_id: p.id, package_name: p.name, price: p.price, flat: pkgFlat(p) })}>
                 <span className="pn">{p.name}</span>
-                <span className="pp"><DH v={p.price} />{!flat && <small> / للضيف</small>}</span>
+                <span className="pp"><DH v={p.price} />{!pkgFlat(p) && <small> / للضيف</small>}</span>
                 <span className="pi">{(p.items || []).slice(0, 4).join(' · ')}</span>
                 {f.package_id === p.id && <span className="tick">{Ic.check(13)}</span>}
               </button>
             ))}
+          </div>
+          <div className="seg2" role="group" aria-label="كيفاش كيتحسب الثمن">
+            <button type="button" className={!flat ? 'on' : ''} onClick={() => set({ flat: false, guests: +f.guests || +ruleOf('guests', s.traiteur) || 200 })}>الثمن ديال الضيف</button>
+            <button type="button" className={flat ? 'on' : ''} onClick={() => set({ flat: true })}>ثمن واحد للعرس</button>
           </div>
           <Field label={flat ? 'الثمن (تقدر تبدلو)' : 'الثمن ديال الضيف (تقدر تبدلو)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => set({ price: e.target.value.replace(/[^\d.]/g, '') })} /></Field>
           <span className="lab">زيادات</span>

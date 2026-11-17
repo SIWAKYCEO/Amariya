@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { InstallButton } from '../install'
-import { RULE_DEFAULTS, ruleDefault, add, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
+import { RULE_DEFAULTS, ruleDefault, add, pkgFlat, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
@@ -57,13 +57,13 @@ export default function Settings({ back, go }) {
         <div className="hscroll">
           {s.packages.map((p, i) => (
             <button key={p.id} className="mncard" onClick={() => setPk(p)}>
-              <span className="img" style={usesFood() ? cropStyle(pics[i % pics.length]) : { backgroundImage: `url(${[PHOTOS.hall, PHOTOS.amariya, PHOTOS.hall2][i % 3]})`, backgroundSize: 'cover', backgroundPosition: 'center' }}><span className="num" dir="ltr">{p.price}<small> DH</small></span></span>
+              <span className="img" style={usesFood() ? cropStyle(pics[i % pics.length]) : { backgroundImage: `url(${[PHOTOS.hall, PHOTOS.amariya, PHOTOS.hall2][i % 3]})`, backgroundSize: 'cover', backgroundPosition: 'center' }}><span className="num" dir="ltr">{p.price}<small>{!pkgFlat(p) ? ' DH / ضيف' : ' DH'}</small></span></span>
               <span className="bd"><b>{p.name}</b><small>{(p.items || []).join(' · ')}</small></span>
             </button>
           ))}
           <button className="mncard add" onClick={() => setPk({})}>{Ic.plus(24)}{isTraiteur() ? 'مينو جديد' : 'زيد وحدة جديدة'}</button>
         </div>
-        <p className="muted" style={{ margin: '-4px 4px 0' }}>{perGuest() ? 'الثمن ديال الضيف. كيتحسب بيه الدوفي بوحدو.' : 'الثمن ديال العرس كامل. كيتحسب بيه الدوفي بوحدو.'}</p>
+        <p className="muted" style={{ margin: '-4px 4px 0' }}>كل وحدة تقدر تكون بالثمن ديال الضيف ولا بثمن واحد للعرس. الدوفي كيتحسب بوحدو.</p>
 
         <h4 className="sec2">الصفحة ديالك والخلاص</h4>
         <div className="glist">
@@ -134,15 +134,19 @@ export default function Settings({ back, go }) {
 }
 
 function PackageSheet({ p, close }) {
-  const [f, setF] = useState({ name: p.name || '', price: p.price ?? '', items: (p.items || []).join('\n') })
+  const [f, setF] = useState({ name: p.name || '', price: p.price ?? '', items: (p.items || []).join('\n'), flat: pkgFlat(p) })
   const save = async () => {
-    const row = { name: f.name.trim(), price: +f.price || 0, items: f.items.split('\n').map((x) => x.trim()).filter(Boolean) }
+    const row = { name: f.name.trim(), price: +f.price || 0, flat: f.flat, items: f.items.split('\n').map((x) => x.trim()).filter(Boolean) }
     try { if (p.id) await update('packages', p.id, row); else await add('packages', { ...row, sort: 99, active: true }); toast('تسجّل'); close() } catch (e) { fail(e) }
   }
   return (
     <Sheet title={p.id ? p.name : 'مينو جديد'} onClose={close}>
       <Field label="السمية"><input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="مثلا: الملكي" /></Field>
-      <Field label={perGuest() ? 'الثمن ديال الضيف (DH)' : 'الثمن (DH)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, '') })} /></Field>
+      <div className="seg2" role="group" aria-label="كيفاش كيتحسب الثمن">
+        <button type="button" className={!f.flat ? 'on' : ''} onClick={() => setF({ ...f, flat: false })}>الثمن ديال الضيف</button>
+        <button type="button" className={f.flat ? 'on' : ''} onClick={() => setF({ ...f, flat: true })}>ثمن واحد للعرس</button>
+      </div>
+      <Field label={!f.flat ? 'الثمن ديال الضيف (DH)' : 'الثمن ديال العرس كامل (DH)'}><input inputMode="numeric" dir="ltr" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value.replace(/\D/g, '') })} /></Field>
       <Field label={usesFood() ? 'الماكلة (كل وحدة فسطر)' : 'شنو فيها (كل حاجة فسطر)'}><textarea rows={6} value={f.items} onChange={(e) => setF({ ...f, items: e.target.value })} placeholder={usesFood() ? 'البسطيلة\nالمشوي\nالفواكه' : '…'} /></Field>
       <button className="btn brass wide" disabled={!f.name.trim() || !+f.price} onClick={save}>سجّل</button>
       {p.id && <button className="btn ghost wide danger" onClick={() => remove('packages', p.id).then(close).catch(fail)}>{Ic.trash()} مسحو</button>}

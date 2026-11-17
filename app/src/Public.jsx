@@ -215,7 +215,8 @@ export function PublicShop({ slug }) {
     const { data, error } = await db.rpc('amr_pub_request', { p_slug: slug, p_name: f.name, p_phone: f.phone, p_day: f.day || null, p_guests: +f.guests || null, p_package: f.pkg || null, p_note: f.note || null })
     setSt(error || !data ? 'error' : 'sent')
   }
-  const min = d.menus.length ? Math.min(...d.menus.map((x) => +x.price || 0).filter(Boolean)) : 0
+  const cheap = d.menus.filter((x) => +x.price > 0).sort((a, b) => a.price - b.price)[0]
+  const min = cheap ? +cheap.price : 0
 
   return (
     <Shell head={<>
@@ -226,14 +227,14 @@ export function PublicShop({ slug }) {
         <button className="pbtn brass" onClick={() => goForm({})}>طلب دوفي</button>
         {d.phone && <button className="pbtn glass" onClick={() => open(waLink(d.phone, 'السلام عليكم، شفت الصفحة ديالكم فـ Amariya وبغيت نسول على عرس 🌿'))}>{Ic.wa(18)} واتساب</button>}
       </div>
-      {min > 0 && <span className="pub-from">ابتداءً من <b dir="ltr">{money(min)} DH</b>{d.per_guest !== false && ' للضيف'}</span>}
+      {min > 0 && <span className="pub-from">ابتداءً من <b dir="ltr">{money(min)} DH</b>{(cheap?.per_guest ?? d.per_guest) !== false && ' للضيف'}</span>}
     </>}>
       {d.menus.length > 0 && <>
         <h2 className="psec">المينوهات</h2>
         <div className="pmenus">
           {d.menus.map((x, i) => (
             <article key={x.id} className="pmenu">
-              <span className="img" style={pic(i)}><span className="price"><small>ابتداءً من</small><b dir="ltr">{money(x.price)} <small>DH</small></b></span></span>
+              <span className="img" style={pic(i)}><span className="price"><small>ابتداءً من</small><b dir="ltr">{money(x.price)} <small>{(x.per_guest ?? d.per_guest) !== false ? 'DH / ضيف' : 'DH'}</small></b></span></span>
               <div className="bd"><b>{x.name}</b><ul>{(x.items || []).map((it) => <li key={it}>{it}</li>)}</ul>
                 <button className="pbtn line" onClick={() => goForm({ pkg: x.id })}>بغيت هاد المينو</button></div>
             </article>

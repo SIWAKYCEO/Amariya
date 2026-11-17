@@ -223,6 +223,8 @@ export const extrasSum = (w) => (w.extras || []).reduce((s, e) => s + (+e.amount
 export const baseOf = (w) => (w.flat ? +w.price || 0 : (+w.guests || 0) * (+w.price || 0))
 export const totalOf = (w) => Math.round(baseOf(w) + extrasSum(w))
 export const newIsFlat = () => !perGuest()
+// each package can be per guest or one price for the night (a hall that also does food has both); null = account default
+export const pkgFlat = (p) => (p && (p.flat === true || p.flat === false) ? p.flat : !perGuest())
 export const paidOf = (w, payments = state.payments) => payments.filter((p) => p.wedding_id === w.id).reduce((s, p) => s + (+p.amount || 0), 0)
 export const restOf = (w, payments) => Math.max(0, totalOf(w) - paidOf(w, payments))
 // the traiteur's own rules (Settings → قواعد الخدمة); these are only the starting values

@@ -1,8 +1,8 @@
-import { perGuest, theTrade, usesGuests } from '../lib/trades'
+import { theTrade, usesGuests } from '../lib/trades'
 // What the traiteur has to do now: new devis requests, deposit proofs to confirm, balance reminders.
 // Plus the ready-made replies and the shared WhatsApp texts.
 import { useEffect, useState } from 'react'
-import { acceptProof, devisLink, markReminded, proofUrl, refresh, remindersDue, shopLink, update, useStore } from '../lib/data'
+import { pkgFlat, acceptProof, devisLink, markReminded, proofUrl, refresh, remindersDue, shopLink, update, useStore } from '../lib/data'
 import { dayLabel, money, openExternal, photoFor, waLink } from '../lib/util'
 import { DH, Ic, Sheet, fail, haptic, toast } from '../ui'
 
@@ -119,7 +119,7 @@ export function replies(s) {
   out.push(['الثمن', [
     'السلام عليكم ومرحبا 🌿',
     `هادو المينوهات ديال ${t.name || theTrade()}:`,
-    ...menus.map((p) => `• ${p.name}: ${money(p.price)} DH${perGuest() ? ' للضيف' : ''}${(p.items || []).length ? ` (${p.items.slice(0, 4).join('، ')})` : ''}`),
+    ...menus.map((p) => `• ${p.name}: ${money(p.price)} DH${!pkgFlat(p) ? ' للضيف' : ''}${(p.items || []).length ? ` (${p.items.slice(0, 4).join('، ')})` : ''}`),
     link && `شوف الصور والنهارات الخاوين: ${link}`,
     usesGuests() ? 'عطيني النهار، المدينة وشحال من ضيف ونصيفط ليك الدوفي فالحين 🙏' : 'عطيني النهار والمدينة ونصيفط ليك الدوفي فالحين 🙏',
   ].filter(Boolean).join('\n')])

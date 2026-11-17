@@ -1,7 +1,7 @@
-import { perGuest, pkgWord, theTrade } from '../lib/trades'
+import { pkgWord, theTrade } from '../lib/trades'
 // Devis requests that came from the traiteur's public page
 import { useEffect, useState } from 'react'
-import { shopLink, update, useStore } from '../lib/data'
+import { pkgFlat, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, dayLabel, money, openExternal, prettyPhone, telLink, waLink } from '../lib/util'
 import { Band, Empty, Ic, fail, toast } from '../ui'
 import { QuickReplies, ago } from './Inbox'
@@ -9,7 +9,7 @@ import { QuickReplies, ago } from './Inbox'
 const replyText = (r, pkg, t) => [
   `السلام عليكم ${r.name} ومرحبا 🌿`,
   `معاك ${t?.name || theTrade()}، توصّلنا بالطلب ديالك${r.day ? ` ديال نهار ${dayLabel(r.day)}` : ''}${r.guests ? ` (${r.guests} ضيف)` : ''}.`,
-  pkg && (perGuest() ? r.guests && `المينو ${pkg.name}: ${money(pkg.price)} DH للضيف، يعني تقريبا ${money(pkg.price * r.guests)} DH.` : `${pkgWord()} ${pkg.name}: ${money(pkg.price)} DH.`),
+  pkg && (!pkgFlat(pkg) ? r.guests && `المينو ${pkg.name}: ${money(pkg.price)} DH للضيف، يعني تقريبا ${money(pkg.price * r.guests)} DH.` : `${pkgWord()} ${pkg.name}: ${money(pkg.price)} DH.`),
   'واش نصيفط ليك الدوفي كامل؟ ولا عندك شي سؤال؟',
 ].filter(Boolean).join('\n')
 
