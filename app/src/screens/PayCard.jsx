@@ -123,6 +123,7 @@ const UNLOCKED = {
 
 // full screen after the card payment: approved (green arch, gold star) or refused (clear reason, what to do now)
 export function PayResult({ ok, plan, name, error, why, onRetry, onOther, onClose }) {
+  const [went, setWent] = useState(false)
   return (
     <div className={'pres ' + (ok ? 'ok' : 'ko')} role="dialog" aria-modal="true" aria-label={ok ? 'الخلاص داز' : 'ما دازش الخلاص'}>
       <div className="pres-arch" aria-hidden="true" />
@@ -133,12 +134,21 @@ export function PayResult({ ok, plan, name, error, why, onRetry, onOther, onClos
           <h1>مبروك! دابا راك فـ <em>{name}</em></h1>
           <p>كلشي تحلّ ليك فالتطبيق دابا، بلا ما تبدّل والو.</p>
           {UNLOCKED[plan] && <ul className="pres-list">{UNLOCKED[plan].map((t) => <li key={t}><i>{Ic.check(12)}</i>{t}</li>)}</ul>}
-          <div className="pres-wa">
-            <b>بغيتي الواتساب يجاوب الكليان ديالك بوحدو؟</b>
-            <small>صيفط لينا ميساج ونشغّلوه ليك.</small>
-            <button className="pres-btn line" onClick={() => openExternal(contactWaLink(`خلّصت ${name}، بغيت نشغّل الواتساب اللي كيجاوب بوحدو.`))}>{Ic.wa(17)} شغّلو ليا الواتساب</button>
-          </div>
-          <button className="pres-btn main" onClick={onClose}>بدا تخدم<i>←</i></button>
+          {plan === 'ultra' ? <>
+            <div className="pres-wa must">
+              <b>آخر خطوة: كمّل معانا فالواتساب</b>
+              <small>باش نبداو السيت، اللوغو، الفيديوهات والريلز ديالك، صيفط لينا الميساج واجد وغادي نتواصلو معاك.</small>
+              <button className="pres-btn main" onClick={() => { setWent(true); openExternal(contactWaLink(`خلّصت Ultra بالكارطة ✅\nبغيت نبداو: السيت، اللوغو، الفيديو ديال الإشهار والريلز.`)) }}>{Ic.wa(18)} كمّل فالواتساب</button>
+            </div>
+            {went && <button className="pres-btn line" onClick={onClose}>دخل للتطبيق</button>}
+          </> : <>
+            <div className="pres-wa">
+              <b>بغيتي الواتساب يجاوب الكليان ديالك بوحدو؟</b>
+              <small>صيفط لينا ميساج ونشغّلوه ليك.</small>
+              <button className="pres-btn line" onClick={() => openExternal(contactWaLink(`خلّصت ${name}، بغيت نشغّل الواتساب اللي كيجاوب بوحدو.`))}>{Ic.wa(17)} شغّلو ليا الواتساب</button>
+            </div>
+            <button className="pres-btn main" onClick={onClose}>بدا تخدم<i>←</i></button>
+          </>}
         </> : <>
           <span className="pres-k">ما دازش الخلاص</span>
           <h1>{error ? 'ما قدرناش نحلّو الخلاص دابا' : 'البنك ما قبلش الخلاص'}</h1>

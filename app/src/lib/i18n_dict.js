@@ -1,5 +1,11 @@
 // darija → [français, english]. Generated: keys are the exact strings shown by the app.
 export const EX = {
+"آخر خطوة: كمّل معانا فالواتساب": ["Dernière étape : continuez avec nous sur WhatsApp", "Last step: continue with us on WhatsApp"],
+"باش نبداو السيت، اللوغو، الفيديوهات والريلز ديالك، صيفط لينا الميساج واجد وغادي نتواصلو معاك.": ["Pour lancer votre site, logo, vidéos et reels, envoyez-nous le message prêt et nous vous contactons.", "To start your website, logo, videos and reels, send us the ready message and we will get in touch."],
+"كمّل فالواتساب": ["Continuer sur WhatsApp", "Continue on WhatsApp"],
+"دخل للتطبيق": ["Entrer dans l'app", "Open the app"],
+"عندك كارطة من برّا المغرب؟": ["Carte d'un autre pays que le Maroc ?", "Card from outside Morocco?"],
+"كارطة أوروبية ولا من بلاد أخرى: كتب لينا فالواتساب وكنقولو ليك كيفاش تخلّص": ["Carte européenne ou d'un autre pays : écrivez-nous sur WhatsApp et on vous explique comment payer", "European or other foreign card: message us on WhatsApp and we'll tell you how to pay"],
 "الخلاص آمن ومحمي. ما كنشوفوش معلومات الكارطة ديالك.": ["Paiement sécurisé et protégé. Nous ne voyons pas les données de votre carte.", "Secure, protected payment. We never see your card details."],
 "المبلغ اللي غادي تخلّص": ["Montant à payer", "Amount to pay"],
 "المبلغ اللي غادي تخلّص فـ CashPlus": ["Montant à payer chez CashPlus", "Amount to pay at CashPlus"],

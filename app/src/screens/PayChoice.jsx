@@ -1,6 +1,6 @@
 // How the traiteur pays a plan: card (automatic, YouCan Pay), bank transfer or CashPlus (we turn the plan on after the receipt on WhatsApp).
 import { useEffect, useState } from 'react'
-import { SALES_WA, SUPABASE_URL, isDemo, supabase, useStore } from '../lib/data'
+import { SALES_WA, SUPABASE_URL, contactWaLink, isDemo, supabase, useStore } from '../lib/data'
 import { Ic, Sheet, Spin, toast } from '../ui'
 import { openExternal } from '../lib/util'
 import PayCard from './PayCard'
@@ -104,6 +104,11 @@ export default function PayChoice({ plan, name, onClose }) {
             <span className="pm-top"><b>CashPlus</b><span className="pm-tag">كتفعّل بوحدها</span></span>
             <small>كتاخد كود وكتخلّص كاش فأقرب وكالة CashPlus</small>
             <span className="pm-logos"><CashPlus /></span>
+          </button>
+          <button className="pmopt abroad" onClick={() => openExternal(contactWaLink(`بغيت نخلّص باقة ${name} ولكن عندي كارطة من برّا المغرب 🌍\nالبلاد ديالي: \nنوع الكارطة (Visa / Mastercard / أخرى): `))}>
+            <span className="pm-top"><b>عندك كارطة من برّا المغرب؟</b></span>
+            <small>كارطة أوروبية ولا من بلاد أخرى: كتب لينا فالواتساب وكنقولو ليك كيفاش تخلّص</small>
+            <span className="pm-logos"><span className="pm-wa">{Ic.wa(20)}</span></span>
           </button>
           {busy && <div className="ycp-wait"><Spin /></div>}
           <p className="ycp-note">{Ic.lock(13)} الخلاص آمن. ما كنشوفوش معلومات الكارطة ديالك.</p>

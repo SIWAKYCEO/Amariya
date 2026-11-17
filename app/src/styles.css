@@ -1806,3 +1806,9 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .ycp-trust svg { flex: none; color: var(--ok) }
 /* niente rimandi al fornitore dentro il modulo della carta */
 #ycp-form a[href*="youcan" i], #ycp-form *:has(> a[href*="youcan" i]) { display: none !important }
+/* pagamento dall'estero e Ultra che passa dal WhatsApp */
+.pmopt.abroad { background: #F4FBF6; border-color: #CDEBD9; box-shadow: none }
+.pm-wa { width: 44px; height: 28px; border-radius: 6px; background: #1FA855; color: #fff; display: grid; place-items: center }
+.pres-wa.must { border-color: rgba(200,161,90,.5); background: rgba(200,161,90,.1); gap: 8px }
+.pres-wa.must b { font-size: 16px; color: #F2D79B }
+.pres-wa.must .pres-btn.main { margin-top: 4px; background: #1FA855; color: #fff; justify-content: center; gap: 8px; box-shadow: 0 14px 30px -14px rgba(31,168,85,.8) }
