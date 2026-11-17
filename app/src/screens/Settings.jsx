@@ -50,7 +50,7 @@ export default function Settings({ back, go }) {
 
         <h4 className="sec2">الخدمة ديالك</h4>
         <div className="glist">
-          <button className="gli" onClick={() => setSh('trade')}><span className="ic">{Ic.team(17)}</span><span className="gtx"><b>{trades().map((k) => tradeName(k)).join(' + ')}</b><small>{perGuest() ? 'الثمن ديال الضيف' : 'ثمن واحد للعرس'} · التطبيق كيتبدّل على حساب الخدمة</small></span><span className="x">بدّل</span></button>
+          <button className="gli" onClick={() => setSh('trade')}><span className="ic">{Ic.team(17)}</span><span className="gtx"><b>{trades().map((k) => tradeName(k)).join(' + ')}</b><small>{`${perGuest() ? 'الثمن ديال الضيف' : 'ثمن واحد للعرس'} · التطبيق كيتبدّل على حساب الخدمة`}</small></span><span className="x">بدّل</span></button>
         </div>
 
         <h4 className="sec2">{pkgsWord()} والأثمنة <button className="mini" onClick={() => setPk({})}>{Ic.plus(16)} زيد</button></h4>
@@ -337,6 +337,6 @@ function TradeSheet({ t, close }) {
 // demo of each trade (internal accounts and the demo)
 function DemoTrades() {
   return TRADE_KEYS.filter((k) => k !== 'tr').map((k) => (
-    <a key={k} className="gli" href={`?demo=1&pro=1&type=${k}`}><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>التجربة · {L(TRADES[k].name)}</b><small>كيفاش كيبان التطبيق لهاد الخدمة</small></span></a>
+    <a key={k} className="gli" href={`?demo=1&pro=1&type=${k}`}><span className="ic">{Ic.check(17)}</span><span className="gtx"><b>{`التجربة · ${L(TRADES[k].name)}`}</b><small>كيفاش كيبان التطبيق لهاد الخدمة</small></span></a>
   ))
 }

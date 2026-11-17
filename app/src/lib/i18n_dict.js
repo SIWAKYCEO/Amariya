@@ -2944,6 +2944,8 @@ Object.assign(EX, {
   "الخدمة ديالك": ["Votre activité", "Your business"],
   "الثمن ديال الضيف": ["Prix par invité", "Price per guest"],
   "ثمن واحد للعرس": ["Un prix pour le mariage", "One price per wedding"],
+  "سجّل دابا": ["Enregistrer", "Save now"],
+  "+ التيليفون، الساعة، القاعة (تقدر تزيدهم من بعد)": ["+ Téléphone, heure, salle (vous pouvez les ajouter plus tard)", "+ Phone, time, venue (you can add them later)"],
   "بدّل العربون": ["Modifier l'acompte", "Edit the deposit"],
   "بدّل هاد الخلاص": ["Modifier ce paiement", "Edit this payment"],
   "شحال خلّصو بصّح؟": ["Combien ont-ils vraiment payé ?", "How much did they really pay?"],

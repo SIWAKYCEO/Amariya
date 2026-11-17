@@ -121,7 +121,7 @@ export default function NewWedding({ back, done, edit, prefill }) {
 
       <div className="actionbar">
         {step < 2
-          ? <>{step === 0 && !edit && <button className="btn ghost wide" disabled={!ok0 || busy || !(+f.price > 0)} onClick={save}>سجّل دابا · <DH v={total} /></button>}<button className="btn brass wide" disabled={step === 0 ? !ok0 : !ok1} onClick={() => setStep(step + 1)}>كمّل</button></>
+          ? <>{step === 0 && !edit && <button className="btn ghost wide" disabled={!ok0 || busy || !(+f.price > 0)} onClick={save}><span>سجّل دابا</span>&nbsp;·&nbsp;<DH v={total} /></button>}<button className="btn brass wide" disabled={step === 0 ? !ok0 : !ok1} onClick={() => setStep(step + 1)}>كمّل</button></>
           : <button className="btn brass wide" disabled={busy} onClick={save}>{edit ? 'سجّل التبديلات' : 'سجّل العرس'} · <DH v={total} /></button>}
       </div>
     </div>

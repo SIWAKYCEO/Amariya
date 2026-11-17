@@ -74,6 +74,7 @@ const WORDS = {
   'ضيف': ['invités', 'guests'], 'درهم': ['DH', 'DH'], 'عرس': ['mariage', 'wedding'], 'العرس': ['le mariage', 'the wedding'],
   'العربون': ["l'acompte", 'the deposit'], 'الباقي': ['le reste', 'the balance'], 'الخلاص': ['le paiement', 'the payment'],
   'دفعة': ['versement', 'payment'], 'خلاص': ['paiement', 'payment'], 'مع': ['à', 'at'], 'ليلة': ['soirée', 'night'], 'ليالي': ['soirées', 'nights'],
+  'عراسات': ['mariages', 'weddings'], 'خدام': ['employés', 'staff'], 'والأثمنة': ['et prix', 'and prices'], 'التجربة': ['Démo', 'Demo'],
   'التريتور': ['le traiteur', 'the caterer'], 'المينو': ['le menu', 'the menu'], 'العقد': ['le contrat', 'the contract'], 'الدوفي': ['le devis', 'the quote'],
 }
 const WORD_RE = new RegExp(`(^|[\\s(،:·])(${Object.keys(WORDS).sort((a, b) => b.length - a.length).join('|')})(?=$|[\\s)،.:؟!·])`, 'g')
@@ -166,7 +167,7 @@ const P = [
   [/^العربون كثر من المجموع \((.+)\)\. تأكّد من الرقم\.$/, "L'acompte dépasse le total ($1). Vérifiez le chiffre.", 'The deposit is more than the total ($1). Check the amount.'],
 ]
 
-function one(s) {
+function one0(s) {
   const k = s.trim()
   if (!k || !AR.test(k)) return s
   const lead = s.match(/^\s*/)[0], trail = s.match(/\s*$/)[0]
@@ -182,6 +183,9 @@ function one(s) {
   if (k.includes(' · ')) return lead + k.split(' · ').map(one).join(' · ') + trail
   return s.replace(WORD_RE, (_, pre, w) => pre + WORDS[w][IDX()])
 }
+// a list joined with the Arabic comma reads «a، b» once its words are translated: give it a normal comma
+const ARL = /[\u0621-\u064A\u0671-\u06D3]/
+function one(s) { const o = one0(s); return o.includes('،') && !ARL.test(o) ? o.replace(/،/g, ',') : o }
 const money = (s) => {
   if (CUR === 'MAD') return s
   const sym = curSym()

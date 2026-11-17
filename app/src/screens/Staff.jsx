@@ -16,7 +16,7 @@ export default function Staff({ go }) {
 
   return (
     <div className="screen">
-      <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={<>{s.staff.filter((p) => p.active !== false).length} خدام · {Object.values(ROLES_PL).slice(0, 3).join('، ')}</>} />
+      <Band photo={PHOTOS.b} pos="center 45%" title="الخدامة" kicker={`${s.staff.filter((p) => p.active !== false).length} خدام · ${Object.values(ROLES_PL).slice(0, 3).join('، ')}`} />
       <div className="content pt" style={{ paddingTop: 16 }}>
         {isPro(s.traiteur) ? <StaffPayCard /> : (
           <Locked compact go={go} title="شكون خلّصتي وشكون باقي؟" why="التطبيق كيحسب الخلصة ديال كل خدام من العراسات اللي خدم فيهم، وكيصيفط ليه ميساج ملّي تخلّصو. ما تنسى حتى واحد.">
