@@ -2,7 +2,7 @@ import { PRICES, cardPay, wantPlan } from './lib/data'
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 const PayChoice = lazy(() => import('./screens/PayChoice'))
 import { money } from './lib/util'
-import { LANG, LANGS, CUR, setPrefs } from './lib/i18n'
+import { LANG, LANGS, CUR, setPrefs, switchLang } from './lib/i18n'
 
 const sv = (d, w = 22, sw = 1.9) => (
   <svg width={w} height={w} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d}</svg>
@@ -290,8 +290,8 @@ export function LangPill({ light }) {
   const pick = async (k) => {
     setOpen(false)
     if (k === LANG) return
-    try { const { saveTraiteur, isDemo } = await import('./lib/data'); if (!isDemo) await saveTraiteur({ lang: k, currency: CUR }) } catch { /* saved on this phone anyway */ }
-    setPrefs(k, CUR)
+    switchLang(k)
+    try { const { saveTraiteur, isDemo, redraw } = await import('./lib/data'); redraw(); if (!isDemo) saveTraiteur({ lang: k, currency: CUR }).catch(() => {}) } catch { /* saved on this phone anyway */ }
   }
   const cur = LANGS.find(([k]) => k === LANG)
   return (

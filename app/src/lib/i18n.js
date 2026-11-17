@@ -7,15 +7,19 @@ import { EX } from './i18n_dict'
 import { applyVocab, vocabOn } from './trades'
 
 export const LANGS = [['ar', 'الدارجة'], ['fr', 'Français'], ['en', 'English']]
-export const CURRENCIES = [
-  ['MAD', 'DH', 'درهم (DH)'], ['EUR', '€', 'Euro (€)'], ['USD', '$', 'US Dollar ($)'], ['GBP', '£', 'Pound (£)'],
-  ['CAD', 'CA$', 'Dollar canadien (CA$)'], ['CHF', 'CHF', 'Franc suisse (CHF)'], ['AED', 'AED', 'Dirham émirati (AED)'],
-  ['SAR', 'SAR', 'Riyal saoudien (SAR)'], ['QAR', 'QAR', 'Riyal qatari (QAR)'], ['KWD', 'KWD', 'Dinar koweïtien (KWD)'],
-  ['TND', 'TND', 'Dinar tunisien (TND)'], ['DZD', 'DA', 'Dinar algérien (DA)'], ['EGP', 'E£', 'Livre égyptienne (E£)'], ['TRY', '₺', 'Lira (₺)'],
-]
+// every currency in the world: the most used first, then all the others (names and symbols come from the phone)
+const TOP = [['MAD', 'DH', 'درهم (DH)'], ['EUR', '€', 'Euro (€)'], ['USD', '$', 'US Dollar ($)'], ['GBP', '£', 'Pound (£)'], ['AED', 'AED', 'Dirham émirati (AED)'],
+  ['SAR', 'SAR', 'Riyal saoudien (SAR)'], ['QAR', 'QAR', 'Riyal qatari (QAR)'], ['KWD', 'KWD', 'Dinar koweïtien (KWD)'], ['BHD', 'BHD', 'Dinar bahreïni (BHD)'],
+  ['OMR', 'OMR', 'Rial omanais (OMR)'], ['CAD', 'CA$', 'Dollar canadien (CA$)'], ['CHF', 'CHF', 'Franc suisse (CHF)'], ['TND', 'TND', 'Dinar tunisien (TND)'],
+  ['DZD', 'DA', 'Dinar algérien (DA)'], ['EGP', 'E£', 'Livre égyptienne (E£)'], ['TRY', '₺', 'Lira (₺)']]
+const ALL_CODES = (() => { try { return Intl.supportedValuesOf('currency') } catch { return [] } })()
+const symOf = (c) => { try { return new Intl.NumberFormat('en', { style: 'currency', currency: c, currencyDisplay: 'narrowSymbol' }).formatToParts(1).find((x) => x.type === 'currency')?.value || c } catch { return c } }
+let curName = (c) => c
+try { const dn = new Intl.DisplayNames(['fr'], { type: 'currency' }); curName = (c) => dn.of(c) || c } catch { /* old phone */ }
+export const CURRENCIES = [...TOP, ...ALL_CODES.filter((c) => !TOP.some((t) => t[0] === c)).map((c) => { const y = /^[A-Z]{3}$/.test(symOf(c)) || symOf(c).length > 3 ? c : symOf(c); return [c, y, `${curName(c)} (${y === c ? c : y + ' · ' + c})`] })]
 const SYM = Object.fromEntries(CURRENCIES.map((c) => [c[0], c[1]]))
 // country calling code → currency (used when someone signs up from abroad)
-const CC_CUR = { 212: 'MAD', 33: 'EUR', 34: 'EUR', 39: 'EUR', 32: 'EUR', 31: 'EUR', 49: 'EUR', 352: 'EUR', 353: 'EUR', 351: 'EUR', 41: 'CHF', 44: 'GBP', 1: 'USD', 971: 'AED', 966: 'SAR', 974: 'QAR', 965: 'KWD', 216: 'TND', 213: 'DZD', 20: 'EGP', 90: 'TRY' }
+const CC_CUR = { 973: 'BHD', 968: 'OMR', 962: 'JOD', 961: 'LBP', 964: 'IQD', 218: 'LYD', 222: 'MRU', 46: 'SEK', 47: 'NOK', 45: 'DKK', 48: 'PLN', 43: 'EUR', 30: 'EUR', 358: 'EUR', 7: 'RUB', 91: 'INR', 92: 'PKR', 61: 'AUD', 64: 'NZD', 27: 'ZAR', 55: 'BRL', 52: 'MXN', 81: 'JPY', 86: 'CNY', 82: 'KRW', 221: 'XOF', 225: 'XOF', 234: 'NGN', 212: 'MAD', 33: 'EUR', 34: 'EUR', 39: 'EUR', 32: 'EUR', 31: 'EUR', 49: 'EUR', 352: 'EUR', 353: 'EUR', 351: 'EUR', 41: 'CHF', 44: 'GBP', 1: 'USD', 971: 'AED', 966: 'SAR', 974: 'QAR', 965: 'KWD', 216: 'TND', 213: 'DZD', 20: 'EGP', 90: 'TRY' }
 export const currencyForPhone = (p) => {
   const d = String(p || '').replace(/\D/g, '')
   const cc = Object.keys(CC_CUR).sort((a, b) => b.length - a.length).find((c) => d.startsWith(c))
@@ -204,6 +208,8 @@ export function tr(text, { keepCur = false } = {}) {
 /* ---------------- live translation of the screen ---------------- */
 const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'CODE', 'PRE'])
 const done = new WeakMap() // text node → the text we put there
+const orig = new WeakMap() // text node → the darija it had before we translated it
+const origAttr = new WeakMap() // element → { attribute: darija }
 let obs = null
 function keep(el) {
   for (let e = el; e; e = e.parentElement) {
@@ -219,14 +225,14 @@ function fixText(n) {
   if (k === 'all') return
   const out = tr(cur, { keepCur: k === 'cur' })
   done.set(n, out)
-  if (out !== cur) n.data = out
+  if (out !== cur) { orig.set(n, cur); n.data = out }
 }
 const ATTRS = ['placeholder', 'title', 'aria-label', 'alt']
 function fixEl(el) {
   if (el.nodeType !== 1 || keep(el) === 'all') return
   for (const a of ATTRS) {
     const v = el.getAttribute(a)
-    if (v && AR.test(v)) { const out = tr(v); if (out !== v) el.setAttribute(a, out) }
+    if (v && AR.test(v)) { const out = tr(v); if (out !== v) { const o = origAttr.get(el) || {}; o[a] = v; origAttr.set(el, o); el.setAttribute(a, out) } }
   }
 }
 function walk(root) {
@@ -236,12 +242,14 @@ function walk(root) {
   const it = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT)
   for (let n = it.nextNode(); n; n = it.nextNode()) n.nodeType === 3 ? fixText(n) : fixEl(n)
 }
+let origTitle = null
 export function startTranslator() {
+  if (origTitle === null) origTitle = document.title
   if (isDefault()) return
   if (LANG !== 'ar') { document.documentElement.lang = LANG; document.documentElement.dir = 'ltr'; document.documentElement.classList.add('ltr') }
   if (obs) obs.disconnect()
   walk(document.body)
-  if (document.title) document.title = tr(document.title)
+  if (origTitle) document.title = tr(origTitle)
   obs = new MutationObserver((list) => {
     for (const m of list) {
       if (m.type === 'characterData') fixText(m.target)
@@ -250,4 +258,25 @@ export function startTranslator() {
     }
   })
   obs.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS })
+}
+
+// change language right away, on the same screen: put back the darija we replaced, then translate again
+export function switchLang(l) {
+  if (obs) { obs.disconnect(); obs = null }
+  const it = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT)
+  for (let n = it.nextNode(); n; n = it.nextNode()) {
+    if (n.nodeType === 3) {
+      if (orig.has(n) && done.get(n) === n.data) n.data = orig.get(n)
+      orig.delete(n); done.delete(n)
+    } else {
+      const o = origAttr.get(n)
+      if (o) { for (const a in o) n.setAttribute(a, o[a]); origAttr.delete(n) }
+    }
+  }
+  if (origTitle) document.title = origTitle
+  LANG = ['fr', 'en'].includes(l) ? l : 'ar'
+  const h = document.documentElement
+  h.lang = LANG; h.dir = LANG === 'ar' ? 'rtl' : 'ltr'; h.classList.toggle('ltr', LANG !== 'ar')
+  put('amr_lang', LANG === 'ar' ? null : LANG)
+  startTranslator()
 }

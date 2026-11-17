@@ -31,6 +31,8 @@ function useTradeOf(t) {
   const k = [t?.trade, ...(t?.trades || []), JSON.stringify(t?.rules?.perGuest ?? '')].join(',')
   if (k !== tradeSeen) { tradeSeen = k; if (vocabOn()) startTranslator() }
 }
+// re-draw every screen (after a language change)
+export const redraw = () => set({})
 const set = (patch) => { if (patch.traiteur) { useTradeOf(patch.traiteur); setHomeFromPhone(patch.traiteur.phone) } state = { ...state, ...patch }; emit() }
 export const useStore = () => useSyncExternalStore((f) => { subs.add(f); return () => subs.delete(f) }, () => state)
 export const getState = () => state

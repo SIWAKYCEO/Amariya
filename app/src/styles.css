@@ -1823,3 +1823,12 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .hd-meter em { display: block; height: 100%; background: var(--green); border-radius: 7px }
 .hd-meter.full em { background: var(--henna) } .hd-meter.full span { color: #8F3A1E }
 .hd-meter .hd-btn { justify-self: start }
+.ltr .pz-chat p { font-size: 10.5px; line-height: 1.4 }
+@media (max-width: 1023px) { .pro .pz-chat .pz-in { display: none } }
+
+/* finestra Pro: niente sovrapposizioni — etichetta in alto e messaggi sotto, uno dopo l'altro */
+.pro .pz-win { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; padding: 0 14px 12px }
+.pz-live, .pro .pz-live { position: static; transform: none; margin-top: auto; color: #CFF5DD; background: rgba(37,211,102,.12); border-color: rgba(37,211,102,.3) }
+.pz-live svg { color: #25D366 }
+.pz-chat { position: static; inset: auto; width: 100% }
+.pro .pz-chat .pz-in { display: none }

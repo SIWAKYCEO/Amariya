@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { InstallButton } from '../install'
-import { RULE_DEFAULTS, ruleDefault, add, pkgFlat, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
+import { RULE_DEFAULTS, ruleDefault, redraw, add, pkgFlat, isDemo, isPro, logout, planOf, remove, ruleOf, saveTraiteur, shopLink, update, useStore } from '../lib/data'
 import { PHOTOS, cropStyle, normPhone, prettyPhone } from '../lib/util'
 import { Band, Field, Ic, MoneyInput, Sheet, fail, shareText, toast } from '../ui'
 import { QuickReplies } from './Inbox'
 import { ContactSheet } from './Account'
-import { CUR, CURRENCIES, LANG, LANGS, setPrefs } from '../lib/i18n'
+import { CUR, CURRENCIES, LANG, LANGS, setPrefs, switchLang } from '../lib/i18n'
 import { L, TRADES, TRADE_KEYS, isTraiteur, perGuest, pkgWord, pkgsWord, stockHint, stockOf, tradeName, trades, usesFood, usesGuests } from '../lib/trades'
 
 export default function Settings({ back, go }) {
   const savePrefs = async (lang, currency) => {
+    if (currency === CUR) { switchLang(lang); redraw(); if (!isDemo) saveTraiteur({ lang, currency }).catch(() => {}); return }
     try { if (!isDemo) await saveTraiteur({ lang, currency }) } catch { /* saved on this phone anyway */ }
     setPrefs(lang, currency)
   }

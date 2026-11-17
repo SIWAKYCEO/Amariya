@@ -73,7 +73,7 @@ function PlanWindow({ k }) {
   )
   if (k === 'pro') return (
     <div className="pz-win" aria-hidden="true">
-      <span className="pz-live"><i />كيجاوب بوحدو · 24/24</span>
+      <span className="pz-live">{Ic.wa(13)} كيجاوب بوحدو · 24/24</span>
       <div className="pz-chat">
         <p className="pz-in">سلام، واش 14 دجنبر خاوي؟ وشحال الثمن؟</p>
         <p className="pz-out">مرحبا بيك، 14 دجنبر خاوي. هادا الدوفي ورابط العربون باش نحجزو ليك النهار<small>Amariya · دابا</small></p>
