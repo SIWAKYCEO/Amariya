@@ -5,6 +5,25 @@ import { Ic, Sheet, Spin } from '../ui'
 import { openExternal } from '../lib/util'
 import { CashPlus, Mastercard, Visa } from '../PayLogos'
 
+// the card form inside the YouCan box, dressed in Amariya colours and font
+const AMR_LOOK = {
+  variables: {
+    primary: '#0F2A24', 'primary-hover': '#173A32', 'primary-foreground': '#F3EDE3',
+    background: '#FBF8F2', card: '#FFFFFF', foreground: '#0B1513', 'muted-foreground': '#7A7366',
+    border: '#E6DCCB', input: '#E6DCCB', ring: '#C8A15A', destructive: '#E0633A', success: '#3FA174',
+    radius: '14px', font: "'Alexandria', system-ui, sans-serif", 'font-rtl': "'Alexandria', system-ui, sans-serif",
+  },
+  rules: `
+    [part="input"] { background: #fff; border: 1px solid #E6DCCB; font-family: 'Alexandria', system-ui, sans-serif; font-size: 15px; transition: border-color .2s, box-shadow .2s }
+    [part="input"]:focus, [part="input"]:focus-within { border-color: #C8A15A; box-shadow: 0 0 0 3px rgba(200,161,90,.22); outline: none }
+    [part="label"] { color: #0F2A24; font-weight: 500 }
+    [part="error"] { color: #E0633A }
+    [part="help"] { display: none }
+    [part="code"] { background: #F3EDE3; border: 1px dashed #C8A15A; border-radius: 14px }
+    [part="code-value"] { color: #0F2A24; font-family: 'Bricolage Grotesque Variable', 'Alexandria', sans-serif; font-weight: 800; letter-spacing: .04em }
+  `,
+}
+
 let ypLoading = null
 const loadYp = () => ypLoading || (ypLoading = new Promise((ok, ko) => {
   if (window.yp) return ok()
@@ -33,7 +52,7 @@ export default function PayCard({ plan, name, onClose, onOther, via = 'credit-ca
         if (!j.token) throw new Error(j.error || 'token')
         setInfo(j); setSt('form')
         const lang = (document.documentElement.lang || 'ar').slice(0, 2)
-        pay.current = window.yp(j.pub_key, { locale: ['ar', 'fr', 'en'].includes(lang) ? lang : 'ar' }).elements({ token: j.token, container: '#ycp-form', gateways: [via] })
+        pay.current = window.yp(j.pub_key, { locale: ['ar', 'fr', 'en'].includes(lang) ? lang : 'ar' }).elements({ token: j.token, container: '#ycp-form', gateways: [via], appearance: AMR_LOOK })
         await pay.current.mount()
       } catch { if (!dead) setSt('error') }
     })()
@@ -81,7 +100,7 @@ export default function PayCard({ plan, name, onClose, onOther, via = 'credit-ca
         <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' || st === 'code' ? 'block' : 'none' }} />
         {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{cp ? 'عطيني الكود ديال CashPlus' : st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
         {st === 'code' && <div className="ycp-wa"><b>سجّل الكود وخلّص بيه فأقرب وكالة CashPlus</b><small>ملي تخلّص، {name} كتفعّل فالتطبيق بوحدها، بلا ما تصيفط حتى حاجة.</small><button className="btn wide" onClick={onClose}>مزيان</button></div>}
-        {st !== 'code' && <p className="ycp-note">الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>}
+        {st !== 'code' && <p className="ycp-note">الخلاص آمن ومحمي. ما كنشوفوش معلومات الكارطة ديالك.</p>}
       </div>
     </Sheet>
   )

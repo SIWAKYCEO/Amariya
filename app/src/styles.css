@@ -1412,7 +1412,7 @@ button, a, .sd { touch-action: manipulation; -webkit-user-select: none; user-sel
 .pzi-foot { display: flex; gap: 8px; justify-content: center; align-items: flex-start; font-size: 12px; line-height: 1.7; color: #7a7366; padding: 0 22px; text-align: center }
 .pzi-foot svg { flex: none; margin-top: 3px }
 
-.pz { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; font-family: var(--font) }
+.pz { flex: 1; min-height: 0; min-width: 0; max-width: 100%; display: flex; flex-direction: column; gap: 12px; font-family: var(--font) }
 .pz-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 14px 0 }
 .pz-tab { position: relative; display: grid; justify-items: center; gap: 1px; padding: 16px 4px 10px; border-radius: 70px 70px 16px 16px / 48px 48px 16px 16px; background: #fff; border: 1px solid #E6DCCB; color: var(--ink); transition: transform .2s, box-shadow .2s }
 .pz-tab b { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 700; opacity: .85 }
