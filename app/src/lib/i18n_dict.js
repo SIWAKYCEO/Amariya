@@ -2972,4 +2972,9 @@ Object.assign(EX, {
   "Virement من البنك ولا من التطبيق ديال البنك": ["Virement depuis la banque ou son application", "Transfer from your bank or its app"],
   "خلّص كاش من أقرب وكالة CashPlus": ["Payez en espèces dans l'agence CashPlus la plus proche", "Pay cash at the nearest CashPlus agency"],
   "الخلاص آمن. ما كنشوفوش معلومات الكارطة ديالك.": ["Paiement sécurisé. Nous ne voyons pas les données de votre carte.", "Secure payment. We never see your card details."],
+  "كتفعّل بوحدها": ["S'active toute seule", "Turns on by itself"],
+  "كتاخد كود وكتخلّص كاش فأقرب وكالة CashPlus": ["Vous recevez un code et payez en espèces dans une agence CashPlus", "You get a code and pay cash at a CashPlus agency"],
+  "عطيني الكود ديال CashPlus": ["Obtenir le code CashPlus", "Get the CashPlus code"],
+  "سجّل الكود وخلّص بيه فأقرب وكالة CashPlus": ["Notez le code et payez dans l'agence CashPlus la plus proche", "Save the code and pay at the nearest CashPlus agency"],
+  "مزيان": ["Parfait", "Great"],
 })

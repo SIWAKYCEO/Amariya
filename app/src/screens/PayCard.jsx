@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SUPABASE_URL, contactWaLink, load, supabase } from '../lib/data'
 import { Ic, Sheet, Spin } from '../ui'
 import { openExternal } from '../lib/util'
-import { Mastercard, Visa } from '../PayLogos'
+import { CashPlus, Mastercard, Visa } from '../PayLogos'
 
 let ypLoading = null
 const loadYp = () => ypLoading || (ypLoading = new Promise((ok, ko) => {
@@ -17,8 +17,9 @@ const call = async (body) => {
   return r.json().catch(() => ({}))
 }
 
-export default function PayCard({ plan, name, onClose, onOther }) {
-  const [st, setSt] = useState('loading') // loading | form | paying | done | fail | error
+export default function PayCard({ plan, name, onClose, onOther, via = 'credit-card' }) {
+  const cp = via === 'cash-plus' // CashPlus through YouCan: a code to pay at an agency, the plan turns on by itself
+  const [st, setSt] = useState('loading') // loading | form | paying | code | done | fail | error
   const [why, setWhy] = useState('')
   const [round, setRound] = useState(0) // "try again" makes a fresh payment
   const [info, setInfo] = useState(null)
@@ -27,12 +28,12 @@ export default function PayCard({ plan, name, onClose, onOther }) {
     let dead = false
     ;(async () => {
       try {
-        const [j] = await Promise.all([call({ plan }), loadYp()])
+        const [j] = await Promise.all([call({ plan, via }), loadYp()])
         if (dead) return
         if (!j.token) throw new Error(j.error || 'token')
         setInfo(j); setSt('form')
         const lang = (document.documentElement.lang || 'ar').slice(0, 2)
-        pay.current = window.yp(j.pub_key, { locale: ['ar', 'fr', 'en'].includes(lang) ? lang : 'ar' }).elements({ token: j.token, container: '#ycp-form' })
+        pay.current = window.yp(j.pub_key, { locale: ['ar', 'fr', 'en'].includes(lang) ? lang : 'ar' }).elements({ token: j.token, container: '#ycp-form', gateways: [via] })
         await pay.current.mount()
       } catch { if (!dead) setSt('error') }
     })()
@@ -41,6 +42,12 @@ export default function PayCard({ plan, name, onClose, onOther }) {
 
   async function confirm() {
     if (!pay.current) return
+    if (cp) { // YouCan shows the code in its form; we tell the dashboard and explain what happens next
+      setSt('code')
+      call({ action: 'code', id: info.id }).catch(() => {})
+      pay.current.confirm().catch(() => {})
+      return
+    }
     setSt('paying')
     let r = null
     try { r = await pay.current.confirm() } catch (e) { r = { error: e } }
@@ -67,13 +74,14 @@ export default function PayCard({ plan, name, onClose, onOther }) {
   if (st === 'fail' || st === 'error') return <PayResult plan={plan} name={name} error={st === 'error'} why={why} onRetry={retry} onOther={onOther} onClose={onClose} />
 
   return (
-    <Sheet onClose={onClose} title={`خلّص ${name} بالكارطة`}>
+    <Sheet onClose={onClose} title={cp ? `خلّص ${name} بـ CashPlus` : `خلّص ${name} بالكارطة`}>
       <div className="ycp">
-        {info && <div className="pm-head"><span className="pm-logos"><Visa /><Mastercard /></span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
+        {info && <div className="pm-head"><span className="pm-logos">{cp ? <CashPlus /> : <><Visa /><Mastercard /></>}</span><p className="ycp-amt"><b className="num" dir="ltr">{info.amount.toLocaleString('de-DE')}</b> درهم{info.sandbox && <em> · تجربة</em>}</p></div>}
         {st === 'loading' && <div className="ycp-wait"><Spin /></div>}
-        <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' ? 'block' : 'none' }} />
-        {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
-        <p className="ycp-note">الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>
+        <div id="ycp-form" key={round} style={{ display: st === 'form' || st === 'paying' || st === 'code' ? 'block' : 'none' }} />
+        {(st === 'form' || st === 'paying') && <button className="btn wide brass" disabled={st === 'paying'} onClick={confirm}>{cp ? 'عطيني الكود ديال CashPlus' : st === 'paying' ? 'كنخلّصو…' : 'خلّص دابا'}</button>}
+        {st === 'code' && <div className="ycp-wa"><b>سجّل الكود وخلّص بيه فأقرب وكالة CashPlus</b><small>ملي تخلّص، {name} كتفعّل فالتطبيق بوحدها، بلا ما تصيفط حتى حاجة.</small><button className="btn wide" onClick={onClose}>مزيان</button></div>}
+        {st !== 'code' && <p className="ycp-note">الخلاص آمن عبر YouCan Pay. ما كنشوفوش معلومات الكارطة ديالك.</p>}
       </div>
     </Sheet>
   )
@@ -112,7 +120,7 @@ export function PayResult({ ok, plan, name, error, why, onRetry, onOther, onClos
             <li><i>{Ic.check(12)}</i>شوف واش الكارطة مفتوحة للخلاص فالأنترنيت</li>
           </ul>
           <button className="pres-btn main" onClick={onRetry}>عاود جرّب<i>←</i></button>
-          {onOther && <button className="pres-btn line" onClick={onOther}>{Ic.cash(17)} خلّص بالتحويل البنكي ولا CashPlus</button>}
+          {onOther && <button className="pres-btn line" onClick={onOther}>{Ic.cash(17)} خلّص بطريقة أخرى</button>}
           <button className="pres-link" onClick={() => openExternal(contactWaLink(`حاولت نخلّص ${name} بالكارطة وما دازش.`))}>{Ic.wa(15)} عاوننا فالواتساب</button>
           <button className="pres-link mute" onClick={onClose}>رجع</button>
         </>}
