@@ -124,6 +124,7 @@ export function vocab() {
   } else if (i === 1) {
     pairs = [['Menus', t.pkgs[1]], ['menus', low(t.pkgs[1])], ['Menu', t.pkg[1]], ['menu', low(t.pkg[1])],
       ['Le traiteur', up(t.the[1])], ['le traiteur', t.the[1]], ['Traiteurs', 'Prestataires'], ['traiteurs', 'prestataires'], ['Traiteur', t.name[1]], ['traiteur', low(t.name[1])],
+      ...(/s$/.test(st[1]) ? [['le matériel', 'les ' + low(st[1])], ['Le matériel', 'Les ' + low(st[1])], ['du matériel', 'des ' + low(st[1])], ['votre matériel', 'vos ' + low(st[1])], ['Votre matériel', 'Vos ' + low(st[1])]] : []),
       ['Matériel', st[1]], ['matériel', low(st[1])]]
   } else {
     pairs = [['Menus', t.pkgs[2]], ['menus', low(t.pkgs[2])], ['Menu', t.pkg[2]], ['menu', low(t.pkg[2])],

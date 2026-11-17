@@ -2914,4 +2914,5 @@ Object.assign(EX, {
   "التطبيق ديال خدمات الأعراس": ["L'application des métiers du mariage", "The app for wedding businesses"],
   "الفريق ديالك مأكّد لكل عرس": ["Votre équipe confirmée pour chaque mariage", "Your team confirmed for every wedding"],
   "الخدمات": ["prestataires", "providers"],
+  "النكافات": ["Neggafas", "Neggafas"],
 })

@@ -52,11 +52,11 @@ export async function load() {
     state = saved?.traiteur ? { ...empty(), ...saved } : demoSeed()
     // ?demo=1&pro=1 → everything open (director view); ?demo=1&free=1 → what a new traiteur sees
     const q = new URLSearchParams(location.search)
-    if (q.has('pro')) state.traiteur = { ...state.traiteur, plan: 'premium', plan_until: null }
-    if (q.has('free')) state.traiteur = { ...state.traiteur, plan: 'free', plan_until: null }
     // ?demo=1&type=music → the demo as an orchestra (also negg, photo, hall…; type=tr,negg for two trades)
     if (q.get('type')) { const ts = q.get('type').split(','); if (ts.join() !== (state.traiteur.trades || ['tr']).join()) state = demoForTrade(state, ts) }
     else if (state.traiteur.trade && state.traiteur.trade !== 'tr') state = demoSeed()
+    if (q.has('pro')) state.traiteur = { ...state.traiteur, plan: 'premium', plan_until: null }
+    if (q.has('free')) state.traiteur = { ...state.traiteur, plan: 'free', plan_until: null }
     useTradeOf(state.traiteur)
     emit()
     return true
